@@ -1,5 +1,5 @@
-import ErrorMessages from './errorMessages'
-import ErrorCodes from './errorCodes'
+import ErrorMessages from './errorMessages.js'
+import ErrorCodes from './errorCodes.js'
 
 /**
  * For error, we would like to see the followings information
