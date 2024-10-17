@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import ENV from '.'
+import ENV from './index.js'
 
 async function DatabaseInit(Application) {
   mongoose.connection.on('connected', () => {

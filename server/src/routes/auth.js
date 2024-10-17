@@ -1,9 +1,9 @@
 import express from 'express'
-import authControllers from '../controllers/authControllers'
-import asyncHandler from '../middlewares/asyncHandler'
+import authControllers from '../controllers/authControllers.js'
+import asyncHandler from '../middlewares/asyncHandler.js'
 
-const router = express.Router()
+const authRouter = express.Router()
 
-router('/register', asyncHandler(authControllers.register))
+authRouter.post('/register', asyncHandler(authControllers.register))
 
 export default authRouter
