@@ -6,6 +6,10 @@ const courseSchema = new Schema({
     type: String,
     required: true,
   },
+  courseInstructor: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+  },
   courseDescription: {
     type: String,
     required: true,
@@ -36,7 +40,7 @@ const courseSchema = new Schema({
   courseRatingAvg: {
     type: Number,
     default: 0,
-  }
+  },
 }, {
   timestamps: true
 });
