@@ -15,6 +15,23 @@ const enrolledCourseSchema = new Schema({
     type: Date,
     required: true
   },
+  courseModulesProgress: {
+    type: [{
+      moduleId: mongoose.Schema.Types.ObjectId,
+      isFinish: Boolean,
+      moduleVideoProgress: [{
+        videoTitle: String,
+        isFinish: Boolean,
+      }],
+      moduleExerciseProgress: [{
+        exerciseId: mongoose.Schema.Types.ObjectId,
+        userScore: Number,
+        hasPassed: Boolean,
+      }]
+    }],
+    required: true,
+    ref: 'Modules'
+  },
 }, {
   timestamps: true
 });

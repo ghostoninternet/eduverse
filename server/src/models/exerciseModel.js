@@ -18,14 +18,6 @@ const exerciseSchema = new Schema({
     type: Number,
     required: true,
   },
-  exerciseUserScore: {
-    type: Number,
-    required: true 
-  },
-  exerciseComplete: {
-    type: Boolean,
-    default: false
-  },
 }, {
   timestamps: true
 });

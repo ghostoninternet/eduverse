@@ -11,7 +11,11 @@ const moduleSchema = new Schema({
     required: true,
   },
   moduleVideoLessons: {
-    type: [mongoose.Schema.Types.String],
+    type: [{
+      videoTitle: String,
+      videoUrl: String,
+      videoLength: Number,
+    }],
     required: true
   },
   moduleExercises: {
