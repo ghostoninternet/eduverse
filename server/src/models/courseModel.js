@@ -14,6 +14,10 @@ const courseSchema = new Schema({
     type: String,
     required: true,
   },
+  courseImgUrl: {
+    type: String,
+    required: true,
+  },
   courseCategory: {
     type: [mongoose.Schema.Types.ObjectId],
     required: true,
@@ -41,9 +45,18 @@ const courseSchema = new Schema({
     type: Number,
     default: 0,
   },
+  courseLearnerCount: {
+    type: Number,
+    default: 0,
+  },
 }, {
   timestamps: true
 });
+
+courseSchema.index({
+  courseTitle: 'text',
+  courseDescription: 'text'
+})
 
 const Courses = mongoose.model("Courses", courseSchema);
 
