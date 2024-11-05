@@ -3,17 +3,26 @@ import courseDaos from "../daos/courseDaos.js"
 import excludeObjectKeys from "../utils/excludeObjectKeys.js"
 
 //GET COURSE
-/*recommened course  */
-
+/*recommended course  */
+const getRecommendedCourses = async () => {
+  let result = courseDaos.findRecommendedCourses()
+  return result
+}
 
 
 /*free course  */
-
+const getFreeCourses = async () => {
+  let result = courseDaos.findFreeCourses()
+  return result
+}
 
 
 
 /*most popular course  */
-
+const getMostPopularCourses = async () => {
+  let result = courseDaos.findMostPopularCourses()
+  return result
+}
 
 
 
@@ -67,5 +76,8 @@ const searchCourses = async (queryParams, limit, page) => {
 }
 
 export default {
-  searchCourses
+  searchCourses,
+  getFreeCourses,
+  getMostPopularCourses,
+  getRecommendedCourses
 }
