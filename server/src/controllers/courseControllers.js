@@ -1,4 +1,4 @@
-import courseServices from '../services/courseService'
+import courseServices from '../services/courseService.js'
 
 const searchCourses = async (req, res, next) => {
   const searchRequest = await courseServices.searchCourses(req.query, req.query.limit, req.query.page)
