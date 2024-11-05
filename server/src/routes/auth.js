@@ -7,7 +7,7 @@ const authRouter = express.Router()
 
 authRouter.post('/register', asyncHandler(authControllers.register))
 authRouter.post('/login', asyncHandler(authControllers.login))
-router.post('/refresh-token', asyncHandler(authControllers.refreshToken))
+authRouter.post('/refresh-token', asyncHandler(authControllers.refreshToken))
 
 authRouter.use(authToken)
 authRouter.post('/logout', asyncHandler(authControllers.logout))

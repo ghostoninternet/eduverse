@@ -1,5 +1,5 @@
-import Courses from "../models/courseModel"
-import CustomError from '../errors/customError'
+import Courses from "../models/courseModel.js"
+import CustomError from '../errors/customError.js'
 
 const countNumberOfCourses = async (filter={}) => {
   return await Courses.countDocuments(filter)

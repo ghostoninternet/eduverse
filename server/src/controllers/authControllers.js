@@ -31,8 +31,8 @@ const login = async (req, res, next) => {
 }
 
 const logout = async (req, res, next) => {
-  res.cookie("accessToken", null)
-  res.cookie("refreshToken", null)
+  res.clearCookie("accessToken")
+  res.clearCookie("refreshToken")
   res.status(200).json({
     message: "Successfully logout!",
     data: true,
