@@ -1,0 +1,3 @@
+const findInstructorById = async (instructorId) => {
+  
+}
