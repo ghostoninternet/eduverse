@@ -1,7 +1,25 @@
-import categoryDaos from "../daos/categoryDaos"
-import courseDaos from "../daos/courseDaos"
-import excludeObjectKeys from "../utils/excludeObjectKeys"
+import categoryDaos from "../daos/categoryDaos.js"
+import courseDaos from "../daos/courseDaos.js"
+import excludeObjectKeys from "../utils/excludeObjectKeys.js"
 
+//GET COURSE
+/*recommened course  */
+
+
+
+/*free course  */
+
+
+
+
+/*most popular course  */
+
+
+
+
+
+
+//search course
 const searchCourses = async (queryParams, limit, page) => {
   let { query, courseCategory } = queryParams
 

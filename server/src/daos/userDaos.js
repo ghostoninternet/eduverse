@@ -1,7 +1,7 @@
 import CustomError from '../errors/customError.js'
-import userModel from "../models/userModel"
-import getSelectData from "../utils/getSelectData"
-import getUnselectData from "../utils/getUnselectData"
+import userModel from "../models/userModel.js"
+import getSelectData from "../utils/getSelectData.js"
+import getUnselectData from "../utils/getUnselectData.js"
 
 const findOneUser = async (filter) => {
   return await userModel.findOne(filter).select(getUnselectData(['password, __v']))
