@@ -1,15 +1,22 @@
 import React from "react";
+import PropTypes from 'prop-types';
+const Course = (props) => {
 
-const Course = () => {
   return (
-    <div className="border rounded-md p-4 mt-3 shadow-md hover:scale-105">
-      <img src="/course_img.png" />
+    <div className="border rounded-md p-4 shadow-md hover:scale-105 flex flex-col">
+      <img src={`${props.imgUrl}`} className="w-full h-full"/>
       <div className="mt-4">
-        <h3 className="break-words font-bold">English for Common Interactions in the Workplace: Basic Level</h3>
-        <p>description</p>
+        <h3 className="break-words font-bold">{props.title}</h3>
+        <p>{props.description}</p>
       </div>
     </div>
   );
 };
+
+Course.propTypes = {
+  description: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  imgUrl: PropTypes.string.isRequired,
+}
 
 export default Course;
