@@ -1,44 +1,64 @@
-import React from "react";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import NotificationsIcon from "@mui/icons-material/Notifications";
+import React, { useState } from "react";
+import NavBar from "./NavBar";
+import Menu from "./Menu";
 import SearchIcon from "@mui/icons-material/Search";
-import SchoolIcon from "@mui/icons-material/School";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 const Header = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isSearch, setIsSearch] = useState(false);
+  const handleClick = () => {
+    setIsOpen(!isOpen);
+  };
+  const onSearch = () => {
+    setIsSearch(true);
+  };
+  const handleBack = () => {
+    setIsSearch(false);
+  }
   return (
-    <div>
-      <div className="flex justify-between px-16 py-4">
-        <div className="flex">
-          <div>
-            <SchoolIcon color="primary" fontSize="medium"/>
+    <div className="">
+      {isSearch ? (
+        <div className="py-4 px-3">
+          <div className="sm:hidden justify-between flex items-center gap-x-2">
+            <button onClick={handleBack}><ArrowBackIcon fontSize="large"/></button>
+            <input className="w-full px-2 py-1 border-gray-400 border-2 rounded-full" placeholder="Search..."/>
+            <button onClick={onSearch}>
+              <SearchIcon fontSize="large" />
+            </button>
           </div>
-          <button className="font-bold text-3xl text-blue-700">Hust Academy</button>
         </div>
+      ) : (
+        <div
+          className={`md:px-16 md:py-4 max-sm:flex max-sm:justify-between max-sm:px-3 max-sm:py-4`}
+        >
+          <div className={`max-sm:flex max-sm:gap-x-7`}>
+            <div className="sm:hidden">
+              <Menu isOpen={isOpen} handleClick={handleClick} />
+            </div>
+            <NavBar />
+          </div>
+          {/*mobile */}
+          <div className="sm:hidden ">
+            <button onClick={onSearch}>
+              <SearchIcon fontSize="large" />
+            </button>
+          </div>
+        </div>
+      )}
 
-        <div className="relative w-fit">
-          <input
-            type="text"
-            placeholder="Search for courses"
-            className="h-12 w-96 p-4 border-2 rounded-full shadow-md"
-          />
-          <button className="absolute right-2.5 top-1.5 border rounded-full p-1 bg-blue-600 text-white hover:bg-blue-700">
-            <SearchIcon />
-          </button>
+      {isOpen && (
+        <div className="flex flex-col">
+          <div className="active:bg-blue-500 px-6 py-4">Buy</div>
+          <div className="active:bg-blue-500 px-6 py-4">Notification</div>
+          <div className="active:bg-blue-500 px-6 py-4">Login</div>
         </div>
-
-        <div className="flex gap-x-6">
-          <button>
-            <ShoppingCartIcon color="primary" fontSize="large" />
-          </button>
-          <button>
-            <NotificationsIcon color="primary" fontSize="large" />
-          </button>
-          <button className="bg-blue-600 text-white border rounded-full px-4 hover:bg-blue-700">
-            Login
-          </button>
-        </div>
+      )}
+      <div className="bg-blue-300 border sm:px-16 sm:py-4 font-semibold">
+        Explore free courses across various topics that provide foundational
+        skills in areas like programming, data analysis, and digital marketing.
+        Increase your knowledge or enhance your skills without any financial
+        commitment...
       </div>
-
-      <div className="bg-blue-300 border px-16 py-4 font-semibold">Explore free courses across various topics that provide foundational skills in areas like programming, data analysis, and digital marketing. Increase your knowledge or enhance your skills without any financial commitment...</div>
     </div>
   );
 };
