@@ -32,11 +32,6 @@ const courseSchema = new Schema({
     required: true,
     ref: 'Modules'
   },
-  courseReviews: {
-    type: [mongoose.Schema.Types.ObjectId],
-    default: [],
-    ref: 'Reviews'
-  },
   courseReviewCount: {
     type: Number,
     default: 0,

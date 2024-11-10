@@ -18,6 +18,10 @@ const exerciseSchema = new Schema({
     type: Number,
     required: true,
   },
+  exerciseDuration: {
+    type: Number,
+    required: true,
+  },
 }, {
   timestamps: true
 });
