@@ -3,6 +3,7 @@ import asyncHandler from '../middlewares/asyncHandler.js'
 import courseControllers from '../controllers/courseControllers.js'
 const courseRouter = express.Router()
 
+courseRouter.get('/:courseId', asyncHandler(courseControllers.getCourseDetail))
 courseRouter.get('/search', asyncHandler(courseControllers.searchCourses))
 courseRouter.get('/recommended', asyncHandler(courseControllers.getRecommendedCourses))
 courseRouter.get('/free', asyncHandler(courseControllers.getFreeCourses))
