@@ -76,10 +76,20 @@ const findCourses = async (filter={}, limit=12, page=1) => {
   })
 }
 
+const findCourseById = async (courseId) => {
+  return await Courses.findById(courseId)
+  .then(data => data)
+  .catch(err => {
+    console.log(err)
+    throw new CustomError.DatabaseError()
+  })
+}
+
 export default {
   countNumberOfCourses,
   findCourses,
   findRecommendedCourses,
   findFreeCourses,
-  findMostPopularCourses
+  findMostPopularCourses,
+  findCourseById,
 }

@@ -15,6 +15,11 @@ const getMostPopularCourses = async (req, res, next) => {
   res.status(200).json(response)
 }
 
+const getCourseDetail = async (req, res, next) => {
+  const courseDetail = await courseServices.getCourseDetail(req.params.courseId)
+  res.status(200).json(courseDetail)
+}
+
 const searchCourses = async (req, res, next) => {
   const searchRequest = await courseServices.searchCourses(req.query, req.query.limit, req.query.page)
   res.status(200).json(searchRequest)
@@ -24,5 +29,6 @@ export default {
   searchCourses,
   getRecommendedCourses,
   getFreeCourses,
-  getMostPopularCourses
+  getMostPopularCourses,
+  getCourseDetail,
 }
