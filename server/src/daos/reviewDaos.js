@@ -1,4 +1,4 @@
-import Reviews from "../models/reviewModel"
+import Reviews from "../models/reviewModel.js"
 
 const countNumberOfReviews = async (filter = {}) => {
   return await Reviews.countDocuments(filter)

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Course from "../../components/Course.jsx";
+import Course from "../../components/Course";
 
 const HomePage = () => {
   const [recommendedCourses, setRecommendedCourses] = useState([]);

@@ -1,8 +1,8 @@
-import courseDaos from "../daos/courseDaos"
-import reviewDaos from "../daos/reviewDaos"
-import userDaos from "../daos/userDaos"
-import CustomError from "../errors/customError"
-import includeObjectKeys from "../utils/includeObjectKeys"
+import courseDaos from "../daos/courseDaos.js"
+import reviewDaos from "../daos/reviewDaos.js"
+import userDaos from "../daos/userDaos.js"
+import CustomError from "../errors/customError.js"
+import includeObjectKeys from "../utils/includeObjectKeys.js"
 
 const recalculateRatingAvg = async (courseId, course) => {
   const allReviews = await reviewDaos.findAllCourseReviews(courseId)
