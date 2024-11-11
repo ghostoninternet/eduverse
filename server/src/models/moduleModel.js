@@ -2,6 +2,16 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const moduleSchema = new Schema({
+  courseId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "Courses",
+  },
+  moduleInstructor: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "Instructors",
+  },
   moduleTitle: {
     type: String,
     required: true,
