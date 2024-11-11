@@ -1,9 +1,15 @@
-import React from "react";
+// import React from "react";
 import SchoolIcon from "@mui/icons-material/School";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import SearchIcon from "@mui/icons-material/Search";
+import { useNavigate } from 'react-router-dom';
+
 const NavBar = () => {
+  const navigate = useNavigate();
+  const handleLoginClick = () => {
+    navigate('/signin')
+  }
   return (
     <div className="sm:flex sm:justify-between items-center max-lg:gap-x-3">
       <div className="flex">
@@ -32,7 +38,7 @@ const NavBar = () => {
         <button>
           <NotificationsIcon color="primary" fontSize="large" />
         </button>
-        <button className="bg-blue-600 text-white border rounded-full px-4 hover:bg-blue-700">
+        <button className="bg-blue-600 text-white border rounded-full px-4 hover:bg-blue-700"  onClick={handleLoginClick}>
           Login
         </button>
       </div>
