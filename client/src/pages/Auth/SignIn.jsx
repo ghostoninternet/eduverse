@@ -1,7 +1,7 @@
+/* eslint-disable react/no-unescaped-entities */
 import React from "react";
-import "../Auth/SignUpForm.jsx";
 import { Link } from "react-router-dom";
-function SignupForm() {
+const SignIn = () => {
   const validateEmail = (e) => {
     const input = e.target;
     input.setCustomValidity("");
@@ -17,32 +17,23 @@ function SignupForm() {
       );
     }
   };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-200">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center mb-3">Sign up</h2>
+        <h2 className="text-2xl font-bold text-center mb-3">Sign in</h2>
         <p className="mb-8 text-center">
-          Have an account?{" "}
-          <Link to={"/signin"} className="hover:text-blue-400 hover:underline">
-            Sign in here!
+          Haven't not an account yet?{" "}
+          <Link to={"/signup"} className="hover:text-blue-400 hover:underline">
+            Sign up here!
           </Link>
         </p>
         <form>
-          {/* Full Name */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Full Name</label>
-            <input
-              onChange={validateEmail}
-              type="text"
-              placeholder="Enter your full name"
-              className="w-full border rounded-md p-2"
-            />
-          </div>
-
           {/* Email */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">Email</label>
             <input
+              onChange={validateEmail}
               type="email"
               placeholder="Enter your email"
               className="w-full border rounded-md p-2"
@@ -59,6 +50,7 @@ function SignupForm() {
             />
             <small className="text-gray-500">Between 8-24 characters</small>
           </div>
+
           <div className="flex flex-col justify-between gap-x-3 mb-7">
             <p className="font-semibold">Role</p>
             <select className="p-2 border-2 border-gray-300 rounded-md w-full">
@@ -71,12 +63,14 @@ function SignupForm() {
             type="submit"
             className="w-full bg-blue-500 text-white font-bold py-2 rounded-lg hover:bg-blue-600 transition-colors"
           >
-            Join for free
+            Sign in
           </button>
         </form>
+
+       
       </div>
     </div>
   );
-}
+};
 
-export default SignupForm;
+export default SignIn;

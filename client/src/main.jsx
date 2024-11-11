@@ -7,6 +7,8 @@ import {
 import Root from './rootLayout.jsx'
 import Home from './pages/Home'
 import './index.css'
+import SignIn from './pages/Auth/SignIn.jsx'
+import SignUp from './pages/Auth/SignUpForm.jsx'
 const router = createBrowserRouter([
   {
     path: "/",
@@ -17,6 +19,14 @@ const router = createBrowserRouter([
         element: <Home />,
       },
     ],
+  },
+  {
+    path: "/signin",
+    element: <SignIn/>
+  },
+  {
+    path: "/signup",
+    element: <SignUp/>
   },
 ]);
 createRoot(document.getElementById('root')).render(
