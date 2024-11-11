@@ -10,7 +10,7 @@ const register = async (req, res, next) => {
     httpOnly: true
   })
   res.status(200).json({
-    message: "Successfully login!",
+    message: "Successfully signup!",
     data: authenticatedData.user
   })
 };

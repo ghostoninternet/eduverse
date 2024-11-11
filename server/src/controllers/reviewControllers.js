@@ -1,4 +1,4 @@
-import reviewServices from "../services/reviewServices"
+import reviewServices from "../services/reviewServices.js"
 
 const getCourseReviews = async (req, res, next) => {
   const { courseId } = req.params.courseId
