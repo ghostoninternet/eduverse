@@ -1,4 +1,4 @@
-import Instructors from '../models/instructorModel'
+import Instructors from '../models/instructorModel.js'
 
 const findInstructorById = async (instructorId) => {
   return await Instructors.findById(instructorId)

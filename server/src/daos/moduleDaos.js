@@ -1,4 +1,4 @@
-import Modules from "../models/moduleModel"
+import Modules from "../models/moduleModel.js"
 
 const findModuleById = async (moduleId) => {
   return await Modules.findById(moduleId)
