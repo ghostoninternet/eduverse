@@ -2,6 +2,16 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const exerciseSchema = new Schema({
+  exerciseInstructor: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "Instructors",
+  },
+  exerciseModule: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "Modules",
+  },
   exerciseName: {
     type: String,
     required: true,
