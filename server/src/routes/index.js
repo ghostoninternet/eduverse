@@ -10,7 +10,7 @@ const router = express.Router()
 router.use('/auth', authRouter)
 router.use('/courses', courseRouter)
 router.use('/review', reviewRouter)
-router.use('/mnodules', moduleRouter)
+router.use('/modules', moduleRouter)
 router.use('/exercises', exerciseRouter)
 
 export default router

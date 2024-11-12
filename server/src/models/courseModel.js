@@ -29,7 +29,7 @@ const courseSchema = new Schema({
   },
   courseModules: {
     type: [mongoose.Schema.Types.ObjectId],
-    required: true,
+    default: [],
     ref: 'Modules'
   },
   courseReviewCount: {
