@@ -85,12 +85,30 @@ const findCourseById = async (courseId) => {
     })
 }
 
+const createNewCourse = async (newCourseDocument) => {
+  return await Courses.create(newCourseDocument)
+    .then(data => data)
+    .catch(err => {
+      console.log(err)
+      throw new CustomError.DatabaseError()
+    })
+}
+
 const updateCourse = async (courseId, updateCourseData) => {
   return await Courses.findOneAndUpdate(
     { _id: courseId },
     updateCourseData,
     { new: true }
   )
+    .then(data => data)
+    .catch(err => {
+      console.log(err)
+      throw new CustomError.DatabaseError()
+    })
+}
+
+const deleteCourse = async (courseId) => {
+  return await Courses.findOneAndDelete({ _id: courseId })
     .then(data => data)
     .catch(err => {
       console.log(err)
@@ -105,5 +123,7 @@ export default {
   findFreeCourses,
   findMostPopularCourses,
   findCourseById,
+  createNewCourse,
   updateCourse,
+  deleteCourse,
 }
