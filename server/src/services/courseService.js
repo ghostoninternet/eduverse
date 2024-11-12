@@ -1,3 +1,4 @@
+import mongoose from "mongoose"
 import CustomError from "../errors/customError.js"
 import categoryDaos from "../daos/categoryDaos.js"
 import courseDaos from "../daos/courseDaos.js"
@@ -26,7 +27,7 @@ const getMostPopularCourses = async () => {
   return result
 }
 
-const getCourseDetail = async(courseId) => {
+const getCourseDetail = async (courseId) => {
   let foundCourse = await courseDaos.findCourseById(courseId)
   if (!foundCourse) {
     return {}
@@ -125,10 +126,210 @@ const searchCourses = async (queryParams, limit, page) => {
   }
 }
 
+// For instructor, optimized later :v
+const getInstructorCourses = async (instructorId, limit = 10, page = 1) => {
+  let foundCourses = await courseDaos.findCourses({ courseInstructor: instructorId }, limit, page)
+  if (foundCourses.length == 0) return []
+
+  foundCourses = foundCourses.map(async (foundCourse) => {
+    let categories = []
+    for (let i = 0; i < foundCourse.courseCategory.length; i++) {
+      let foundCategory = await categoryDaos.findCategoryById(foundCourse.courseCategory[i])
+      if (foundCategory) {
+        categories.push(foundCategory.categoryName)
+      }
+    }
+    foundCourse.courseCategory = categories
+
+    return excludeObjectKeys(foundCourse, [
+      'courseInstructor',
+      'courseImgUrl',
+      'courseModules',
+      'updatedAt'
+    ])
+  })
+
+  const totalCourses = await courseDaos.countNumberOfCourses({ courseInstructor: instructorId })
+  const totalPages = Math.ceil(totalCourses / limit)
+
+  return {
+    data: foundCourses,
+    pagination: {
+      totalPages: totalPages,
+      currentPage: page,
+      limitPerPage: limit
+    }
+  }
+}
+
+const getInstructorCourseDetail = async (courseId) => {
+  const foundCourse = await courseDaos.findCourseById(courseId)
+  if (!foundCourse) throw new CustomError.NotFoundError("No course found!")
+
+  let categories = []
+  for (let i = 0; i < foundCourse.courseCategory.length; i++) {
+    let foundCategory = await categoryDaos.findCategoryById(foundCourse.courseCategory[i])
+    if (foundCategory) {
+      categories.push(foundCategory.categoryName)
+    }
+  }
+  foundCourse.courseCategory = categories
+
+  let modules = []
+  for (let i = 0; i < foundCourse.courseModules.length; i++) {
+    let foundModule = await moduleDaos.findModuleById(foundCourse.courseModules[i])
+    if (foundModule) {
+      let moduleExercises = []
+      for (let j = 0; j < foundModule.moduleExercises.length; j++) {
+        let foundExercise = await exerciseDaos.findExerciseById(foundModule.moduleExercises[j])
+        if (foundExercise) {
+          moduleExercises.push(includeObjectKeys(foundExercise, [
+            '_id',
+            'exerciseName',
+            'exerciseDuration'
+          ]))
+        }
+      }
+      foundModule.moduleExercises = moduleExercises
+      modules.push(excludeObjectKeys(foundModule, [
+        'courseId',
+        'moduleInstructor',
+        'createdAt',
+        'updatedAt'
+      ]))
+    }
+  }
+
+  foundCourse.courseModules = modules
+
+  return foundCourse
+}
+
+const searchInstructorCourses = async (instructorId, query, limit, page) => {
+  let filter = {
+    $text: { $search: query },
+    courseInstructor: new mongoose.Types.ObjectId(instructorId)
+  }
+
+  let foundCourses = await courseDaos.findCourses(filter, limit, page)
+  if (foundCourses.length == 0) return []
+
+  foundCourses = foundCourses.map(async (foundCourse) => {
+    let categories = []
+    for (let i = 0; i < foundCourse.courseCategory.length; i++) {
+      let foundCategory = await categoryDaos.findCategoryById(foundCourse.courseCategory[i])
+      if (foundCategory) {
+        categories.push(foundCategory.categoryName)
+      }
+    }
+    foundCourse.courseCategory = categories
+
+    return excludeObjectKeys(foundCourse, [
+      'courseInstructor',
+      'courseImgUrl',
+      'courseModules',
+      'updatedAt'
+    ])
+  })
+
+  const totalCourses = await courseDaos.countNumberOfCourses(filter)
+  const totalPages = Math.ceil(totalCourses / limit)
+
+  return {
+    data: foundCourses,
+    pagination: {
+      totalPages: totalPages,
+      currentPage: page,
+      limitPerPage: limit
+    }
+  }
+}
+
+const createNewCourse = async (instructorId, newCourseData) => {
+  const categories = []
+  for (let i = 0; i < newCourseData.courseCategory.length; i++) {
+    let foundCategory = await categoryDaos.findCategoryById(newCourseData.courseCategory[i])
+    if (!foundCategory) throw new CustomError.NotFoundError("No category found!")
+    categories.push(foundCategory._id)
+  }
+
+  const newCourseDocument = {
+    ...newCourseData,
+    courseCategory: categories,
+    courseInstructor: new mongoose.Types.ObjectId(instructorId),
+  }
+
+  const newCourse = await courseDaos.createNewCourse(newCourseDocument)
+
+  return excludeObjectKeys(newCourse, [
+    'courseInstructor',
+    'courseImgUrl',
+    'courseModules',
+    'updatedAt'
+  ])
+}
+
+const updateCourse = async (courseId, updateCourseData) => {
+  const foundCourse = await courseDaos.findCourseById(courseId)
+  if (!foundCourse) throw new CustomError.NotFoundError("No course found!")
+
+  const categories = []
+  for (let i = 0; i < updateCourseData.courseCategory.length; i++) {
+    let foundCategory = await categoryDaos.findCategoryById(updateCourseData.courseCategory[i])
+    if (!foundCategory) throw new CustomError.NotFoundError("No category found!")
+    categories.push(foundCategory._id)
+  }
+
+  const modules = []
+  for (let i = 0; i < updateCourseData.courseModules.length; i++) {
+    let foundModule = await moduleDaos.findModuleById(updateCourseData.courseModules[i])
+    if (!foundModule) throw new CustomError.NotFoundError("No module found!")
+    modules.push(foundModule._id)
+  }
+
+  let updateCourseDocument = {
+    ...updateCourseData,
+    courseCategory: categories,
+    courseModules: modules,
+    courseInstructor: new mongoose.Types.ObjectId(foundCourse.courseInstructor)
+  }
+
+  const updatedCourse = await courseDaos.updateCourse(courseId, updateCourseDocument)
+
+  return excludeObjectKeys(updatedCourse, [
+    'courseInstructor',
+    'courseImgUrl',
+    'courseModules',
+    'updatedAt'
+  ])
+}
+
+const deleteCourse = async (courseId) => {
+  const foundCourse = await courseDaos.findCourseById(courseId)
+  if (!foundCourse) throw new CustomError.NotFoundError("No course found!")
+
+  const deletedCourse = await courseDaos.deleteCourse(foundCourse._id)
+  for (let i = 0; i < deletedCourse.courseModules.length; i++) {
+    const deletedModule = await moduleDaos.deleteModuleById(deletedCourse.courseModules[i])
+    if (deletedModule) {
+      for (let j = 0; j < deletedModule.moduleExercises.length; j++) {
+        await exerciseDaos.deleteExercise(deletedModule.moduleExercises[i])
+      }
+    }
+  }
+  return true
+}
+
 export default {
   getCourseDetail,
   searchCourses,
   getFreeCourses,
   getMostPopularCourses,
-  getRecommendedCourses
+  getRecommendedCourses,
+  getInstructorCourses,
+  getInstructorCourseDetail,
+  searchInstructorCourses,
+  createNewCourse,
+  updateCourse,
+  deleteCourse
 }
