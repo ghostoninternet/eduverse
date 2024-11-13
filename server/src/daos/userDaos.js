@@ -4,7 +4,7 @@ import getSelectData from "../utils/getSelectData.js"
 import getUnselectData from "../utils/getUnselectData.js"
 
 const findOneUser = async (filter) => {
-  return await userModel.findOne(filter).select(getUnselectData(['password, __v']))
+  return await userModel.findOne(filter).select(getUnselectData(['password', '__v']))
     .then(data => data)
     .catch(err => {
       console.log(err)

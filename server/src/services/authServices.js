@@ -3,7 +3,7 @@ import CustomError from '../errors/customError.js'
 import generateToken from "../utils/generateToken.js"
 import userDaos from "../daos/userDaos.js"
 import ENV from "../configs/index.js"
-
+import User from '../models/userModel.js'
 const ACCESS_TOKEN_SECRET_KEY = ENV.AT_SECRET_KEY
 const REFRESH_TOKEN_SECRET_KEY = ENV.RT_SECRET_KEY
 
@@ -38,7 +38,7 @@ const register = async ({ username, email, password }) => {
 }
 
 const login = async ({ email, password }) => {
-  const foundUser = await userDaos.findOneUser({ email: email })
+  const foundUser = await User.findOne({ email: email })
   if (!foundUser) throw new CustomError.NotFoundError("User does not exist!")
 
   const compareResult = await bcrypt.compare(password, foundUser.password)
@@ -101,7 +101,13 @@ const refreshToken = async (refreshToken) => {
   }
 }
 
+const getUser = async(userId) => {
+  const user = await userDaos.findOneUser({_id: userId})
+  return user;
+}
+
 export default {
+  getUser,
   register,
   login,
   refreshToken
