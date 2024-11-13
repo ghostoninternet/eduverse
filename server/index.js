@@ -11,7 +11,10 @@ function Application() {
   app.use(express.urlencoded({extended: true}))
   app.use(express.json())
   app.use(cookieParser())
-  app.use(cors())
+  app.use(cors({
+    origin: 'http://localhost:5173', // Your client URL
+    credentials: true, // Allow credentials to be sent
+  }));
   app.use('/api', router)
   
   app.use(errorHandler)

@@ -1,19 +1,20 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
+import { useAuth } from "../../contexts/authContext";
 const SignIn = () => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [message, setMessage] = useState();
+  const {setAuthState} = useAuth();
   const navigate = useNavigate();
 
   const validateEmail = (e) => {
     const input = e.target;
     input.setCustomValidity("");
-    setEmail(input.value); // Update state on change
+    setEmail(input.value); 
 
     if (!input.validity.valid) {
-      return; // Basic HTML5 validation fails (e.g., empty, invalid format)
+      return; 
     }
 
     if (!input.value.endsWith("@gmail.com")) {
@@ -34,15 +35,15 @@ const SignIn = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
+        credentials: 'include'
       });
-
+      
       const json = await response.json();
-      console.log(json);
-
       if (response.status === 200) {
+        setAuthState(json)
         navigate("/");
-      }else{
-        setMessage(json.message)
+      } else {
+        setMessage(json.message);
       }
 
       // Navigate to another route after successful login
@@ -95,11 +96,9 @@ const SignIn = () => {
               <option>Student</option>
             </select>
           </div>
-          
+
           {/* Sign-in Button */}
-          <button
-            className="w-full bg-blue-500 text-white font-bold py-2 rounded-lg hover:bg-blue-600 transition-colors"
-          >
+          <button className="w-full bg-blue-500 text-white font-bold py-2 rounded-lg hover:bg-blue-600 transition-colors">
             Sign in
           </button>
 
