@@ -1,20 +1,28 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { useAuth } from "../../contexts/authContext";
 
-export const FieldName = ()  => {
-    return (
-        <div className="flex flex-col">
-        <label className="text-xl">Full Name</label>
-        <input
-          value="PhucPham"
-          className="w-5/6 border-2 border-gray-500 p-2 text-xl"
-        />
-      </div>
-    );
+export const FieldName = () => {
+  return (
+    <div className="flex flex-col">
+      <label className="text-xl">Full Name</label>
+      <input
+        value="PhucPham"
+        className="w-5/6 border-2 border-gray-500 p-2 text-xl"
+      />
+    </div>
+  );
+};
+
+const Settings = () => {
+  const { authState } = useAuth();
+  const navigate = useNavigate();
+
+  if (!authState) {
+    navigate("/");
+    return;
   }
-
-
-const index = () => {
   return (
     <div className="flex h-screen bg-gray-200">
       <div className="w-1/3 flex flex-col items-center pt-20">
@@ -32,12 +40,14 @@ const index = () => {
                 <FieldName />
                 <FieldName />
                 <FieldName />
-                <button className=" border-2 w-1/4 border-blue-500 text-2xl p-2 rounded-md hover:bg-blue-500 hover:text-white">Save</button>
+                <button className=" border-2 w-1/4 border-blue-500 text-2xl p-2 rounded-md hover:bg-blue-500 hover:text-white">
+                  Save
+                </button>
               </div>
               <div className="flex flex-col gap-y-10 ">
-              <FieldName />
-              <FieldName />
-              <FieldName />
+                <FieldName />
+                <FieldName />
+                <FieldName />
               </div>
             </div>
           </div>
@@ -47,4 +57,4 @@ const index = () => {
   );
 };
 
-export default index;
+export default Settings;

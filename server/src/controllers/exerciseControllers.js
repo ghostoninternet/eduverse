@@ -1,4 +1,4 @@
-import exerciseServices from "../services/exerciseServices"
+import exerciseServices from "../services/exerciseServices.js"
 
 const getExercises = async (req, res, next) => {
   const { userId } = req.userId
