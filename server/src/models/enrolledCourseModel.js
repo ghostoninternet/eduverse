@@ -7,13 +7,18 @@ const enrolledCourseSchema = new Schema({
     required: true,
     ref: 'Courses'
   },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'Users',
+  },
   courseProgress: {
     type: Number,
-    default: 0
+    default: 0,
   },
   courseEstimateDeadline: {
     type: Date,
-    required: true
+    required: true,
   },
   courseModulesProgress: {
     type: [{
@@ -27,13 +32,17 @@ const enrolledCourseSchema = new Schema({
         exerciseId: mongoose.Schema.Types.ObjectId,
         userScore: Number,
         hasPassed: Boolean,
+        previousSubmitDate: {
+          type: Date,
+          default: null,
+        }
       }]
     }],
     required: true,
-    ref: 'Modules'
+    ref: 'Modules',
   },
 }, {
-  timestamps: true
+  timestamps: true,
 });
 
 const EnrolledCourses = mongoose.model("EnrolledCourses", enrolledCourseSchema);
