@@ -4,6 +4,7 @@ import courseRouter from './course.js'
 import reviewRouter from './review.js'
 import exerciseRouter from './exercise.js'
 import moduleRouter from './module.js'
+import enrolledCourseRouter from './enrolledCourse.js'
 
 const router = express.Router()
 
@@ -12,5 +13,6 @@ router.use('/courses', courseRouter)
 router.use('/review', reviewRouter)
 router.use('/modules', moduleRouter)
 router.use('/exercises', exerciseRouter)
+router.use('/enrolled-courses', enrolledCourseRouter)
 
 export default router
