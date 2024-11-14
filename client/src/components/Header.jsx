@@ -37,6 +37,7 @@ const Header = () => {
             </div>
             <NavBar />
           </div>
+          
           {/*mobile */}
           <div className="sm:hidden ">
             <button onClick={onSearch}>
