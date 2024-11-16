@@ -64,10 +64,7 @@ const getUser = async (req, res, next) => {
 
   // Send the user profile data as a response
   res.status(200).json({
-    id: user._id,
-    name: user.username,
-    email: user.email,
-    gender: user.gender
+    user: user
   });
 }
 

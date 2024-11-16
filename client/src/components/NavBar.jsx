@@ -23,7 +23,8 @@ const NavBar = () => {
   }
   
   const handleProfileClick = () => {
-
+    navigate("/profile");
+    setIsDown(false);
   }
   const handleSettingsClick = () => {
     navigate("/settings");
