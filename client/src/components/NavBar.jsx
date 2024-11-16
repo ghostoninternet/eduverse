@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import SchoolIcon from "@mui/icons-material/School";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import NotificationsIcon from "@mui/icons-material/Notifications";
@@ -7,34 +7,35 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/authContext";
-
+import logout from "../apis/logout";
 const NavBar = () => {
-  const [isDown, setIsDown] = useState(false)
+  const [isDown, setIsDown] = useState(false);
   const { authState, setAuthState } = useAuth();
   const navigate = useNavigate();
   const handleLoginClick = () => {
     navigate("/signin");
   };
   const handleAvtClick = () => {
-    setIsDown(!isDown)
+    setIsDown(!isDown);
   };
-  const handleLogout = () => {
-    setAuthState(null)
-  }
-  
+  const handleLogout = async () => {
+    await logout();
+    setAuthState(null);
+  };
+
   const handleProfileClick = () => {
     navigate("/profile");
     setIsDown(false);
-  }
+  };
   const handleSettingsClick = () => {
     navigate("/settings");
     setIsDown(false);
-  }
+  };
 
-  const handleLogoClick = () =>{
+  const handleLogoClick = () => {
     navigate("/");
     setIsDown(false);
-  }
+  };
   return (
     <div className="sm:flex sm:justify-between items-center max-lg:gap-x-3">
       <div className="flex" onClick={handleLogoClick}>
@@ -76,12 +77,28 @@ const NavBar = () => {
                 <ArrowDropDownIcon fontSize="large" className="text-blue-600" />
               </div>
             </div>
-            {isDown && <div className="absolute z-10 bg-white w-24">
-              <div onClick={handleProfileClick} className="p-4 font-semibold hover:bg-blue-500 hover:text-white cursor-pointer">Profile</div>
-              <div onClick={handleSettingsClick} className="p-4 font-semibold hover:bg-blue-500 hover:text-white cursor-pointer">Settings</div>
-              <div onClick={handleLogout} className="p-4 font-semibold hover:bg-blue-500 hover:text-white cursor-pointer">Log out</div>
-            </div>}
-            
+            {isDown && (
+              <div className="absolute z-10 bg-white w-24">
+                <div
+                  onClick={handleProfileClick}
+                  className="p-4 font-semibold hover:bg-blue-500 hover:text-white cursor-pointer"
+                >
+                  Profile
+                </div>
+                <div
+                  onClick={handleSettingsClick}
+                  className="p-4 font-semibold hover:bg-blue-500 hover:text-white cursor-pointer"
+                >
+                  Settings
+                </div>
+                <div
+                  onClick={handleLogout}
+                  className="p-4 font-semibold hover:bg-blue-500 hover:text-white cursor-pointer"
+                >
+                  Log out
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <button
