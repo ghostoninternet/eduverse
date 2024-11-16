@@ -7,6 +7,7 @@ import "./index.css";
 import SignIn from "./pages/Auth/SignIn.jsx";
 import SignUp from "./pages/Auth/SignUpForm.jsx";
 import Settings from "./pages/Settings"
+import Profile from "./pages/Profile"
 import AuthProvider from "./contexts/authContext.jsx";
 const router = createBrowserRouter([
   {
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
       {
         path: "/settings",
         element: <Settings />,
+      },
+      {
+        path: "/profile",
+        element: <Profile />,
       },
     ],
   },
