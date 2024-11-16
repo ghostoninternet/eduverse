@@ -45,9 +45,9 @@ const refreshToken = async (req, res, next) => {
     httpOnly: true
   })
 
-  res.cookie("refreshToken", authenticatedData.refreshToken, {
-    httpOnly: true
-  })
+  // res.cookie("refreshToken", authenticatedData.refreshToken, {
+  //   httpOnly: true
+  // })
   res.status(200).json({
     message: "Successfully refresh!",
     data: authenticatedData.user
