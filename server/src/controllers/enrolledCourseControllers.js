@@ -1,4 +1,4 @@
-import enrolledCourseService from "../services/enrolledCourseService"
+import enrolledCourseService from "../services/enrolledCourseService.js"
 
 const getEnrolledCourseDetail = async (req, res, next) => {
   const { userId } = req.userId
