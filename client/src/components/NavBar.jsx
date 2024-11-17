@@ -36,6 +36,11 @@ const NavBar = () => {
     navigate("/");
     setIsDown(false);
   };
+
+  const handleHomeClick = () => {
+    navigate("/");
+    setIsDown(false);
+  }
   return (
     <div className="sm:flex sm:justify-between items-center max-lg:gap-x-3">
       <div className="flex" onClick={handleLogoClick}>
@@ -67,7 +72,7 @@ const NavBar = () => {
         {authState ? (
           <div>
             <div
-              className="flex border-2 p-2 rounded-md border-gray-600 cursor-pointer"
+              className="flex border-2 p-2 rounded-md border-gray-300 cursor-pointer"
               onClick={handleAvtClick}
             >
               <div>
@@ -78,7 +83,13 @@ const NavBar = () => {
               </div>
             </div>
             {isDown && (
-              <div className="absolute z-10 bg-white w-24">
+              <div className="absolute z-10 bg-white w-24 border-2 border-slate-300">
+                <div
+                  onClick={handleHomeClick}
+                  className="p-4 font-semibold hover:bg-blue-500 hover:text-white cursor-pointer"
+                >
+                  Home
+                </div>
                 <div
                   onClick={handleProfileClick}
                   className="p-4 font-semibold hover:bg-blue-500 hover:text-white cursor-pointer"
