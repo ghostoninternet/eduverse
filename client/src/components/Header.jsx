@@ -21,7 +21,7 @@ const Header = () => {
   };
   
   return (
-    <div className="">
+    <div className="bg-white">
       {isSearch ? (
         <div className="py-4 px-3">
           <div className="sm:hidden justify-between flex items-center gap-x-2">

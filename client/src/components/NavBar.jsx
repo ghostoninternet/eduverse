@@ -24,21 +24,21 @@ const NavBar = () => {
   };
 
   const handleProfileClick = () => {
-    navigate("/profile");
+    window.location.href = "/profile";
     setIsDown(false);
   };
   const handleSettingsClick = () => {
-    navigate("/settings");
+    window.location.href = "/settings";
     setIsDown(false);
   };
 
   const handleLogoClick = () => {
-    navigate("/");
+    window.location.href = "/";
     setIsDown(false);
   };
 
   const handleHomeClick = () => {
-    navigate("/");
+    window.location.href = "/";
     setIsDown(false);
   }
   return (
