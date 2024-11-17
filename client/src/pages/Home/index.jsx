@@ -1,12 +1,57 @@
 import React, { useEffect, useState } from "react";
 import Course from "../../components/Course";
 import { useAuth } from "../../contexts/authContext";
+import MyLearningTab from "../../components/Home/MyLearningTab";
+import HomeTab from "../../components/Home/HomeTab";
 const HomePage = () => {
+  const coursesInfo = [
+    {
+      id: 1,
+      courseTitle: "Introduction to Web Development",
+      courseDescription: "Learn the basics of HTML, CSS, and JavaScript.",
+      courseImgUrl: "/course_img.png",
+    },
+    {
+      id: 2,
+      courseTitle: "Data Structures and Algorithms",
+      courseDescription:
+        "Understand key data structures and algorithms to improve coding efficiency.",
+      courseImgUrl: "/course_img.png",
+    },
+    {
+      id: 3,
+      courseTitle: "Modern React Development",
+      courseDescription:
+        "Master React.js and build interactive UIs for web applications.",
+      courseImgUrl: "/course_img.png",
+    },
+    {
+      id: 4,
+      courseTitle: "Full-Stack JavaScript",
+      courseDescription:
+        "Become proficient in both front-end and back-end JavaScript programming.",
+      courseImgUrl: "/course_img.png",
+    },
+    // {
+    //   id: 5,
+    //   courseTitle: "Machine Learning Basics",
+    //   courseDescription:
+    //     "Get started with machine learning concepts and simple models.",
+    //     courseImgUrl: "/course_img.png",
+    // },
+  ];
+  const [activeItem, setActiveItem] = useState("Home");
   const [recommendedCourses, setRecommendedCourses] = useState([]);
   const [freeCourses, setFreeCourses] = useState([]);
   const [popularCourses, setPopularCourses] = useState([]);
   const { authState } = useAuth();
-
+  
+  const handleHomeClick = () => {
+    setActiveItem("Home");
+  };
+  const handleMyLearningClick = () => {
+    setActiveItem("My Learning");
+  };
   // useEffect(() => {
   //   const fetchRecommendedCourses = async () => {
   //     try {
@@ -53,56 +98,38 @@ const HomePage = () => {
   // }, []);
   return (
     <div>
-      {authState ? (<div>Authorized</div>) : (<div className="sm:flex sm:flex-col sm:gap-y-11 sm:px-6 sm:my-4 my-3 gap-y-5">
-      <div>
-        <h2 className="sm:text-2xl text-3xl font-semibold m-3">
-          Recommended Course
-        </h2>
-        <div className="sm:grid grid-cols-4 sm:gap-6 flex flex-col gap-y-4">
-          {/* {recommendedCourses.map((course) => (
-            <Course
-              key={course._id} 
-              title={course.courseTitle}
-              description={course.courseDescription}
-              imgUrl={course.courseImgUrl}
-            />
-          ))} */}
-          <Course title="hello" description="welcome to my course" imgUrl="/course_img.png"/>
+      {authState && (
+        <div>
+          <ul className="flex gap-x-8 pl-20 border-b-2">
+            <li
+              onClick={handleHomeClick}
+              className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
+                activeItem === "Home"
+                  ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
+                  : "text-slate-500 font-medium"
+              } `}
+            >
+              Home
+            </li>
+            <li
+              onClick={handleMyLearningClick}
+              className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
+                activeItem === "My Learning"
+                  ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
+                  : "text-slate-500 font-medium"
+              } `}
+            >
+              My learning
+            </li>
+          </ul>
         </div>
-      </div>
-      <div>
-        <h2 className="text-3xl sm:text-2xl font-semibold m-3">Free Course</h2>
-        <div className="sm:grid grid-cols-4 sm:gap-6 flex flex-col gap-y-4">
-          {/* {freeCourses.map((course) => (
-            <Course
-              key={course._id}
-              title={course.courseTitle}
-              description={course.courseDescription}
-              imgUrl={course.courseImgUrl}
-            />
-          ))} */}
-           <Course title="hello" description="welcome to my course" imgUrl="/course_img.png"/>
-        </div>
-      </div>
-      <div className="mb-4">
-        <h2 className="sm:text-2xl text-3xl font-semibold m-3">
-          Most Popular Course
-        </h2>
-        <div className="sm:grid grid-cols-4 sm:gap-6 flex flex-col gap-y-4">
-          {/* {popularCourses.map((course) => (
-            <Course
-              key={course._id}
-              title={course.courseTitle}
-              description={course.courseDescription}
-              imgUrl={course.courseImgUrl}
-            />
-          ))} */}
-           <Course title="hello" description="welcome to my course" imgUrl="/course_img.png"/>
-        </div>
-      </div>
-    </div>)}
+      )}
+      {activeItem === "My Learning" ? (
+        <MyLearningTab courseInfo={coursesInfo} />
+      ) : (
+        <HomeTab courseInfo={coursesInfo} />
+      )}
     </div>
-    
   );
 };
 
