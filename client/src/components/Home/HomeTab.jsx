@@ -3,7 +3,7 @@ import Course from "../Course";
 import PropTypes from "prop-types";
 const HomeTab = (props) => {
   return (
-    <div>
+    <div className="">
       <div className="sm:flex sm:flex-col sm:gap-y-11 sm:px-20 sm:my-4 max-sm:m-3 gap-y-5">
         <div>
           <h2 className="sm:text-2xl text-3xl font-semibold my-3">

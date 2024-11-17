@@ -8,7 +8,7 @@ import { Outlet } from "react-router-dom";
 function App() {
   return (
     <div>
-      <header>
+      <header className="sticky top-0">
         <Header />
       </header>
       <main>
