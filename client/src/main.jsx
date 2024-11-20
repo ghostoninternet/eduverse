@@ -6,9 +6,10 @@ import Home from "./pages/Home";
 import "./index.css";
 import SignIn from "./pages/Auth/SignIn.jsx";
 import SignUp from "./pages/Auth/SignUpForm.jsx";
-import Settings from "./pages/Settings"
-import Profile from "./pages/Profile"
-import AuthProvider from "./contexts/authContext.jsx";
+import Settings from "./pages/Settings";
+import Profile from "./pages/Profile";
+import AuthProvider from "./contexts/authContext";
+import Learn from "./pages/Learn/index.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
       {
         path: "/settings",
         element: <Settings />,
+      },
+      {
+        path: "/learn/:courseId",
+        element: <Learn />,
       },
       {
         path: "/profile",

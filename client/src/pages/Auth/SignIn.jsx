@@ -41,7 +41,7 @@ const SignIn = () => {
       const json = await response.json();
       if (response.status === 200) {
         setAuthState(json)
-        navigate("/");
+        window.location.href = "/";
       } else {
         setMessage(json.message);
       }

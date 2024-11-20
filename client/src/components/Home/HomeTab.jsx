@@ -1,7 +1,7 @@
-import React from "react";
 import Course from "../Course";
 import PropTypes from "prop-types";
-const HomeTab = (props) => {
+
+const HomeTab = ({ handleCourseClick, recommend, free, popular }) => {
   return (
     <div className="">
       <div className="sm:flex sm:flex-col sm:gap-y-11 sm:px-20 sm:my-4 max-sm:m-3 gap-y-5">
@@ -10,9 +10,10 @@ const HomeTab = (props) => {
             Recommended Course
           </h2>
           <div className="sm:grid grid-cols-4 sm:gap-6 flex flex-col gap-y-4">
-            {props.courseInfo.map((course) => (
+            {recommend.map((course) => (
               <Course
-                key={course.id}
+                onClick={() => handleCourseClick(course)}
+                key={course._id}
                 title={course.courseTitle}
                 description={course.courseDescription}
                 imgUrl={course.courseImgUrl}
@@ -25,8 +26,9 @@ const HomeTab = (props) => {
             Free Course
           </h2>
           <div className="sm:grid grid-cols-4 sm:gap-6 flex flex-col gap-y-4">
-            {props.courseInfo.map((course) => (
+            {free.map((course) => (
               <Course
+                onClick={() => handleCourseClick(course)}
                 key={course._id}
                 title={course.courseTitle}
                 description={course.courseDescription}
@@ -40,8 +42,9 @@ const HomeTab = (props) => {
             Most Popular Course
           </h2>
           <div className="sm:grid grid-cols-4 sm:gap-6 flex flex-col gap-y-4">
-            {props.courseInfo.map((course) => (
+            {popular.map((course) => (
               <Course
+                onClick={() => handleCourseClick(course)}
                 key={course._id}
                 title={course.courseTitle}
                 description={course.courseDescription}
@@ -58,5 +61,8 @@ const HomeTab = (props) => {
 export default HomeTab;
 
 HomeTab.propTypes = {
-  courseInfo: PropTypes.array,
+  recommend: PropTypes.array,
+  free: PropTypes.array,
+  popular: PropTypes.array,
+  handleCourseClick: PropTypes.func,
 };

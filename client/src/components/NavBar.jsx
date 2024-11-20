@@ -3,7 +3,6 @@ import SchoolIcon from "@mui/icons-material/School";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import SearchIcon from "@mui/icons-material/Search";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/authContext";
@@ -24,21 +23,25 @@ const NavBar = () => {
   };
 
   const handleProfileClick = () => {
-    window.location.href = "/profile";
+    // window.location.href = "/profile";
+    navigate("/profile");
     setIsDown(false);
   };
   const handleSettingsClick = () => {
-    window.location.href = "/settings";
+    // window.location.href = "/settings";
+    navigate("/settings");
     setIsDown(false);
   };
 
   const handleLogoClick = () => {
-    window.location.href = "/";
+    // window.location.href = "/";
+    navigate("/");
     setIsDown(false);
   };
 
   const handleHomeClick = () => {
-    window.location.href = "/";
+    // window.location.href = "/";
+    navigate("/")
     setIsDown(false);
   }
   return (
@@ -76,7 +79,7 @@ const NavBar = () => {
               onClick={handleAvtClick}
             >
               <div>
-                <AccountCircleIcon fontSize="large" className="text-blue-600" />
+                <img src={authState?.user?.avatarUrl} width={40} height={40} className="rounded-full"/>
               </div>
               <div>
                 <ArrowDropDownIcon fontSize="large" className="text-blue-600" />
