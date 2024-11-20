@@ -3,43 +3,10 @@ import Course from "../../components/Course";
 import { useAuth } from "../../contexts/authContext";
 import MyLearningTab from "../../components/Home/MyLearningTab";
 import HomeTab from "../../components/Home/HomeTab";
+import { useNavigate } from "react-router-dom";
 const HomePage = () => {
-  const coursesInfo = [
-    {
-      id: 1,
-      courseTitle: "Introduction to Web Development",
-      courseDescription: "Learn the basics of HTML, CSS, and JavaScript.",
-      courseImgUrl: "/course_img.png",
-    },
-    {
-      id: 2,
-      courseTitle: "Data Structures and Algorithms",
-      courseDescription:
-        "Understand key data structures and algorithms to improve coding efficiency.",
-      courseImgUrl: "/course_img.png",
-    },
-    {
-      id: 3,
-      courseTitle: "Modern React Development",
-      courseDescription:
-        "Master React.js and build interactive UIs for web applications.",
-      courseImgUrl: "/course_img.png",
-    },
-    {
-      id: 4,
-      courseTitle: "Full-Stack JavaScript",
-      courseDescription:
-        "Become proficient in both front-end and back-end JavaScript programming.",
-      courseImgUrl: "/course_img.png",
-    },
-    // {
-    //   id: 5,
-    //   courseTitle: "Machine Learning Basics",
-    //   courseDescription:
-    //     "Get started with machine learning concepts and simple models.",
-    //     courseImgUrl: "/course_img.png",
-    // },
-  ];
+  const navigate = useNavigate();
+
   const [activeItem, setActiveItem] = useState("Home");
   const [recommendedCourses, setRecommendedCourses] = useState([]);
   const [freeCourses, setFreeCourses] = useState([]);
@@ -52,50 +19,54 @@ const HomePage = () => {
   const handleMyLearningClick = () => {
     setActiveItem("My Learning");
   };
-  // useEffect(() => {
-  //   const fetchRecommendedCourses = async () => {
-  //     try {
-  //       const url = "http://localhost:8000/api/courses/recommended";
-  //       const response = await fetch(url);
-  //       const json = await response.json();
-  //       setRecommendedCourses(json);
-  //     } catch (error) {
-  //       console.error("Error fetching courses:", error);
-  //     }
-  //   };
 
-  //   fetchRecommendedCourses();
-  // }, []);
+  const handleCourseClick = (course) => {
+    navigate(`/learn/${course._id}`);
+  };
+  useEffect(() => {
+    const fetchRecommendedCourses = async () => {
+      try {
+        const url = "http://localhost:8000/api/courses/recommended";
+        const response = await fetch(url);
+        const json = await response.json();
+        setRecommendedCourses(json);
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    };
 
-  // useEffect(() => {
-  //   const fetchFreeCourses = async () => {
-  //     try {
-  //       const url = "http://localhost:8000/api/courses/free";
-  //       const response = await fetch(url);
-  //       const json = await response.json();
-  //       setFreeCourses(json);
-  //     } catch (error) {
-  //       console.error("Error fetching courses:", error);
-  //     }
-  //   };
+    fetchRecommendedCourses();
+  }, []);
+  console.log(recommendedCourses)
+  useEffect(() => {
+    const fetchFreeCourses = async () => {
+      try {
+        const url = "http://localhost:8000/api/courses/free";
+        const response = await fetch(url);
+        const json = await response.json();
+        setFreeCourses(json);
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    };
 
-  //   fetchFreeCourses();
-  // }, []);
+    fetchFreeCourses();
+  }, []);
 
-  // useEffect(() => {
-  //   const fetchPopularCourses = async () => {
-  //     try {
-  //       const url = "http://localhost:8000/api/courses/popular";
-  //       const response = await fetch(url);
-  //       const json = await response.json();
-  //       setPopularCourses(json);
-  //     } catch (error) {
-  //       console.error("Error fetching courses:", error);
-  //     }
-  //   };
+  useEffect(() => {
+    const fetchPopularCourses = async () => {
+      try {
+        const url = "http://localhost:8000/api/courses/popular";
+        const response = await fetch(url);
+        const json = await response.json();
+        setPopularCourses(json);
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    };
 
-  //   fetchPopularCourses();
-  // }, []);
+    fetchPopularCourses();
+  }, []);
   return (
     <div>
       {authState && (
@@ -125,9 +96,9 @@ const HomePage = () => {
         </div>
       )}
       {activeItem === "My Learning" ? (
-        <MyLearningTab courseInfo={coursesInfo} />
+        <MyLearningTab myCourse={freeCourses} />
       ) : (
-        <HomeTab courseInfo={coursesInfo} />
+        <HomeTab recommend={recommendedCourses} free={freeCourses} popular={popularCourses} handleCourseClick={handleCourseClick}/>
       )}
     </div>
   );
