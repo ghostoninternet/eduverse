@@ -16,6 +16,7 @@ function AuthProvider({ children }) {
         try {
           const userData = await getUser();
           setAuthState(userData);
+          console.log(userData)
         } catch (error) {
           console.error("Error fetching user data:", error);
           setAuthState(null);

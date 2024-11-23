@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import NavBar from "./NavBar";
 import Menu from "./Menu";
 import SearchIcon from "@mui/icons-material/Search";
