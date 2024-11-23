@@ -32,7 +32,7 @@ const createNewUser = async (userDocument) => {
 
 const updateUser = async (userId, updateUserData) => {
   return await userModel.findOneAndUpdate(
-    { _id: userId },
+     {_id: userId} ,
     updateUserData,
     { new: true }
   )

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import StarIcon from "@mui/icons-material/Star";
 import { useParams } from "react-router-dom";
 const Learn = () => {
