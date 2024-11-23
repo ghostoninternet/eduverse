@@ -1,8 +1,8 @@
-import React from "react";
+import  { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import EditIcon from "@mui/icons-material/Edit";
 import { useAuth } from "../../contexts/authContext";
 import PropTypes from "prop-types";
+import getUser from "../../apis/getUser";
 export const Infor = (props) => {
   return (
     <div className="flex flex-col gap-y-10 border-2 w-5/6 p-12 bg-white rounded-md">
@@ -13,21 +13,29 @@ export const Infor = (props) => {
 };
 
 const Profile = () => {
-  const users = [
-    {
-      id: 1,
-      username: "jsmith89",
-      email: "jsmith89@example.com",
-      gender: "male",
-      avatarUrl:
-        "https://marketplace.canva.com/EAFltFTo1p0/1/0/1600w/canva-cute-anime-illustration-boy-avatar-d8N3f7Rn9aU.jpg",
-      location: "new york, usa",
-    },
-  ];
-
-  const { authState } = useAuth();
+  const { authState, setAuthState } = useAuth();
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userData = await getUser();
+        setAuthState(userData);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setAuthState(null);
+        navigate("/"); // Redirect to home on error
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchUser();
+  }, [setAuthState, navigate]);
+
+  if (loading) {
+    return <div>Loading...</div>; // Replace with a loading spinner if desired
+  }
   if (!authState) {
     navigate("/");
     return;
@@ -37,14 +45,13 @@ const Profile = () => {
       <div className="flex min-h-screen pb-16">
         <div className="w-1/3 flex flex-col items-center mt-20 gap-y-4">
           <img
-            src={users[0].avatarUrl}
+            src={authState.user.avatarUrl}
             width={300}
             height={300}
             className="shadow-lg"
           />
           <div className="flex items-center justify-center gap-x-2">
-            <h2 className="text-2xl font-semibold">Edit your avatar</h2>
-            <EditIcon />
+            <h2 className="text-2xl font-semibold">{authState.user.username}</h2>
           </div>
         </div>
         <div className="w-2/3 mt-20 flex flex-col gap-y-10">

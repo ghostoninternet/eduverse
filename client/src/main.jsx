@@ -8,8 +8,9 @@ import SignIn from "./pages/Auth/SignIn.jsx";
 import SignUp from "./pages/Auth/SignUpForm.jsx";
 import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
-import AuthProvider from "./contexts/authContext";
+import AuthProvider from "./contexts/AuthContext.jsx";
 import Learn from "./pages/Learn/index.jsx";
+
 const router = createBrowserRouter([
   {
     path: "/",
