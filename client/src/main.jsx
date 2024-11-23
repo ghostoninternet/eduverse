@@ -6,19 +6,13 @@ import Home from "./pages/Home";
 import "./index.css";
 import SignIn from "./pages/Auth/SignIn.jsx";
 import SignUp from "./pages/Auth/SignUpForm.jsx";
-<<<<<<< HEAD
-import Settings from "./pages/Settings";
-import Profile from "./pages/Profile";
-import AuthProvider from "./contexts/authContext";
 import Learn from "./pages/Learn/index.jsx";
-=======
 import Settings from "./pages/Settings"
 import Profile from "./pages/Profile"
 import AuthProvider from "./contexts/authContext.jsx";
 import InstructorMainLayout from "./layouts/InstructorMainLayout.jsx";
 import CourseManagement from "./pages/CourseManagement/CourseManagement.jsx";
 
->>>>>>> 6991ed7 (feature: Course Management UI)
 const router = createBrowserRouter([
   {
     path: "/",
