@@ -37,9 +37,17 @@ const deleteEnrolledCourse = async (req, res, next) => {
   })
 }
 
-const getAllEnrolledCourses = async (req, res, next) => {
+const getCompletedEnrolledCourses = async (req, res, next) => {
   const {userId} = req
-  const getResult = await enrolledCourseService.getAllEnrolledCourses(userId)
+  const getResult = await enrolledCourseService.getCompletedEnrolledCourses(userId)
+  res.status(200).json({
+    data: getResult
+  })
+}
+
+const getInProgressEnrolledCourses = async (req, res, next) => {
+  const {userId} = req
+  const getResult = await enrolledCourseService.getInProgressEnrolledCourses(userId)
   res.status(200).json({
     data: getResult
   })
@@ -51,5 +59,6 @@ export default {
   updateEnrolledCourseVideoProgress,
   updateEnrolledCourseExerciseProgress,
   deleteEnrolledCourse,
-  getAllEnrolledCourses
+  getCompletedEnrolledCourses,
+  getInProgressEnrolledCourses
 }

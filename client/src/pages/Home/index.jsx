@@ -4,6 +4,7 @@ import { useAuth } from "../../contexts/authContext";
 import MyLearningTab from "../../components/Home/MyLearningTab";
 import HomeTab from "../../components/Home/HomeTab";
 import { useNavigate } from "react-router-dom";
+import getEnrolledCourseList from "../../apis/enrolled-course/getEnrolledCourseList";
 const HomePage = () => {
   const navigate = useNavigate();
 
@@ -11,6 +12,8 @@ const HomePage = () => {
   const [recommendedCourses, setRecommendedCourses] = useState([]);
   const [freeCourses, setFreeCourses] = useState([]);
   const [popularCourses, setPopularCourses] = useState([]);
+  const [inProgressCourses, setInProgressCourses] = useState([]);
+  const [completedCourses, setCompletedCourses] = useState([]);
   const { authState } = useAuth();
   
   const handleHomeClick = () => {
@@ -37,7 +40,7 @@ const HomePage = () => {
 
     fetchRecommendedCourses();
   }, []);
-  console.log(recommendedCourses)
+
   useEffect(() => {
     const fetchFreeCourses = async () => {
       try {
@@ -66,6 +69,32 @@ const HomePage = () => {
     };
 
     fetchPopularCourses();
+  }, []);
+
+  useEffect(() => {
+    const fetchCompletedCourse = async () => {
+      try {
+        const json = await getEnrolledCourseList.getCompletedEnrolledCourses();
+        setCompletedCourses(json);
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    };
+
+    fetchCompletedCourse();
+  }, []);
+
+  useEffect(() => {
+    const fetchInProgressCourse = async () => {
+      try {
+        const json = await getEnrolledCourseList.getInProgressEnrolledCourses();
+        setInProgressCourses(json);
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    };
+
+    fetchInProgressCourse();
   }, []);
   return (
     <div>
@@ -96,7 +125,7 @@ const HomePage = () => {
         </div>
       )}
       {authState && activeItem === "My Learning" ? (
-        <MyLearningTab myCourse={freeCourses} />
+        <MyLearningTab courseInProgress={inProgressCourses} courseInCompleted={completedCourses}/>
       ) : (
         <HomeTab recommend={recommendedCourses} free={freeCourses} popular={popularCourses} handleCourseClick={handleCourseClick}/>
       )}

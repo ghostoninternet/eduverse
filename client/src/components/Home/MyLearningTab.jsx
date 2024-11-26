@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Course from "../Course";
 import PropTypes from "prop-types";
-const MyLearningTab = ({myCourse}) => {
+const MyLearningTab = ({ courseInProgress, courseInCompleted }) => {
   const [isTab, setIsTab] = useState("In Progress");
   const handleInProgressClick = () => {
     setIsTab("In Progress");
@@ -31,7 +31,7 @@ const MyLearningTab = ({myCourse}) => {
             </div>
 
             <div className="sm:grid grid-cols-4 sm:gap-6 flex flex-col gap-y-4 mb-8">
-              {myCourse.map((course) => (
+              {courseInProgress.data.map((course) => (
                 <Course
                   key={course.id}
                   title={course.courseTitle}
@@ -59,7 +59,7 @@ const MyLearningTab = ({myCourse}) => {
             </div>
 
             <div className="sm:grid grid-cols-4 sm:gap-6 flex flex-col gap-y-4 mb-8">
-              {myCourse.map((course) => (
+              {courseInCompleted.data.map((course) => (
                 <Course
                   key={course.id}
                   title={course.courseTitle}
@@ -78,5 +78,6 @@ const MyLearningTab = ({myCourse}) => {
 export default MyLearningTab;
 
 MyLearningTab.propTypes = {
-  myCourse: PropTypes.array,
+  courseInCompleted: PropTypes.array,
+  courseInProgress: PropTypes.array,
 };
