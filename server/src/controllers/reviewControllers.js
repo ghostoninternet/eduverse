@@ -1,8 +1,8 @@
 import reviewServices from "../services/reviewServices.js"
 
 const getCourseReviews = async (req, res, next) => {
-  const { courseId } = req.params.courseId
-  const { limit, page } = req.query
+  const { courseId } = req.params
+  const { limit = 3, page = 1 } = req.query
   const courseReviews = await reviewServices.getCourseReviews(courseId, limit, page)
   res.status(200).json(courseReviews)
 }

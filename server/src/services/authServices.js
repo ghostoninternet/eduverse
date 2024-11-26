@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken'
 const ACCESS_TOKEN_SECRET_KEY = ENV.AT_SECRET_KEY
 const REFRESH_TOKEN_SECRET_KEY = ENV.RT_SECRET_KEY
 
-const register = async ({ username, email, password }) => {
+const register = async ({ username, email, password, avatarUrl }) => {
   const foundUser = await userDaos.findOneUser({ email: email })
   if (foundUser) throw new CustomError.UserAlreadyExistError()
 
@@ -16,6 +16,7 @@ const register = async ({ username, email, password }) => {
     email: email,
     password: hashPassword,
     username: username,
+    avatarUrl: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
     isActive: true
   }
 

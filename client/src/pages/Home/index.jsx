@@ -95,7 +95,7 @@ const HomePage = () => {
           </ul>
         </div>
       )}
-      {activeItem === "My Learning" ? (
+      {authState && activeItem === "My Learning" ? (
         <MyLearningTab myCourse={freeCourses} />
       ) : (
         <HomeTab recommend={recommendedCourses} free={freeCourses} popular={popularCourses} handleCourseClick={handleCourseClick}/>
