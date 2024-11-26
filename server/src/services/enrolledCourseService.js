@@ -292,8 +292,13 @@ const deleteEnrolledCourse = async (userId, courseId) => {
   return true
 }
 
-const getAllEnrolledCourses = async(userId) => {
-  const response = await enrolledCourseDaos.getAllEnrolledCourses(userId)
+const getCompletedEnrolledCourses = async(userId) => {
+  const response = await enrolledCourseDaos.getCompletedEnrolledCourses(userId)
+  return response
+}
+
+const getInProgressEnrolledCourses = async(userId) => {
+  const response = await enrolledCourseDaos.getInProgressEnrolledCourses(userId)
   return response
 }
 export default {
@@ -302,5 +307,6 @@ export default {
   updateEnrolledCourseVideoProgress,
   updateEnrolledCourseExerciseProgress,
   deleteEnrolledCourse,
-  getAllEnrolledCourses
+  getCompletedEnrolledCourses,
+  getInProgressEnrolledCourses
 }
