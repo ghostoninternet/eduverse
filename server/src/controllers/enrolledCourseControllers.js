@@ -1,10 +1,10 @@
 import enrolledCourseService from "../services/enrolledCourseService.js"
 
 const getEnrolledCourseDetail = async (req, res, next) => {
-  const { userId } = req.userId
+  const { userId } = req
   const { courseId } = req.params
   const enrolledCourseDetail = await enrolledCourseService.getEnrolledCourseDetail(userId, courseId)
-  res.status(200).json(getEnrolledCourseDetail)
+  res.status(200).json(enrolledCourseDetail)
 }
 
 const createNewEnrolledCourse = async (req, res, next) => {
@@ -37,10 +37,19 @@ const deleteEnrolledCourse = async (req, res, next) => {
   })
 }
 
+const getAllEnrolledCourses = async (req, res, next) => {
+  const {userId} = req
+  const getResult = await enrolledCourseService.getAllEnrolledCourses(userId)
+  res.status(200).json({
+    data: getResult
+  })
+}
+
 export default {
   getEnrolledCourseDetail,
   createNewEnrolledCourse,
   updateEnrolledCourseVideoProgress,
   updateEnrolledCourseExerciseProgress,
-  deleteEnrolledCourse
+  deleteEnrolledCourse,
+  getAllEnrolledCourses
 }
