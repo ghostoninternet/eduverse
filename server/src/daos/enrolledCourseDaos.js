@@ -45,9 +45,18 @@ const deleteEnrolledCourse = async (filter) => {
     })
 }
 
+const getAllEnrolledCourses = async(filter) => {
+  return await EnrolledCourses.find({userId: filter})
+    .then(data => data)
+    .catch(err => {
+      console.log(err)
+    })
+}
+
 export default {
   findEnrolledCourse,
   createNewEnrolledCourse,
   updateEnrolledCourse,
   deleteEnrolledCourse,
+  getAllEnrolledCourses
 }

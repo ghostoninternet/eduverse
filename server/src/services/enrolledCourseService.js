@@ -292,10 +292,15 @@ const deleteEnrolledCourse = async (userId, courseId) => {
   return true
 }
 
+const getAllEnrolledCourses = async(userId) => {
+  const response = await enrolledCourseDaos.getAllEnrolledCourses(userId)
+  return response
+}
 export default {
   getEnrolledCourseDetail,
   createNewEnrolledCourse,
   updateEnrolledCourseVideoProgress,
   updateEnrolledCourseExerciseProgress,
-  deleteEnrolledCourse
+  deleteEnrolledCourse,
+  getAllEnrolledCourses
 }
