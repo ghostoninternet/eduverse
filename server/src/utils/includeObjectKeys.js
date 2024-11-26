@@ -4,7 +4,7 @@ const includeObjectKeys = (obj, includeKeys) => {
   }
 
   let newObject = {}
-  Object.keys(obj).forEach(key => {
+  Object.keys(obj._doc).forEach(key => {
     if (includeKeys.includes(key)) {
       newObject[key] = obj[key]
     }
