@@ -6,13 +6,13 @@ import Home from "./pages/Home";
 import "./index.css";
 import SignIn from "./pages/Auth/SignIn.jsx";
 import SignUp from "./pages/Auth/SignUpForm.jsx";
-import Learn from "./pages/Learn/index.jsx";
-import Settings from "./pages/Settings"
-import Profile from "./pages/Profile"
+import Learn from "./pages/Learn/Learning.jsx";
+import Settings from "./pages/Settings";
+import Profile from "./pages/Profile";
 import AuthProvider from "./contexts/authContext.jsx";
 import InstructorMainLayout from "./layouts/InstructorMainLayout.jsx";
 import CourseManagement from "./pages/CourseManagement/CourseManagement.jsx";
-
+import CourseLearning from "./pages/Learn/CourseLearning.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -23,13 +23,18 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "/settings",
-        element: <Settings />,
-      },
-      {
         path: "/learn/:courseId",
         element: <Learn />,
       },
+      {
+        path: "/enrolledCourse/:courseId",
+        element: <CourseLearning />,
+      },
+      {
+        path: "/settings",
+        element: <Settings />,
+      },
+
       {
         path: "/profile",
         element: <Profile />,
@@ -52,8 +57,8 @@ const router = createBrowserRouter([
         path: "course-management",
         element: <CourseManagement />,
       },
-    ]
-  }
+    ],
+  },
 ]);
 createRoot(document.getElementById("root")).render(
   <StrictMode>

@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import Course from "../Course";
 import PropTypes from "prop-types";
-const MyLearningTab = ({ courseInProgress, courseInCompleted }) => {
+import { useNavigate } from "react-router-dom";
+const MyLearningTab = ({
+  courseInProgress,
+  courseInCompleted,
+  handleEnrolledCourseClick,
+}) => {
   const [isTab, setIsTab] = useState("In Progress");
   const handleInProgressClick = () => {
     setIsTab("In Progress");
@@ -9,6 +14,7 @@ const MyLearningTab = ({ courseInProgress, courseInCompleted }) => {
   const handleCompletedClick = () => {
     setIsTab("Completed");
   };
+
   return (
     <div>
       <div className="px-16">
@@ -33,7 +39,8 @@ const MyLearningTab = ({ courseInProgress, courseInCompleted }) => {
             <div className="sm:grid grid-cols-4 sm:gap-6 flex flex-col gap-y-4 mb-8">
               {courseInProgress.data.map((course) => (
                 <Course
-                  key={course.id}
+                  onClick={() => handleEnrolledCourseClick(course)}
+                  key={course._id}
                   title={course.courseTitle}
                   description={course.courseDescription}
                   imgUrl={course.courseImgUrl}
@@ -61,7 +68,8 @@ const MyLearningTab = ({ courseInProgress, courseInCompleted }) => {
             <div className="sm:grid grid-cols-4 sm:gap-6 flex flex-col gap-y-4 mb-8">
               {courseInCompleted.data.map((course) => (
                 <Course
-                  key={course.id}
+                  onClick={() => handleEnrolledCourseClick(course)}
+                  key={course._id}
                   title={course.courseTitle}
                   description={course.courseDescription}
                   imgUrl={course.courseImgUrl}
@@ -78,6 +86,7 @@ const MyLearningTab = ({ courseInProgress, courseInCompleted }) => {
 export default MyLearningTab;
 
 MyLearningTab.propTypes = {
-  courseInCompleted: PropTypes.array,
-  courseInProgress: PropTypes.array,
+  courseInCompleted: PropTypes.object,
+  courseInProgress: PropTypes.object,
+  handleEnrolledCourseClick: PropTypes.func,
 };
