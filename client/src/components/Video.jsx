@@ -1,10 +1,11 @@
 import React from 'react'
 import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
 const Video = ({title}) => {
   return (
     <div className='flex p-4 gap-x-4 items-center cursor-pointer hover:bg-gray-100'>
       <div className=''>
-        <input type='checkbox' style={{ width: '20px', height: '20px' }}/>
+        <input type='checkbox' style={{ width: '20px', height: '20px' }} className='cursor-pointer'/>
       </div>
       <div className='flex flex-col gap-y-2'>
         <p className='text-xl'>1. {title}</p>

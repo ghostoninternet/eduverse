@@ -9,8 +9,8 @@ const Module = ({ title, videos }) => {
     setIsHidden(!isHidden);
   };
   return (
-    <div className="w-2/3 border-y-2 cursor-pointer" onClick={handleClickArrow}>
-      <div className="flex justify-between bg-gray-100 p-4">
+    <div className="w-2/3 border-y-2 cursor-pointer" >
+      <div className="flex justify-between bg-gray-100 p-4" onClick={handleClickArrow}>
         <div>
           <p className="text-2xl font-semibold">{title}</p>
           <div className="flex gap-x-2">

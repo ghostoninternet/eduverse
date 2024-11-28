@@ -1,6 +1,6 @@
 import EnrolledCourses from "../models/enrolledCourseModel.js";
 import courseDaos from "./courseDaos.js";
-
+import Mongoose from 'mongoose';
 const findEnrolledCourse = async (filter) => {
   return await EnrolledCourses.findOne(filter)
     .then((data) => data)
@@ -52,28 +52,45 @@ const deleteEnrolledCourse = async (filter) => {
 
 const getCompletedEnrolledCourses = async (filter) => {
   try {
-    const courses = await EnrolledCourses.find({ userId: filter, courseProgress: 100 })
+    const courses = await EnrolledCourses.find({
+      userId: filter,
+      courseProgress: 100,
+    });
     let data = [];
     for (const course of courses) {
       const result = await courseDaos.findCourseById(course.courseId);
       data.push(result);
     }
-    return data
+    return data;
   } catch (error) {
     console.log(error);
   }
-  
 };
 
 const getInProgressEnrolledCourses = async (filter) => {
   try {
-    const courses = await EnrolledCourses.find({ userId: filter, courseProgress: {$lt: 100} })
-    let data = [];
-    for (const course of courses) {
-      const result = await courseDaos.findCourseById(course.courseId);
-      data.push(result);
-    }
-    return data
+    const data = await EnrolledCourses.aggregate([
+      {
+        $match: { userId: new Mongoose.Types.ObjectId(filter), courseProgress: { $lt: 100 } },
+      },
+      {
+        $lookup: {
+          from: "courses",
+          localField: "courseId",
+          foreignField: "_id",
+          as: "inProgress"
+        }
+      },
+      {$unwind: "$inProgress"},
+      {
+        $project: {
+          _id: 0,
+          courseProgress: 1,
+          inProgress: 1
+        },
+      },
+    ]);
+    return data;
   } catch (error) {
     console.log(error);
   }
@@ -84,5 +101,5 @@ export default {
   updateEnrolledCourse,
   deleteEnrolledCourse,
   getCompletedEnrolledCourses,
-  getInProgressEnrolledCourses
+  getInProgressEnrolledCourses,
 };
