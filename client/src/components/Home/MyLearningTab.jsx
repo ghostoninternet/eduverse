@@ -7,7 +7,6 @@ const MyLearningTab = ({
   courseInCompleted,
   handleEnrolledCourseClick,
 }) => {
-
   const [isTab, setIsTab] = useState("In Progress");
   const handleInProgressClick = () => {
     setIsTab("In Progress");
@@ -38,15 +37,21 @@ const MyLearningTab = ({
             </div>
 
             <div className="sm:grid grid-cols-4 sm:gap-6 flex flex-col gap-y-4 mb-8">
-              {courseInProgress.data.map((course) => (
-                <Course
-                  onClick={() => handleEnrolledCourseClick(course)}
-                  key={course._id}
-                  title={course.courseTitle}
-                  description={course.courseDescription}
-                  imgUrl={course.courseImgUrl}
-                />
-              ))}
+                {courseInProgress.data.map((course) => {
+                  const progress = course.courseProgress.toFixed(1)
+                  return (
+                    <Course
+                      onClick={() => handleEnrolledCourseClick(course.inProgress)}
+                      key={course.inProgress._id}
+                      title={course.inProgress.courseTitle}
+                      description={course.inProgress.courseDescription}
+                      imgUrl={course.inProgress.courseImgUrl}
+                      avgRating={course.inProgress.courseRatingAvg}
+                      reviewers={course.inProgress.courseLearnerCount}
+                      progress={progress}
+                    />
+                  );
+                })}
             </div>
           </div>
         ) : (
@@ -74,6 +79,8 @@ const MyLearningTab = ({
                   title={course.courseTitle}
                   description={course.courseDescription}
                   imgUrl={course.courseImgUrl}
+                  avgRating={course.courseRatingAvg}
+                  reviewers={course.courseLearnerCount}
                 />
               ))}
             </div>
