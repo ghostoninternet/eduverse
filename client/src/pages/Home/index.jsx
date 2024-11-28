@@ -3,21 +3,32 @@ import { useAuth } from "../../contexts/authContext";
 import MyLearningTab from "../../components/Home/MyLearningTab";
 import HomeTab from "../../components/Home/HomeTab";
 import { Link, useNavigate } from "react-router-dom";
-import getEnrolledCourseList from "../../apis/enrolled-course/getEnrolledCourseList";
+import { useCourse } from "../../contexts/CourseContext";
 const HomePage = () => {
   const navigate = useNavigate()
   const [activeItem, setActiveItem] = useState("home");
   const [recommendedCourses, setRecommendedCourses] = useState([]);
   const [freeCourses, setFreeCourses] = useState([]);
   const [popularCourses, setPopularCourses] = useState([]);
-  const [inProgressCourses, setInProgressCourses] = useState([]);
-  const [completedCourses, setCompletedCourses] = useState([]);
   const { authState } = useAuth();
 
 
   const handleCourseClick = (course) => {
     navigate(`/learn/${course._id}`);
   };
+
+  
+  useEffect(() => {
+    let hash = window.location.hash;
+    if (hash){
+      hash = window.location.hash.replace("#","")
+      setActiveItem(hash)
+      console.log(hash)
+    }
+  },[])
+
+  
+  
   useEffect(() => {
     const fetchRecommendedCourses = async () => {
       try {
@@ -63,39 +74,19 @@ const HomePage = () => {
     fetchPopularCourses();
   }, []);
 
-  useEffect(() => {
-    const fetchCompletedCourse = async () => {
-      try {
-        const json = await getEnrolledCourseList.getCompletedEnrolledCourses();
-        setCompletedCourses(json);
-      } catch (error) {
-        console.error("Error fetching courses:", error);
-      }
-    };
 
-    fetchCompletedCourse();
-  }, []);
-
-  useEffect(() => {
-    const fetchInProgressCourse = async () => {
-      try {
-        const json = await getEnrolledCourseList.getInProgressEnrolledCourses();
-        setInProgressCourses(json);
-      } catch (error) {
-        console.error("Error fetching courses:", error);
-      }
-    };
-
-    fetchInProgressCourse();
-  }, []);
-
+  const {completedCourses, inProgressCourses} = useCourse();
+  console.log(completedCourses)
   const handleEnrolledCourseClick = (course) => {
     navigate(`/enrolledCourse/${course._id}`);
   };
 
   const handleTabClick = (tab) => {
     setActiveItem(tab);
+    window.location.hash = tab; 
   };
+
+  
   return (
     <div>
       {authState && (
