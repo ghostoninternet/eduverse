@@ -1,27 +1,19 @@
 import React, { useEffect, useState } from "react";
-import Course from "../../components/Course";
 import { useAuth } from "../../contexts/authContext";
 import MyLearningTab from "../../components/Home/MyLearningTab";
 import HomeTab from "../../components/Home/HomeTab";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import getEnrolledCourseList from "../../apis/enrolled-course/getEnrolledCourseList";
 const HomePage = () => {
-  const navigate = useNavigate();
-
-  const [activeItem, setActiveItem] = useState("Home");
+  const navigate = useNavigate()
+  const [activeItem, setActiveItem] = useState("home");
   const [recommendedCourses, setRecommendedCourses] = useState([]);
   const [freeCourses, setFreeCourses] = useState([]);
   const [popularCourses, setPopularCourses] = useState([]);
   const [inProgressCourses, setInProgressCourses] = useState([]);
   const [completedCourses, setCompletedCourses] = useState([]);
   const { authState } = useAuth();
-  
-  const handleHomeClick = () => {
-    setActiveItem("Home");
-  };
-  const handleMyLearningClick = () => {
-    setActiveItem("My Learning");
-  };
+
 
   const handleCourseClick = (course) => {
     navigate(`/learn/${course._id}`);
@@ -96,15 +88,23 @@ const HomePage = () => {
 
     fetchInProgressCourse();
   }, []);
+
+  const handleEnrolledCourseClick = (course) => {
+    navigate(`/enrolledCourse/${course._id}`);
+  };
+
+  const handleTabClick = (tab) => {
+    setActiveItem(tab);
+  };
   return (
     <div>
       {authState && (
         <div>
           <ul className="flex gap-x-8 pl-20 border-b-2">
             <li
-              onClick={handleHomeClick}
+              onClick={() => handleTabClick("home")}
               className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
-                activeItem === "Home"
+                activeItem === "home"
                   ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
                   : "text-slate-500 font-medium"
               } `}
@@ -112,9 +112,9 @@ const HomePage = () => {
               Home
             </li>
             <li
-              onClick={handleMyLearningClick}
+              onClick={()=> handleTabClick("my-learning")}
               className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
-                activeItem === "My Learning"
+                activeItem === "my-learning"
                   ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
                   : "text-slate-500 font-medium"
               } `}
@@ -124,10 +124,19 @@ const HomePage = () => {
           </ul>
         </div>
       )}
-      {authState && activeItem === "My Learning" ? (
-        <MyLearningTab courseInProgress={inProgressCourses} courseInCompleted={completedCourses}/>
+      {authState && activeItem === "my-learning" ? (
+        <MyLearningTab
+          courseInProgress={inProgressCourses}
+          courseInCompleted={completedCourses}
+          handleEnrolledCourseClick={handleEnrolledCourseClick}
+        />
       ) : (
-        <HomeTab recommend={recommendedCourses} free={freeCourses} popular={popularCourses} handleCourseClick={handleCourseClick}/>
+        <HomeTab
+          recommend={recommendedCourses}
+          free={freeCourses}
+          popular={popularCourses}
+          handleCourseClick={handleCourseClick}
+        />
       )}
     </div>
   );

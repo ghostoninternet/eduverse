@@ -18,6 +18,7 @@ Course.propTypes = {
   description: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
   imgUrl: PropTypes.string.isRequired,
+  onClick: PropTypes.func.isRequired
 }
 
 export default Course;

@@ -42,7 +42,7 @@ const Settings = () => {
         ...prev,
         user: updatedUser,
       }));
-      toast.success("MY SUCCESS", {
+      toast.success("Updated successfully!", {
         pauseOnHover: false,
         pauseOnFocusLoss: false,
         autoClose: 1500,
