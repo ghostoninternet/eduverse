@@ -5,22 +5,32 @@ const getCompletedEnrolledCourses = async () => {
   try {
     const response = await customFetch(url);
     const json = await response.json();
-    return json
+    return json;
   } catch (error) {
     console.error(error);
   }
 };
 
 const getInProgressEnrolledCourses = async () => {
-    const url = `http://localhost:8000/api/enrolled-courses/inProgress`;
-    try {
-      const response = await customFetch(url);
-      const json = await response.json();
-      return json
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const url = `http://localhost:8000/api/enrolled-courses/inProgress`;
+  try {
+    const response = await customFetch(url);
+    const json = await response.json();
+    return json;
+  } catch (error) {
+    console.error(error);
+  }
+};
 
+const getEnrolledCourseDetail = async (courseId) => {
+  const url = `http://localhost:8000/api/enrolled-courses/${courseId}`;
+  try {
+    const response = await customFetch(url);
+    const json = await response.json();
+    return json;
+  } catch (error) {
+    console.error(error);
+  }
+};
 
-export default {getCompletedEnrolledCourses, getInProgressEnrolledCourses}
+export default { getCompletedEnrolledCourses, getInProgressEnrolledCourses,getEnrolledCourseDetail };
