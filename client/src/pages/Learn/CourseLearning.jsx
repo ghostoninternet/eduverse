@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactPlayer from "react-player";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { Link } from "react-router-dom";
@@ -26,10 +26,18 @@ const CourseLearning = () => {
     },
   ];
   const [isTab, setIsTab] = useState("Contents");
+  useEffect(() => {
+    if (window.location.hash) {
+      window.location.hash = ""; // Clear the hash on page load
+      setIsTab("Contents"); // Set the default tab to 'home'
+    }
+  }, []);
   const handleContentsClick = () => {
+    window.location.hash = "contents"
     setIsTab("Contents");
   };
   const handleOverviewClick = () => {
+    window.location.hash = "overview"
     setIsTab("Overview");
   };
 

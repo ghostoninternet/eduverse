@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import Course from "../Course";
 import PropTypes from "prop-types";
-import { useNavigate } from "react-router-dom";
+
 const MyLearningTab = ({
   courseInProgress,
   courseInCompleted,
   handleEnrolledCourseClick,
 }) => {
+
   const [isTab, setIsTab] = useState("In Progress");
   const handleInProgressClick = () => {
     setIsTab("In Progress");
