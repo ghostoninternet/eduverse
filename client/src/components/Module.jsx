@@ -9,7 +9,7 @@ const Module = ({ title, videos }) => {
     setIsHidden(!isHidden);
   };
   return (
-    <div className="w-2/3 border-y-2">
+    <div className="w-2/3 border-y-2 cursor-pointer" onClick={handleClickArrow}>
       <div className="flex justify-between bg-gray-100 p-4">
         <div>
           <p className="text-2xl font-semibold">{title}</p>
@@ -18,7 +18,7 @@ const Module = ({ title, videos }) => {
             <p>37 mins</p>
           </div>
         </div>
-        <div onClick={handleClickArrow} className="cursor-pointer">
+        <div >
           {isHidden ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon/>}
         </div>
       </div>

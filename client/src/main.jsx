@@ -10,6 +10,7 @@ import Learn from "./pages/Learn/Learning.jsx";
 import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
 import AuthProvider from "./contexts/authContext.jsx";
+import CourseProvider from "./contexts/CourseContext.jsx";
 import InstructorMainLayout from "./layouts/InstructorMainLayout.jsx";
 import CourseManagement from "./pages/CourseManagement/CourseManagement.jsx";
 import CourseLearning from "./pages/Learn/CourseLearning.jsx";
@@ -63,7 +64,9 @@ const router = createBrowserRouter([
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthProvider>
-      <RouterProvider router={router} />
+      <CourseProvider>
+        <RouterProvider router={router} />
+      </CourseProvider>
     </AuthProvider>
   </StrictMode>
 );

@@ -38,19 +38,23 @@ const Learn = () => {
   const aboutRef = useRef(null);
   const modulesRef = useRef(null);
   const reviewsRef = useRef(null);
+  
   const scrollToAbout = () => {
+    window.location.hash = "about"
     if (aboutRef.current) {
       aboutRef.current.scrollIntoView({ behavior: "smooth" });
     }
     setIsSection("About");
   };
   const scrollToModules = () => {
+    window.location.hash = "modules"
     if (modulesRef.current) {
       modulesRef.current.scrollIntoView({ behavior: "smooth" });
     }
     setIsSection("Modules");
   };
   const scrollToReviews = () => {
+    window.location.hash = "reviews"
     if (reviewsRef.current) {
       reviewsRef.current.scrollIntoView({ behavior: "smooth" });
     }
