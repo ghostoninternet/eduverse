@@ -76,7 +76,7 @@ const HomePage = () => {
 
 
   const {completedCourses, inProgressCourses} = useCourse();
-  console.log(completedCourses)
+
   const handleEnrolledCourseClick = (course) => {
     navigate(`/enrolledCourse/${course._id}`);
   };

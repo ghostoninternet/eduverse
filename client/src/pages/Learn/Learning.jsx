@@ -69,7 +69,7 @@ const Learn = () => {
           </h2>
           <div className="text-xl font-normal mb-9">instructor</div>
           <button className="px-3 py-5 bg-blue-500 font-semibold text-xl text-white rounded-md w-1/3 mb-7">
-            Enroll for free
+            Enroll now!
           </button>
           <div className="">
             <p className="text-lg">

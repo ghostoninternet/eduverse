@@ -11,7 +11,10 @@ const findRecommendedCourses = async () => {
       $project: {
         "courseTitle": 1,
         "courseImgUrl": 1,
-        "courseDescription": 1
+        "courseDescription": 1,
+        "coursePrice": 1,
+        "courseRatingAvg": 1,
+        "courseLearnerCount": 1
       }
     },
     {
@@ -32,7 +35,10 @@ const findFreeCourses = async () => {
       $project: {
         "courseTitle": 1,
         "courseImgUrl": 1,
-        "courseDescription": 1
+        "courseDescription": 1,
+        "coursePrice": 1,
+        "courseRatingAvg": 1,
+        "courseLearnerCount": 1
       }
     },
     {
@@ -50,7 +56,10 @@ const findMostPopularCourses = async () => {
       $project: {
         "courseTitle": 1,
         "courseImgUrl": 1,
-        "courseDescription": 1
+        "courseDescription": 1,
+        "coursePrice": 1,
+        "courseRatingAvg": 1,
+        "courseLearnerCount": 1
       }
     },
     {
