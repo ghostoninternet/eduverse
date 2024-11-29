@@ -6,7 +6,7 @@ function TableHeader({ tableHeaders }) {
       <tr>
         {
           tableHeaders.map((tabelHeader) => (
-            <th scope="col" className="px-6 py-3">
+            <th key={tabelHeader} scope="col" className="px-6 py-3">
               {tabelHeader}
             </th>
           ))
