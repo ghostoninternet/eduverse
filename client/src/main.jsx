@@ -14,6 +14,8 @@ import CourseProvider from "./contexts/CourseContext.jsx";
 import InstructorMainLayout from "./layouts/InstructorMainLayout.jsx";
 import CourseManagement from "./pages/CourseManagement/CourseManagement.jsx";
 import CourseLearning from "./pages/Learn/CourseLearning.jsx";
+import ModuleManagement from "./pages/ModuleManagement/ModuleManagement.jsx";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -57,6 +59,10 @@ const router = createBrowserRouter([
       {
         path: "course-management",
         element: <CourseManagement />,
+      },
+      {
+        path: "module-management",
+        element: <ModuleManagement />,
       },
     ],
   },
