@@ -14,7 +14,7 @@ function VideoModal({
         onClick={(e) => {
           e.stopPropagation()
         }}
-        className="w-4/5 mx-auto mt-10 p-3 border-2 bg-white rounded-2xl lg:w-3/5 max-h-[75dvh] overflow-auto"
+        className="w-4/5 mx-auto mt-20 p-3 border-2 bg-white rounded-2xl lg:w-3/5 max-h-[75dvh] overflow-auto"
       >
         <div className="flex justify-between mb-4">
           <div className="font-bold text-2xl">Video Title Here</div>
