@@ -1,5 +1,5 @@
 import { useState } from "react"
-import ManagementTable from "../../components/Tables/ManagementTable"
+import Table from "../../components/Tables/Table"
 import AddNewCourseModal from "../../components/Modals/Courses/AddNewCourseModal"
 import { COURSE_MANAGEMENT_TABLE_HEADER } from "../../constants/course"
 import DeleteConfirmModal from "../../components/Modals/Confirmation/DeleteConfirmModal"
@@ -88,7 +88,7 @@ function CourseManagement() {
           </div>
         </div>
 
-        <ManagementTable tableHeaders={COURSE_MANAGEMENT_TABLE_HEADER} tableData={list} />
+        <Table tableHeaders={COURSE_MANAGEMENT_TABLE_HEADER} tableData={list} />
       </div>
 
       <AddNewCourseModal
