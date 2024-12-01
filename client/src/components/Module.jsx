@@ -3,7 +3,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import Video from "./Video";
 import PropTypes from "prop-types";
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-const Module = ({ title, videos }) => {
+const Module = ({ title, videos, index,seenVideo, totalVideos }) => {
   const [isHidden, setIsHidden] = useState("true");
   const handleClickArrow = () => {
     setIsHidden(!isHidden);
@@ -12,9 +12,9 @@ const Module = ({ title, videos }) => {
     <div className="w-2/3 border-y-2 cursor-pointer" >
       <div className="flex justify-between bg-gray-100 p-4" onClick={handleClickArrow}>
         <div>
-          <p className="text-2xl font-semibold">{title}</p>
+          <p className="text-2xl font-semibold">{index}. {title}</p>
           <div className="flex gap-x-2">
-            <p>9 / 9 |</p>
+            <p>{seenVideo} / {totalVideos} |</p>
             <p>37 mins</p>
           </div>
         </div>
@@ -24,8 +24,8 @@ const Module = ({ title, videos }) => {
       </div>
       {!isHidden && (
         <div className=" ">
-          {videos.map((video) => (
-            <Video key={video.id} title={video.videoTitle} />
+          {videos?.map((video, index) => (
+            <Video index={index+1} key={video._id} title={video.videoTitle} isChecked={video.isFinish}/>
           ))}
         </div>
       )}
@@ -37,6 +37,9 @@ Module.propTypes = {
   videos: PropTypes.array,
   handleClickArrow: PropTypes.func,
   title: PropTypes.string,
+  index: PropTypes.number,
+  seenVideo: PropTypes.number,
+  totalVideos: PropTypes.number,
 };
 
 export default Module;

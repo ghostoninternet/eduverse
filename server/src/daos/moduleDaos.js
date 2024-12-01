@@ -10,7 +10,7 @@ const findModules = async (filter, limit = 10, page = 1) => {
 }
 
 const findModuleById = async (moduleId) => {
-  return await Modules.findById(moduleId)
+  return await Modules.findById(moduleId).lean()
     .then(data => data)
     .catch(err => {
       console.log(err)
