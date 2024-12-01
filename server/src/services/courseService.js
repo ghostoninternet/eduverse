@@ -10,20 +10,20 @@ import exerciseDaos from "../daos/exerciseDaos.js"
 
 //GET COURSE
 /*recommended course  */
-const getRecommendedCourses = async () => {
-  let result = courseDaos.findRecommendedCourses()
+const getRecommendedCourses = async (categoryId) => {
+  let result = await courseDaos.findRecommendedCourses(categoryId)
   return result
 }
 
 /*free course  */
-const getFreeCourses = async () => {
-  let result = courseDaos.findFreeCourses()
+const getFreeCourses = async (categoryId) => {
+  let result = await courseDaos.findFreeCourses(categoryId)
   return result
 }
 
 /*most popular course  */
-const getMostPopularCourses = async () => {
-  let result = courseDaos.findMostPopularCourses()
+const getMostPopularCourses = async (categoryId) => {
+  let result = await courseDaos.findMostPopularCourses(categoryId)
   return result
 }
 
@@ -105,17 +105,22 @@ const searchCourses = async (queryParams, limit, page) => {
   const totalCourses = await courseDaos.countNumberOfCourses(filter)
   const totalPages = Math.ceil(totalCourses / limit)
   let foundCourses = await courseDaos.findCourses(filter, limit, page)
-  foundCourses = foundCourses.map(foundCourse => {
-    return excludeObjectKeys(foundCourse, [
-      'courseInstructor',
-      'coursePrice',
-      'courseModules',
-      'courseReviews',
-      'courseLearnerCount',
-      'createdAt',
-      'updatedAt'
-    ])
-  })
+
+  foundCourses = await Promise.all(
+    foundCourses.map(async (foundCourse) => {
+      let instructor = await instructorDaos.findInstructorById(foundCourse.courseInstructor)
+      foundCourse.courseInstructor = instructor.instructorName
+      return excludeObjectKeys(foundCourse, [
+        'coursePrice',
+        'courseModules',
+        'courseReviews',
+        'courseLearnerCount',
+        'createdAt',
+        'updatedAt'
+      ])
+    }
+  ) )
+    
   return {
     data: foundCourses,
     pagination: {
@@ -331,5 +336,5 @@ export default {
   searchInstructorCourses,
   createNewCourse,
   updateCourse,
-  deleteCourse
+  deleteCourse,
 }

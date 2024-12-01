@@ -10,7 +10,7 @@ const findCategoryById = async (categoryId) => {
 }
 
 const findCategoryByName = async (categoryName) => {
-  return await Categories.findOne({
+  return await Categories.find({
     categoryName: categoryName
   })
   .then(data => data)

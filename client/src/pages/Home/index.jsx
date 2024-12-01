@@ -4,8 +4,10 @@ import MyLearningTab from "../../components/Home/MyLearningTab";
 import HomeTab from "../../components/Home/HomeTab";
 import { Link, useNavigate } from "react-router-dom";
 import { useCourse } from "../../contexts/CourseContext";
+import { useLocation } from 'react-router'
 const HomePage = () => {
   const navigate = useNavigate()
+  let location = useLocation()
   const [activeItem, setActiveItem] = useState("home");
   const [recommendedCourses, setRecommendedCourses] = useState([]);
   const [freeCourses, setFreeCourses] = useState([]);
@@ -23,7 +25,6 @@ const HomePage = () => {
     if (hash){
       hash = window.location.hash.replace("#","")
       setActiveItem(hash)
-      console.log(hash)
     }
   },[])
 
@@ -32,7 +33,7 @@ const HomePage = () => {
   useEffect(() => {
     const fetchRecommendedCourses = async () => {
       try {
-        const url = "http://localhost:8000/api/courses/recommended";
+        const url = `http://localhost:8000/api/courses/recommended${location.search}`;
         const response = await fetch(url);
         const json = await response.json();
         setRecommendedCourses(json);
@@ -42,12 +43,12 @@ const HomePage = () => {
     };
 
     fetchRecommendedCourses();
-  }, []);
+  }, [location.search]);
 
   useEffect(() => {
     const fetchFreeCourses = async () => {
       try {
-        const url = "http://localhost:8000/api/courses/free";
+        const url = `http://localhost:8000/api/courses/free${location.search}`;
         const response = await fetch(url);
         const json = await response.json();
         setFreeCourses(json);
@@ -57,12 +58,12 @@ const HomePage = () => {
     };
 
     fetchFreeCourses();
-  }, []);
+  }, [location.search]);
 
   useEffect(() => {
     const fetchPopularCourses = async () => {
       try {
-        const url = "http://localhost:8000/api/courses/popular";
+        const url = `http://localhost:8000/api/courses/popular${location.search}`;
         const response = await fetch(url);
         const json = await response.json();
         setPopularCourses(json);
@@ -72,7 +73,7 @@ const HomePage = () => {
     };
 
     fetchPopularCourses();
-  }, []);
+  }, [location.search]);
 
 
   const {completedCourses, inProgressCourses} = useCourse();
@@ -86,7 +87,7 @@ const HomePage = () => {
     window.location.hash = tab; 
   };
 
-  
+
   return (
     <div>
       {authState && (
