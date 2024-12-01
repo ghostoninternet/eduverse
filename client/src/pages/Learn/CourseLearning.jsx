@@ -4,7 +4,11 @@ import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { Link } from "react-router-dom";
 import StarIcon from "@mui/icons-material/Star";
 import Module from "../../components/Module";
+import getEnrolledCourseList from "../../apis/enrolled-course/getEnrolledCourseList";
+import { useParams } from "react-router"
 const CourseLearning = () => {
+  let params = useParams()
+  const [enrolledCoursesDetail, setEnrolledCourseDetail] = useState({})
   
   const modules = [
     {
@@ -41,7 +45,19 @@ const CourseLearning = () => {
     setIsTab("Overview");
   };
 
-  
+  useEffect(() => {
+    const fetchedEnrolledCourse = async () => {
+      try {
+        const response = await getEnrolledCourseList.getEnrolledCourseDetail(params.courseId);
+        setEnrolledCourseDetail(response);
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    };
+    
+    fetchedEnrolledCourse();
+  }, [params.courseId])
+
   return (
     <div>
       <div className=" px-8 bg-black py-2 flex text-white items-center gap-x-2">
@@ -85,13 +101,24 @@ const CourseLearning = () => {
         {isTab == "Contents" ? (
           <div className="mt-16 px-16">
             <div className="flex flex-col items-center">
-              {modules.map((module) => (
-                <Module
-                  key={module.id}
-                  title={module.title}
-                  videos={module.moduleVideo}
-                />
-              ))}
+              {enrolledCoursesDetail.courseModulesProgress?.map((module, index) => {
+                let count = 0;
+                module.moduleVideoProgress.forEach((module) => {
+                  if(module.isFinish == true){
+                    count++;
+                  }
+                })
+                return (
+                  <Module
+                    index={index + 1}
+                    key={module._id}
+                    title={module.moduleTitle}
+                    videos={module.moduleVideoProgress}
+                    totalVideos={module.moduleVideoProgress.length}
+                    seenVideo={count}
+                  />
+                )
+              })}
             </div>
           </div>
         ) : (
