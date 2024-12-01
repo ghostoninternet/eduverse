@@ -2,7 +2,7 @@ import EnrolledCourses from "../models/enrolledCourseModel.js";
 import courseDaos from "./courseDaos.js";
 import Mongoose from 'mongoose';
 const findEnrolledCourse = async (filter) => {
-  return await EnrolledCourses.findOne(filter)
+  return await EnrolledCourses.findOne(filter).lean()
     .then((data) => data)
     .catch((err) => {
       console.log(err);

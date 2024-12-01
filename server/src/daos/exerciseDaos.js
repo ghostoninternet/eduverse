@@ -10,7 +10,7 @@ const countExercises = async (filter) => {
 }
 
 const findExerciseById = async (exerciseId) => {
-  return await Exercises.findById(exerciseId)
+  return await Exercises.findById(exerciseId).lean()
     .then(data => data)
     .catch(err => {
       console.log(err)

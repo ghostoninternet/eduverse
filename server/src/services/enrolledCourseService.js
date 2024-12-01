@@ -32,7 +32,7 @@ const getEnrolledCourseDetail = async (userId, courseId) => {
 
     let exercises = []
     for (let j = 0; j < foundModule.moduleExercises.length; j++) {
-      let foundExercise = await exerciseDaos.findExerciseById(foundModule.moduleExercises[i])
+      let foundExercise = await exerciseDaos.findExerciseById(foundModule.moduleExercises[j])
       if (!foundExercise) throw new CustomError.NotFoundError("No exercise found!")
       foundExercise = excludeObjectKeys(foundExercise, [
         'exerciseInstructor',
