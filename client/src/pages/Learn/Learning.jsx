@@ -4,11 +4,19 @@ import { useParams, useNavigate } from "react-router-dom";
 import getCourseDetail from "../../apis/course/getCourseDetail";
 import Review from "../../components/Review";
 import getCourseReview from "../../apis/review/getCourseReview";
+
 const Learn = () => {
   const [isSection, setIsSection] = useState("");
   const { courseId } = useParams();
   const [reviews, setReviews] = useState({ data: [],rating:{}, pagination: {} });
   const [courseDetail, setCourseDetail] = useState({});
+  const [isEnrollPopupOpen, setIsEnrollPopupOpen] = useState(false); // State Enroll popup
+  const [isLeaveReviewOpen, setIsLeaveReviewOpen] = useState(false); // State popup Leave Review
+  const [newReview, setNewReview] = useState({
+    content: "",
+    rating: 0,
+  });
+
   useEffect(() => {
     const fetchedCourse = async () => {
       try {
@@ -38,7 +46,7 @@ const Learn = () => {
   const aboutRef = useRef(null);
   const modulesRef = useRef(null);
   const reviewsRef = useRef(null);
-  
+
   const scrollToAbout = () => {
     window.location.hash = "about"
     if (aboutRef.current) {
@@ -60,6 +68,40 @@ const Learn = () => {
     }
     setIsSection("Reviews");
   };
+
+  const handleLeaveReviewClick = () => setIsLeaveReviewOpen(true);
+
+  const handleCloseLeaveReview = () => {
+    setIsLeaveReviewOpen(false);
+    setNewReview({ content: "", rating: 0 });
+  };
+
+  // Hàm gửi review
+  const handleSubmitReview = () => {
+    if (newReview.content && newReview.rating > 0) {
+      const newReviewData = {
+        _id: `${reviews.data.length + 1}`,
+        userId: {
+          avatarUrl: "https://via.placeholder.com/50",
+          username: "Current User",
+        },
+        reviewContent: newReview.content,
+        createdAt: new Date().toISOString(),
+        ratingStar: newReview.rating,
+      };
+      setReviews((prev) => ({
+        ...prev,
+        data: [...prev.data, newReviewData],
+      }));
+      handleCloseLeaveReview();
+      alert("Review submitted successfully!");
+    } else {
+      alert("Please provide both content and rating.");
+    }
+  };
+  // Quản lý Enroll popup
+  const handleEnrollClick = () => setIsEnrollPopupOpen(true);
+  const handleCloseEnrollPopup = () => setIsEnrollPopupOpen(false);
   return (
     <div className="">
       <div className="bg-blue-100 px-16 h-[calc(100vh-3rem)] flex items-center">
@@ -67,8 +109,11 @@ const Learn = () => {
           <h2 className="text-5xl font-semibold leading-tight">
             {courseDetail.courseTitle}
           </h2>
-          <div className="text-xl font-normal mb-9">instructor</div>
-          <button className="px-3 py-5 bg-blue-500 font-semibold text-xl text-white rounded-md w-1/3 mb-7">
+          <div className="text-xl font-normal mb-9">Instructor</div>
+          <button 
+            onClick={handleEnrollClick}
+            className="px-3 py-5 bg-blue-500 font-semibold text-xl text-white rounded-md w-1/3 mb-7"
+            >
             Enroll now!
           </button>
           <div className="">
@@ -76,7 +121,7 @@ const Learn = () => {
               <span className="font-semibold">
                 {courseDetail.courseLearnerCount}
               </span>{" "}
-              already enrolled
+              Already enrolled
             </p>
           </div>
         </div>
@@ -101,10 +146,10 @@ const Learn = () => {
               </h3>
               <StarIcon color="primary" />
             </div>
-            <p className="">({courseDetail.courseReviewCount} reviews)</p>
+            <p className="">({courseDetail.courseReviewCount} Reviews)</p>
           </li>
           <li className="flex flex-col border-r-2 w-3/12 items-center">
-            <h3 className="text-2xl font-semibold ">hours to complete</h3>
+            <h3 className="text-2xl font-semibold ">Hours to complete</h3>
             <p className=""></p>
           </li>
           <li className="flex flex-col w-3/12 items-center">
@@ -147,8 +192,8 @@ const Learn = () => {
         <div className="my-4" ref={modulesRef}>
           <h3 className="text-2xl font-semibold">
             There are 5 modules in this course
-          </h3>
-          <div>modules details</div>
+            </h3>
+          <div>Modules details</div>
         </div>
         <div className="flex gap-x-14" ref={reviewsRef}>
           <div className="w-1/3">
@@ -157,14 +202,14 @@ const Learn = () => {
               <StarIcon color="primary" fontSize="large" />
               <p className="text-4xl font-semibold">
                 {courseDetail.courseRatingAvg}
-              </p>
+                </p>
               <p className="text-lg place-self-end ml-3">
-                {courseDetail.courseReviewCount} reviews
-              </p>
+                {courseDetail.courseReviewCount} Reviews
+                </p>
             </div>
             <div className="">
               <div className="flex gap-3 items-center">
-                <p className="font-semibold text-xl w-1/6 ">5 stars</p>
+                <p className="font-semibold text-xl w-1/6">5 stars</p>
                 <div className="bg-gray-200 h-2 w-2/3 rounded-full">
                   <div
                     className="bg-blue-700 h-2 rounded-full"
@@ -226,9 +271,82 @@ const Learn = () => {
                 star={review.ratingStar}
               />
             ))}
+            <button
+              onClick={handleLeaveReviewClick}
+              className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-md"
+            >
+              Leave a Review
+            </button>
           </div>
         </div>
       </div>
+      {/* Popup Enroll */}
+      {isEnrollPopupOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-8 rounded-md shadow-md w-1/3">
+            <h2 className="text-2xl font-semibold mb-4">Confirm Enrollment</h2>
+            <p className="mb-6">
+              Are you sure you want to enroll in <strong>{courseDetail.courseTitle}</strong>?
+            </p>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={handleCloseEnrollPopup}
+                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  alert("Enrolled successfully!");
+                  setIsEnrollPopupOpen(false);
+                }}
+                className="px-4 py-2 bg-blue-500 text-white rounded-md"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Popup Leave Review */}
+      {isLeaveReviewOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-8 rounded-md shadow-md w-1/3">
+            <h2 className="text-2xl font-semibold mb-4">Leave a Review</h2>
+            <textarea
+              value={newReview.content}
+              onChange={(e) => setNewReview({ ...newReview, content: e.target.value })}
+              className="w-full border rounded-md p-3 mb-4"
+              rows="4"
+              placeholder="Write your review..."
+            ></textarea>
+            <div className="flex items-center mb-4">
+              <p className="mr-4">Rating:</p>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <StarIcon
+                  key={star}
+                  className={`cursor-pointer ${newReview.rating >= star ? "text-yellow-400" : "text-gray-300"}`}
+                  onClick={() => setNewReview({ ...newReview, rating: star })}
+                />
+              ))}
+            </div>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={handleCloseLeaveReview}
+                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSubmitReview}
+                className="px-4 py-2 bg-green-500 text-white rounded-md"
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
