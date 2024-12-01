@@ -1,17 +1,47 @@
+import categoryServices from '../services/categoryServices.js';
 import courseServices from '../services/courseService.js'
 
 const getRecommendedCourses = async (req, res, next) => {
-  const response = await courseServices.getRecommendedCourses();
+  let {categoryName = ""} = req.query 
+  let categories = await categoryServices.findCategoryByName(categoryName) || [];
+  let categoriesId = [];
+  categories.forEach((category) => {
+    categoriesId.push(category._id)
+  })
+  if(categoriesId.length == 0){
+    categoriesId = null
+  }
+  const response = await courseServices.getRecommendedCourses(categoriesId);
   res.status(200).json(response)
 }
 
 const getFreeCourses = async (req, res, next) => {
-  const response = await courseServices.getFreeCourses();
+  let {categoryName = ""} = req.query
+  let categories = await categoryServices.findCategoryByName(categoryName) || [];
+  let categoriesId = [];
+  categories.forEach((category) => {
+    categoriesId.push(category._id)
+  })
+  if(categoriesId.length == 0){
+    categoriesId = null
+  }
+  let response = await courseServices.getFreeCourses(categoriesId);
   res.status(200).json(response)
 }
 
 const getMostPopularCourses = async (req, res, next) => {
-  const response = await courseServices.getMostPopularCourses();
+  let {categoryName = ""} = req.query
+  let categories = await categoryServices.findCategoryByName(categoryName) || [];
+  let categoriesId = [];
+    categories.forEach((category) => {
+      categoriesId.push(category._id)
+    })
+    if(categoriesId.length == 0){
+      categoriesId = null
+    }
+  
+  const response = await courseServices.getMostPopularCourses(categoriesId);
+  
   res.status(200).json(response)
 }
 
@@ -76,5 +106,5 @@ export default {
   searchInstructorCourses,
   createNewCourse,
   updateCourse,
-  deleteCourse
+  deleteCourse,
 }

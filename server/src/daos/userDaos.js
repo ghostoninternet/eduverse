@@ -4,7 +4,7 @@ import getSelectData from "../utils/getSelectData.js"
 
 // Fix do not return user password in userService
 const findOneUser = async (filter) => {
-  return await userModel.findOne(filter)
+  return await userModel.findOne(filter).lean()
     .then(data => data)
     .catch(err => {
       console.log(err)

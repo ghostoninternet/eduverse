@@ -19,7 +19,7 @@ const findAllCourseReviews = async (courseId) => {
 }
 
 const findCourseReviews = async (filter, limit = 5, page = 1) => {
-  return await Reviews.find(filter).skip((page - 1) * limit).limit(limit).sort({ createdAt: -1 })
+  return await Reviews.find(filter).skip((page - 1) * limit).limit(limit).sort({ createdAt: -1 }).lean()
     .then(data => data)
     .catch(err => {
       console.log(err)
