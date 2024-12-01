@@ -4,7 +4,7 @@ const excludeObjectKeys = (obj, excludeKeys) => {
   }
 
   let newObject = {}
-  Object.keys(obj._doc).forEach(key => {
+  Object.keys(obj).forEach(key => {
     if (!excludeKeys.includes(key)) {
       newObject[key] = obj[key]
     }

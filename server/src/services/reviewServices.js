@@ -36,8 +36,9 @@ const getCourseReviews = async (courseId, limit, page) => {
         'username',
         'avatarUrl',
       ])
+      console.log(foundUser)
       //  foundReviews[i] = {...foundReviews[i], userId: foundUser};
-      foundReviews[i]._doc.userId = foundUser;
+      foundReviews[i].userId = foundUser;
     }
   }
   // Calculate number of pages and current page

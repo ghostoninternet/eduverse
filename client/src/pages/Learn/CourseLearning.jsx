@@ -62,7 +62,7 @@ const CourseLearning = () => {
         />
       </div>
       <div className="flex flex-col mt-10">
-        <div className="flex">
+        <div className="flex border-b-2">
           <h2
             onClick={handleContentsClick}
             className={`w-1/2 text-center text-xl text-gray-400 py-2 cursor-pointer ${
