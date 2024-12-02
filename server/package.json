@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "generate": "node ./src/configs/generateSampleData.js",
-    "start": "npm run generate && nodemon index.js"
+    "start": "npm run generate && nodemon index.js",
+    "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "",

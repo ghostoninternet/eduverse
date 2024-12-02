@@ -10,7 +10,7 @@ import Modules from '../models/moduleModel.js';
 import Payments from '../models/paymentModel.js';
 import Reviews from '../models/reviewModel.js';
 import Users from '../models/userModel.js';
-
+import fs from 'fs'
 
 const getRandomElement = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
@@ -109,11 +109,19 @@ export default async function generateSampleData() {
 
     // Users
     console.log("Generating Users....")
+    const userAccount = 'userAccount.txt'
+
+    fs.writeFileSync(userAccount, '');
+
     for (let i = 0; i < 500; i++) {
+      const rawPassword = faker.internet.password(); 
+      const username = faker.person.fullName();
+      const email = `example-v${i}@gmail.com`;
+      fs.appendFileSync(userAccount, `Account: ${username}, ${email}, ${rawPassword}\n`);
       const user = await Users.create({
-        username: faker.person.fullName(),
-        email: `example-v${i}@gmail.com`,
-        password: await bcrypt.hash(faker.internet.password(), 10),
+        username: username,
+        email: email,
+        password: await bcrypt.hash(rawPassword, 10),
         gender: getRandomElement(["Male", "Female"]),
         avatarUrl: faker.image.avatar(),
         location: faker.location.city() + ", " + faker.location.country(),
@@ -128,11 +136,18 @@ export default async function generateSampleData() {
 
     // Instructor
     console.log("Generaing Instructors....")
+    const instructorAccount = 'instructorAccount.txt'
+
+    fs.writeFileSync(instructorAccount, '');
     for (let i = 0; i < 10; i++) {
+      const rawPassword = faker.internet.password(); 
+      const username = faker.person.fullName();
+      const email = `example-v${i}@gmail.com`;
+      fs.appendFileSync(instructorAccount, `Account: ${username}, ${email}, ${rawPassword}\n`);
       const instructor = await Users.create({
-        username: faker.person.fullName(),
-        email: `example-v${i}@gmail.com`,
-        password: await bcrypt.hash(faker.internet.password(), 10),
+        username: username,
+        email: email,
+        password: await bcrypt.hash(rawPassword, 10),
         gender: getRandomElement(["Male", "Female"]),
         avatarUrl: faker.image.avatar(),
         location: faker.location.city() + ", " + faker.location.country(),
