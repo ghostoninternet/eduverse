@@ -6,6 +6,10 @@ const courseSchema = new Schema({
     type: String,
     required: true,
   },
+  courseSlug: {
+    type: String,
+    required: true,
+  },
   courseInstructor: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
@@ -44,6 +48,11 @@ const courseSchema = new Schema({
     type: Number,
     default: 0,
   },
+  courseStatus: {
+    type: String,
+    enum: ['public', 'draft'],
+    required: true,
+  }
 }, {
   timestamps: true
 });
