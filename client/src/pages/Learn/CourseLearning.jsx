@@ -70,7 +70,7 @@ const CourseLearning = () => {
 
       <div className="flex justify-center bg-gray-600">
         <ReactPlayer
-          url="https://www.youtube.com/watch?v=LXb3EKWsInQ"
+          url="https://www.youtube.com/watch?v=a1IMCwIzkCc"
           width="100%"
           height={520}
           playing={false}

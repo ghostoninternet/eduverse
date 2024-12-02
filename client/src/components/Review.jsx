@@ -16,7 +16,7 @@ const Review = ({avatarUrl, username, reviewContent, createdAt, star}) => {
         <div className="flex items-center mb-4">
           <p className="font-semibold text-xl">{star}</p>
           <StarIcon color="primary" className=""/>
-          <p className="ml-3">Reviewd on {formatDate(createdAt)}</p>
+          <p className="ml-3">Reviewed on {formatDate(createdAt)}</p>
         </div>
         <p className="text-lg">
           {reviewContent}
