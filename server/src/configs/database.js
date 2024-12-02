@@ -1,6 +1,5 @@
 import mongoose from 'mongoose'
 import ENV from './index.js'
-import generateSampleData from './generateSampleData.js'; 
 
 async function DatabaseInit(Application) {
   mongoose.connection.on('connected', () => {
@@ -15,10 +14,8 @@ async function DatabaseInit(Application) {
   await mongoose.connect(ENV.MONGO_URI, {
     dbName: ENV.DATABASE_NAME
   })
-  .then(() => {
-    // generateSampleData(); 
+  .then(async () => {
     Application()
-    
   })
   .catch((err) => {
     console.log("Error connecting to Database!")

@@ -27,6 +27,14 @@ const userSchema = new Schema({
     type: String,
     default: "",
   },
+  jobTitle: {
+    type: String,
+    default: "",
+  },
+  organization: {
+    type: String,
+    default: "",
+  },
   enrolledCourses: {
     type: [mongoose.Schema.Types.ObjectId],
     default: []
@@ -40,6 +48,11 @@ const userSchema = new Schema({
       theme: "light",
       language: "english"
     }
+  },
+  role: {
+    type: String,
+    enum: ['instructor', 'user'],
+    default: 'user',
   }
 }, {
   timestamps: true

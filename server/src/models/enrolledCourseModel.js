@@ -26,6 +26,8 @@ const enrolledCourseSchema = new Schema({
       isFinish: Boolean,
       moduleVideoProgress: [{
         videoTitle: String,
+        videoUrl: String,
+        videoLength: Number,
         isFinish: Boolean,
       }],
       moduleExerciseProgress: [{
