@@ -107,6 +107,8 @@ const searchModule = async (query, limit, page) => {
   }
 }
 
+
+
 const createNewModule = async (instructorId, newModuleData) => {
   const foundCourse = await courseDaos.findCourseById(newModuleData.courseId)
   if (!foundCourse) throw new CustomError.NotFoundError("No course found!")
@@ -162,6 +164,12 @@ const deleteModule = async (moduleId) => {
   return true
 }
 
+const getModuleByCourseId = async (courseId) => {
+  const foundModule = await moduleDaos.findModules({filter : courseId})
+  return foundModule
+}
+
+
 export default {
   getModules,
   getModuleDetail,
@@ -169,4 +177,5 @@ export default {
   createNewModule,
   updateModule,
   deleteModule,
+  getModuleByCourseId
 }

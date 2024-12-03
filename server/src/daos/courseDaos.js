@@ -1,11 +1,10 @@
 import Courses from "../models/courseModel.js";
 import CustomError from "../errors/customError.js";
-
 const findRecommendedCourses = async (categoryId) => {
   if (categoryId) {
     return await Courses.aggregate([
       {
-        $match: { courseCategory: { $all: [categoryId] }},
+        $match: { courseCategory: { $all: [categoryId] } },
       },
       {
         $sort: { courseRatingAvg: -1 }, //-1: sort descending
@@ -15,6 +14,7 @@ const findRecommendedCourses = async (categoryId) => {
         $project: {
           courseTitle: 1,
           courseImgUrl: 1,
+          courseSlug: 1,
           courseDescription: 1,
           coursePrice: 1,
           courseRatingAvg: 1,
@@ -36,6 +36,7 @@ const findRecommendedCourses = async (categoryId) => {
         $project: {
           courseTitle: 1,
           courseImgUrl: 1,
+          courseSlug: 1,
           courseDescription: 1,
           coursePrice: 1,
           courseRatingAvg: 1,
@@ -62,6 +63,7 @@ const findFreeCourses = async (categoryId) => {
       {
         $project: {
           courseTitle: 1,
+          courseSlug: 1,
           courseImgUrl: 1,
           courseDescription: 1,
           coursePrice: 1,
@@ -85,6 +87,7 @@ const findFreeCourses = async (categoryId) => {
       {
         $project: {
           courseTitle: 1,
+          courseSlug: 1,
           courseImgUrl: 1,
           courseDescription: 1,
           coursePrice: 1,
@@ -104,7 +107,7 @@ const findMostPopularCourses = async (categoryId) => {
   if (categoryId) {
     return await Courses.aggregate([
       {
-        $match: { courseCategory: { $all: [categoryId] }}
+        $match: { courseCategory: { $all: [categoryId] } },
       },
       {
         $sort: { courseLearnerCount: -1 }, //sort by descending
@@ -112,6 +115,7 @@ const findMostPopularCourses = async (categoryId) => {
       {
         $project: {
           courseTitle: 1,
+          courseSlug: 1,
           courseImgUrl: 1,
           courseDescription: 1,
           coursePrice: 1,
@@ -132,6 +136,7 @@ const findMostPopularCourses = async (categoryId) => {
       {
         $project: {
           courseTitle: 1,
+          courseSlug: 1,
           courseImgUrl: 1,
           courseDescription: 1,
           coursePrice: 1,
@@ -160,6 +165,15 @@ const findCourses = async (filter = {}, limit = 12, page = 1) => {
     .skip((page - 1) * limit)
     .limit(limit)
     .lean()
+    .then((data) => data)
+    .catch((err) => {
+      console.log(err);
+      throw new CustomError.DatabaseError();
+    });
+};
+
+const findCourseBySlug = async (courseSlug) => {
+  return await Courses.findOne({courseSlug: courseSlug}).lean()
     .then((data) => data)
     .catch((err) => {
       console.log(err);
@@ -215,4 +229,5 @@ export default {
   createNewCourse,
   updateCourse,
   deleteCourse,
+  findCourseBySlug
 };

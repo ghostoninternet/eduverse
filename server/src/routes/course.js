@@ -18,5 +18,5 @@ courseRouter.put('/instructor/:exerciseId', asyncHandler(courseControllers.updat
 courseRouter.delete('/instructor/:exerciseId', asyncHandler(courseControllers.deleteCourse))
 
 //the parameter :courseId will include /search, /recommended, /free, /popular route above, so adjust at the end
-courseRouter.get('/:courseId', asyncHandler(courseControllers.getCourseDetail))
+courseRouter.get('/:courseSlug', asyncHandler(courseControllers.getCourseDetail))
 export default courseRouter

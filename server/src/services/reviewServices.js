@@ -17,17 +17,18 @@ const recalculateRatingAvg = async (courseId, course) => {
   await courseDaos.updateCourse(courseId, course)
 }
 
-const getCourseReviews = async (courseId, limit, page) => {
+const getCourseReviews = async (courseSlug, limit, page) => {
   // Check course exist
-  const foundCourse = await courseDaos.findCourseById(courseId)
+  const foundCourse = await courseDaos.findCourseBySlug(courseSlug)
   if (!foundCourse) {
     throw new CustomError.NotFoundError("No course found!")
   }
 
   // Find reviews
-  let foundReviews = await reviewDaos.findCourseReviews({ courseId: courseId }, limit, page)
+  let foundReviews = await reviewDaos.findCourseReviews({ courseId: foundCourse._id }, limit, page)
   if (foundReviews.length == 0) return []
-
+  let allReviews = await reviewDaos.findAllCourseReviews(foundCourse._id)
+  if (allReviews.length == 0) return []
   // Find user info
   for (let i = 0; i < foundReviews.length; i++) {
     let foundUser = await userDaos.findOneUser({ _id: foundReviews[i].userId })
@@ -36,13 +37,12 @@ const getCourseReviews = async (courseId, limit, page) => {
         'username',
         'avatarUrl',
       ])
-      console.log(foundUser)
       //  foundReviews[i] = {...foundReviews[i], userId: foundUser};
       foundReviews[i].userId = foundUser;
     }
   }
   // Calculate number of pages and current page
-  const totalReviews = await reviewDaos.countNumberOfReviews({ courseId: courseId })
+  const totalReviews = await reviewDaos.countNumberOfReviews({ courseId: foundCourse._id })
   const totalPages = Math.ceil(totalReviews / limit)
 
   let totalStar = 0;
@@ -52,7 +52,7 @@ const getCourseReviews = async (courseId, limit, page) => {
   let fourStar = 0;
   let fiveStar = 0;
 
-  foundReviews.forEach((review) => {
+  allReviews.forEach((review) => {
     totalStar += review.ratingStar
     switch(review.ratingStar){
       case 1: {
@@ -77,8 +77,8 @@ const getCourseReviews = async (courseId, limit, page) => {
       }
     }
   })
-  const avgRating = totalStar/(foundReviews.length)
-  await courseDaos.updateCourse({_id: courseId}, {courseRatingAvg: formatValue(avgRating), courseReviewCount: totalReviews})
+  const avgRating = totalStar/(totalReviews)
+  await courseDaos.updateCourse({_id: foundCourse._id}, {courseRatingAvg: formatValue(avgRating), courseReviewCount: totalReviews})
   return {
     data: foundReviews,
     rating: {

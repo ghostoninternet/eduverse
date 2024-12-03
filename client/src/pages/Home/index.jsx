@@ -16,7 +16,7 @@ const HomePage = () => {
 
 
   const handleCourseClick = (course) => {
-    navigate(`/learn/${course._id}`);
+    navigate(`/learn/${course.courseSlug}`);
   };
 
   

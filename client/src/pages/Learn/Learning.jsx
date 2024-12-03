@@ -1,14 +1,23 @@
 import { useEffect, useState, useRef } from "react";
 import StarIcon from "@mui/icons-material/Star";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import getCourseDetail from "../../apis/course/getCourseDetail";
 import Review from "../../components/Review";
 import getCourseReview from "../../apis/review/getCourseReview";
+import CircularProgress from "@mui/material/CircularProgress";
+import ModuleOverview from "../../components/ModuleOverview";
 
 const Learn = () => {
   const [isSection, setIsSection] = useState("");
-  const { courseId } = useParams();
-  const [reviews, setReviews] = useState({ data: [],rating:{}, pagination: {} });
+  const [queryParams, setQueryParams] = useState(1);
+  const [isMore, setIsMore] = useState(true);
+  let { courseSlug } = useParams();
+  const [loading, setLoading] = useState(true);
+  const [reviews, setReviews] = useState({
+    data: [],
+    rating: {},
+    pagination: {},
+  });
   const [courseDetail, setCourseDetail] = useState({});
   const [isEnrollPopupOpen, setIsEnrollPopupOpen] = useState(false); // State Enroll popup
   const [isLeaveReviewOpen, setIsLeaveReviewOpen] = useState(false); // State popup Leave Review
@@ -16,24 +25,32 @@ const Learn = () => {
     content: "",
     rating: 0,
   });
-
+  useEffect(() => {
+    if (
+      3 * queryParams ===
+      reviews?.pagination?.itemPerPage * reviews?.pagination?.totalPages
+    ) {
+      setIsMore(false);
+    }
+  }, [queryParams, reviews]);
   useEffect(() => {
     const fetchedCourse = async () => {
       try {
-        const response = await getCourseDetail(courseId);
+        const response = await getCourseDetail(courseSlug);
         setCourseDetail(response);
       } catch (error) {
         console.error("Error fetching courses:", error);
+      } finally {
+        setLoading(false);
       }
     };
-
     fetchedCourse();
-  }, [courseId]);
+  }, [courseSlug, queryParams]);
 
   useEffect(() => {
     const fetchedReview = async () => {
       try {
-        const response = await getCourseReview(courseId);
+        const response = await getCourseReview(courseSlug, queryParams);
         setReviews(response);
       } catch (error) {
         console.error("Error fetching courses:", error);
@@ -41,28 +58,28 @@ const Learn = () => {
     };
 
     fetchedReview();
-  }, [courseId]);
+  }, [courseSlug, queryParams]);
 
   const aboutRef = useRef(null);
   const modulesRef = useRef(null);
   const reviewsRef = useRef(null);
 
   const scrollToAbout = () => {
-    window.location.hash = "about"
+    window.location.hash = "about";
     if (aboutRef.current) {
       aboutRef.current.scrollIntoView({ behavior: "smooth" });
     }
     setIsSection("About");
   };
   const scrollToModules = () => {
-    window.location.hash = "modules"
+    window.location.hash = "modules";
     if (modulesRef.current) {
       modulesRef.current.scrollIntoView({ behavior: "smooth" });
     }
     setIsSection("Modules");
   };
   const scrollToReviews = () => {
-    window.location.hash = "reviews"
+    window.location.hash = "reviews";
     if (reviewsRef.current) {
       reviewsRef.current.scrollIntoView({ behavior: "smooth" });
     }
@@ -102,24 +119,34 @@ const Learn = () => {
   // Quản lý Enroll popup
   const handleEnrollClick = () => setIsEnrollPopupOpen(true);
   const handleCloseEnrollPopup = () => setIsEnrollPopupOpen(false);
+
+  const handleSeeMore = () => {
+    const newQueryParams = queryParams + 1;
+    setQueryParams(newQueryParams);
+  };
   return (
     <div className="">
       <div className="bg-blue-100 px-16 h-[calc(100vh-3rem)] flex items-center">
         <div className="w-5/12">
           <h2 className="text-5xl font-semibold leading-tight">
-            {courseDetail.courseTitle}
+            {loading ? "loading..." : courseDetail.courseTitle}
           </h2>
-          <div className="text-xl font-normal mb-9">Instructor</div>
-          <button 
+          <div className="text-xl font-normal mb-9">
+            <span className="">
+              {" "}
+              {courseDetail?.courseInstructor?.username}
+            </span>
+          </div>
+          <button
             onClick={handleEnrollClick}
-            className="px-3 py-5 bg-blue-500 font-semibold text-xl text-white rounded-md w-1/3 mb-7"
-            >
-            Enroll now!
+            className="px-3 py-5 bg-blue-500 font-semibold text-2xl text-white rounded-md w-1/3 mb-7"
+          >
+            Enroll now! {courseDetail.coursePrice}$
           </button>
           <div className="">
             <p className="text-lg">
               <span className="font-semibold">
-                {courseDetail.courseLearnerCount}
+                {loading ? "..." : courseDetail.courseLearnerCount}
               </span>{" "}
               Already enrolled
             </p>
@@ -127,14 +154,20 @@ const Learn = () => {
         </div>
         <div className="w-7/12 flex">
           <div className="w-full h-full flex items-center justify-center">
-            <img src={courseDetail.courseImgUrl} className="w-3/4" />
+            {loading ? (
+              <CircularProgress />
+            ) : (
+              <img src={courseDetail.courseImgUrl} className="w-3/4" />
+            )}
           </div>
         </div>
       </div>
       <div className="px-16">
         <ul className="-translate-y-10 -bottom-12 bg-white shadow-lg border py-6 w-full flex justify-around px-8">
           <li className=" flex flex-col border-r-2 w-4/12 items-center">
-            <h3 className="text-2xl font-semibold">5 modules</h3>
+            <h3 className="text-2xl font-semibold">
+              {courseDetail?.courseModules?.length} modules
+            </h3>
             <p className="">
               Gain insight into a topic and learn the fundamentals.
             </p>
@@ -149,8 +182,12 @@ const Learn = () => {
             <p className="">({courseDetail.courseReviewCount} Reviews)</p>
           </li>
           <li className="flex flex-col border-r-2 w-3/12 items-center">
-            <h3 className="text-2xl font-semibold ">Hours to complete</h3>
-            <p className=""></p>
+            <h3 className="text-2xl font-semibold ">Categories</h3>
+            <div className="text-center">
+              {courseDetail?.courseCategory?.map((category, index) => (
+                <span key={category.index}>{category} ・ </span>
+              ))}
+            </div>
           </li>
           <li className="flex flex-col w-3/12 items-center">
             <h3 className="text-2xl font-semibold">Flexible schedule</h3>
@@ -186,26 +223,64 @@ const Learn = () => {
           </li>
         </ul>
         <div className="my-4" ref={aboutRef}>
-          <h3 className="text-2xl font-semibold">What you'll learn</h3>
-          <p className="mt-3">{courseDetail.courseDescription}</p>
+          <h3 className="text-3xl font-semibold">What you'll learn</h3>
+          <p className="mt-3 text-xl">{courseDetail.courseDescription}</p>
         </div>
-        <div className="my-4" ref={modulesRef}>
-          <h3 className="text-2xl font-semibold">
-            There are 5 modules in this course
-            </h3>
-          <div>Modules details</div>
+        <div className="my-8" ref={modulesRef}>
+          <h3 className="text-3xl font-semibold">
+            There are {courseDetail?.courseModules?.length} modules in this
+            course
+          </h3>
+          <div className="flex gap-x-10 my-6">
+            <div className="w-8/12 border-4 rounded-md px-6 pt-3 flex flex-col gap-y-4">
+              {courseDetail?.courseModules?.map((moduleOverview, index) => {
+                return (
+                  <ModuleOverview
+                    index={index}
+                    key={moduleOverview._id}
+                    exercises={moduleOverview.moduleExercises}
+                    videoLessons={moduleOverview.moduleVideoLessons}
+                    moduleDescription={moduleOverview.moduleDescription}
+                    moduleTitle={moduleOverview.moduleTitle}
+                  />
+                );
+              })}
+            </div>
+            <div className="w-4/12 border-4 rounded-md px-8 py-8 h-fit">
+              <p className="text-3xl font-semibold">Instructor</p>
+              <div className="mt-8 flex gap-x-6 items-center">
+                <div>
+                  <img
+                    src={courseDetail?.courseInstructor?.avatarUrl}
+                    width={50}
+                    height={50}
+                    className="rounded-full"
+                  />
+                </div>
+
+                <div className="flex flex-col">
+                  <p className="text-xl font-semibold">
+                    {courseDetail?.courseInstructor?.username}
+                  </p>
+                  <p className="text-lg">
+                    {courseDetail?.courseInstructor?.jobTitle}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div className="flex gap-x-14" ref={reviewsRef}>
           <div className="w-1/3">
-            <h3 className="text-2xl font-semibold mb-10">Learner reviews</h3>
+            <h3 className="text-3xl font-semibold mb-10">Learner reviews</h3>
             <div className="flex items-center mb-10">
               <StarIcon color="primary" fontSize="large" />
               <p className="text-4xl font-semibold">
                 {courseDetail.courseRatingAvg}
-                </p>
+              </p>
               <p className="text-lg place-self-end ml-3">
                 {courseDetail.courseReviewCount} Reviews
-                </p>
+              </p>
             </div>
             <div className="">
               <div className="flex gap-3 items-center">
@@ -216,7 +291,9 @@ const Learn = () => {
                     style={{ width: `${reviews?.rating?.fiveStar}%` }}
                   ></div>
                 </div>
-                <p className="font-semibold text-lg w-1/6 text-center">{reviews?.rating?.fiveStar}%</p>
+                <p className="font-semibold text-lg w-1/6 text-center">
+                  {reviews?.rating?.fiveStar}%
+                </p>
               </div>
               <div className="flex gap-3 items-center">
                 <p className="font-semibold text-xl w-1/6 ">4 stars</p>
@@ -226,7 +303,9 @@ const Learn = () => {
                     style={{ width: `${reviews?.rating?.fourStar}%` }}
                   ></div>
                 </div>
-                <p className="font-semibold text-lg w-1/6 text-center">{reviews?.rating?.fourStar}%</p>
+                <p className="font-semibold text-lg w-1/6 text-center">
+                  {reviews?.rating?.fourStar}%
+                </p>
               </div>
               <div className="flex gap-3 items-center">
                 <p className="font-semibold text-xl w-1/6 ">3 stars</p>
@@ -236,7 +315,9 @@ const Learn = () => {
                     style={{ width: `${reviews?.rating?.threeStar}%` }}
                   ></div>
                 </div>
-                <p className="font-semibold text-lg w-1/6 text-center">{reviews?.rating?.threeStar}%</p>
+                <p className="font-semibold text-lg w-1/6 text-center">
+                  {reviews?.rating?.threeStar}%
+                </p>
               </div>
               <div className="flex gap-3 items-center">
                 <p className="font-semibold text-xl w-1/6 ">2 stars</p>
@@ -246,7 +327,9 @@ const Learn = () => {
                     style={{ width: `${reviews?.rating?.twoStar}%` }}
                   ></div>
                 </div>
-                <p className="font-semibold text-lg w-1/6 text-center">{reviews?.rating?.twoStar}%</p>
+                <p className="font-semibold text-lg w-1/6 text-center">
+                  {reviews?.rating?.twoStar}%
+                </p>
               </div>
               <div className="flex gap-3 items-center">
                 <p className="font-semibold text-xl w-1/6 ">1 star</p>
@@ -256,11 +339,18 @@ const Learn = () => {
                     style={{ width: `${reviews?.rating?.oneStar}%` }}
                   ></div>
                 </div>
-                <p className="font-semibold text-lg w-1/6 text-center">{reviews?.rating?.oneStar}%</p>
+                <p className="font-semibold text-lg w-1/6 text-center">
+                  {reviews?.rating?.oneStar}%
+                </p>
               </div>
             </div>
           </div>
           <div className="w-2/3 flex flex-col gap-y-10 mb-10">
+            <div className="text-xl">
+              Showing {3 * queryParams}/
+              {reviews?.pagination?.itemPerPage *
+                reviews?.pagination?.totalPages}
+            </div>
             {reviews?.data?.map((review) => (
               <Review
                 key={review._id}
@@ -271,6 +361,15 @@ const Learn = () => {
                 star={review.ratingStar}
               />
             ))}
+            {isMore && (
+              <div
+                className="text-xl ml-4 text-blue-700 font-semibold underline cursor-pointer"
+                onClick={handleSeeMore}
+              >
+                See more
+              </div>
+            )}
+
             <button
               onClick={handleLeaveReviewClick}
               className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-md"
@@ -286,7 +385,8 @@ const Learn = () => {
           <div className="bg-white p-8 rounded-md shadow-md w-1/3">
             <h2 className="text-2xl font-semibold mb-4">Confirm Enrollment</h2>
             <p className="mb-6">
-              Are you sure you want to enroll in <strong>{courseDetail.courseTitle}</strong>?
+              Are you sure you want to enroll in{" "}
+              <strong>{courseDetail.courseTitle}</strong>?
             </p>
             <div className="flex justify-end gap-4">
               <button
@@ -315,7 +415,9 @@ const Learn = () => {
             <h2 className="text-2xl font-semibold mb-4">Leave a Review</h2>
             <textarea
               value={newReview.content}
-              onChange={(e) => setNewReview({ ...newReview, content: e.target.value })}
+              onChange={(e) =>
+                setNewReview({ ...newReview, content: e.target.value })
+              }
               className="w-full border rounded-md p-3 mb-4"
               rows="4"
               placeholder="Write your review..."
@@ -325,7 +427,11 @@ const Learn = () => {
               {[1, 2, 3, 4, 5].map((star) => (
                 <StarIcon
                   key={star}
-                  className={`cursor-pointer ${newReview.rating >= star ? "text-yellow-400" : "text-gray-300"}`}
+                  className={`cursor-pointer ${
+                    newReview.rating >= star
+                      ? "text-yellow-400"
+                      : "text-gray-300"
+                  }`}
                   onClick={() => setNewReview({ ...newReview, rating: star })}
                 />
               ))}
