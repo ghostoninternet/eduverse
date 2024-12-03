@@ -1,6 +1,6 @@
 import Modules from "../models/moduleModel.js"
 
-const findModules = async (filter, limit = 10, page = 1) => {
+const findModules = async (filter = {}, limit = 10, page = 1) => {
   return await Modules.find(filter).skip((page - 1) * limit).limit(limit)
     .then(data => data)
     .catch(err => {

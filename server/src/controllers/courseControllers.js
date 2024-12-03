@@ -46,7 +46,8 @@ const getMostPopularCourses = async (req, res, next) => {
 }
 
 const getCourseDetail = async (req, res, next) => {
-  const courseDetail = await courseServices.getCourseDetail(req.params.courseId)
+  const {courseSlug} = req.params
+  const courseDetail = await courseServices.getCourseDetail(courseSlug)
   res.status(200).json(courseDetail)
 }
 

@@ -64,8 +64,8 @@ const NavBar = () => {
     fetchedSearchCourses();
   }, [search, setSearch]);
 
-  const handlecourseBarClick = (courseId) => {
-    navigate(`/learn/${courseId}`)
+  const handlecourseBarClick = (courseSlug) => {
+    navigate(`/learn/${courseSlug}`)
     setSearch('')
   }
   return (
@@ -97,7 +97,7 @@ const NavBar = () => {
               title={searchedCourse.courseTitle}
               instructorName={searchedCourse.courseInstructor}
               avgRating={searchedCourse.courseRatingAvg}
-              handleClick={() => handlecourseBarClick(searchedCourse._id)}
+              handleClick={() => handlecourseBarClick(searchedCourse.courseSlug)}
             />
             )
           })}

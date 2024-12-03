@@ -176,7 +176,7 @@ export default async function generateSampleData() {
         courseImgUrl: faker.image.avatar(),
         courseCategory,
         coursePrice: Number.parseFloat(faker.finance.amount({
-          min: 9.99,
+          min: 0.00,
           max: 49.99,
         })),
         courseModules: [],
