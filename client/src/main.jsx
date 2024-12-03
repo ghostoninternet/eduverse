@@ -26,7 +26,7 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "/learn/:courseId",
+        path: "/learn/:courseSlug",
         element: <Learn />,
       },
       {

@@ -39,6 +39,13 @@ const deleteModule = async (req, res, next) => {
   })
 }
 
+const getModuleByCourseId = async (req, res, next) => {
+  const { courseId } = req.params
+  const result = await moduleServices.getModuleByCourseId(courseId)
+  res.status(200).json({
+    data: result
+  })
+}
 export default {
   getModules,
   getModuleDetail,
@@ -46,4 +53,5 @@ export default {
   createNewModule,
   updateModule,
   deleteModule,
+  getModuleByCourseId
 }

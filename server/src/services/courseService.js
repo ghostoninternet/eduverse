@@ -2,11 +2,13 @@ import mongoose from "mongoose"
 import CustomError from "../errors/customError.js"
 import categoryDaos from "../daos/categoryDaos.js"
 import courseDaos from "../daos/courseDaos.js"
-import instructorDaos from "../daos/instructorDaos.js"
 import excludeObjectKeys from "../utils/excludeObjectKeys.js"
 import includeObjectKeys from "../utils/includeObjectKeys.js"
 import moduleDaos from "../daos/moduleDaos.js"
 import exerciseDaos from "../daos/exerciseDaos.js"
+import userDaos from "../daos/userDaos.js"
+import formatValue from "../utils/formatValue.js"
+import Courses from "../models/courseModel.js"
 
 //GET COURSE
 /*recommended course  */
@@ -27,23 +29,27 @@ const getMostPopularCourses = async (categoryId) => {
   return result
 }
 
-const getCourseDetail = async (courseId) => {
-  let foundCourse = await courseDaos.findCourseById(courseId)
+const getCourseDetail = async (courseSlug) => {
+  let foundCourse = await courseDaos.findCourseBySlug(courseSlug)
   if (!foundCourse) {
     return {}
   }
 
   // Get instructor information
-  let instructorInfo = await instructorDaos.findInstructorById(foundCourse.courseInstructor)
+  let instructorInfo = await userDaos.findOneUser(foundCourse.courseInstructor)
   if (!instructorInfo) {
     throw new CustomError.NotFoundError("No instructor found!")
   }
   instructorInfo = includeObjectKeys(instructorInfo, [
-    'instructorName',
-    'instructorAvatar'
+    'username',
+    'avatarUrl',
+    'jobTitle'
+  ])
+
+  foundCourse = excludeObjectKeys(foundCourse, [
+    'updatedAt'
   ])
   foundCourse.courseInstructor = instructorInfo
-
   // Get all category name
   let categoryNames = []
   for (let i = 0; i < foundCourse.courseCategory.length; i++) {
@@ -71,11 +77,12 @@ const getCourseDetail = async (courseId) => {
           exerciseInfo.push(foundExerciseInfo)
         }
       }
-      foundModuleInfo.moduleExercises.push(exerciseInfo)
+      foundModuleInfo.moduleExercises = exerciseInfo
     }
     moduleInfo.push(foundModuleInfo)
   }
   foundCourse.courseModules = moduleInfo
+  foundCourse.courseRatingAvg = formatValue(foundCourse.courseRatingAvg)
   return foundCourse
 }
 
@@ -108,8 +115,11 @@ const searchCourses = async (queryParams, limit, page) => {
 
   foundCourses = await Promise.all(
     foundCourses.map(async (foundCourse) => {
-      let instructor = await instructorDaos.findInstructorById(foundCourse.courseInstructor)
-      foundCourse.courseInstructor = instructor.instructorName
+      let instructor = await userDaos.findOneUser(foundCourse.courseInstructor)
+      foundCourse = {
+        ...foundCourse, 
+      courseInstructor: instructor.username, 
+      }
       return excludeObjectKeys(foundCourse, [
         'coursePrice',
         'courseModules',

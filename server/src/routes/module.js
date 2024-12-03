@@ -10,5 +10,5 @@ moduleRouter.get('/instructor/search', asyncHandler(moduleControllers.searchModu
 moduleRouter.post('/instructor', asyncHandler(moduleControllers.createNewModule))
 moduleRouter.put('/instructor/:moduleId', asyncHandler(moduleControllers.updateModule))
 moduleRouter.delete('/instructor/:moduleId', asyncHandler(moduleControllers.deleteModule))
-
+moduleRouter.get('/:courseId', asyncHandler(moduleControllers.getModuleByCourseId))
 export default moduleRouter
