@@ -8,7 +8,7 @@ import moduleDaos from "../daos/moduleDaos.js"
 import exerciseDaos from "../daos/exerciseDaos.js"
 import enrolledCourseDaos from "../daos/enrolledCourseDaos.js"
 import excludeObjectKeys from "../utils/excludeObjectKeys.js"
-
+import formatValue from '../utils/formatValue.js'
 const getEnrolledCourseDetail = async (userId, courseId) => {
   let enrolledCourse = await enrolledCourseDaos.findEnrolledCourse(
     {
@@ -49,7 +49,24 @@ const getEnrolledCourseDetail = async (userId, courseId) => {
       ...foundModule
     }
   }
-
+  let course = await courseDaos.findCourseById(enrolledCourse.courseId)
+  let instructor = await userDaos.findOneUser(course.courseInstructor)
+  enrolledCourse = {
+    ...enrolledCourse,
+    courseTitle : course.courseTitle,
+    courseDescription :  course.courseDescription,
+    courseRatingAvg: formatValue(course.courseRatingAvg),
+    courseInstuctor: {
+      username: instructor.username,
+      location: instructor.location,
+      jobTitle: instructor.jobTitle,
+      organization: instructor.organization,
+      email: instructor.email,
+      avatarUrl: instructor.avatarUrl
+    },
+    courseReviewCount: course.courseReviewCount,
+    courseLearnerCount: course.courseLearnerCount,
+  }
   return enrolledCourse
 }
 
@@ -134,7 +151,7 @@ const updateEnrolledCourseVideoProgress = async (userId, courseId, updateData) =
   if (!foundEnrolledCourse) throw new CustomError.NotFoundError("No enrolled course found!")
 
   foundEnrolledCourse.courseModulesProgress = foundEnrolledCourse.courseModulesProgress.map(moduleProgress => {
-    if (moduleProgress.moduleId == new mongoose.Types.ObjectId(updateData.moduleId)) {
+    if (moduleProgress.moduleId == updateData.moduleId) {
       moduleProgress.moduleVideoProgress = moduleProgress.moduleVideoProgress.map(videoProgress => {
         if (videoProgress.videoTitle == updateData.videoTitle) {
           videoProgress.isFinish = true

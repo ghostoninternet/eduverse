@@ -37,7 +37,7 @@ const MyLearningTab = ({
             </div>
 
             <div className="sm:grid grid-cols-4 sm:gap-6 flex flex-col gap-y-4 mb-8">
-                {courseInProgress.data?.map((course) => {
+                {courseInProgress?.data?.map((course) => {
                   const progress = course.courseProgress.toFixed(1)
                   return (
                     <Course
@@ -72,7 +72,7 @@ const MyLearningTab = ({
             </div>
 
             <div className="sm:grid grid-cols-4 sm:gap-6 flex flex-col gap-y-4 mb-8">
-              {courseInCompleted.data.map((course) => (
+              {courseInCompleted?.data?.map((course) => (
                 <Course
                   onClick={() => handleEnrolledCourseClick(course)}
                   key={course._id}

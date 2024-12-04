@@ -2,30 +2,54 @@ import React, { useState } from "react";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import Video from "./Video";
 import PropTypes from "prop-types";
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-const Module = ({ title, videos, index,seenVideo, totalVideos }) => {
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+const Module = ({
+  title,
+  videos,
+  index,
+  seenVideo,
+  totalVideos,
+  handleVideoClick,
+  module,
+}) => {
   const [isHidden, setIsHidden] = useState("true");
   const handleClickArrow = () => {
     setIsHidden(!isHidden);
   };
   return (
-    <div className="w-2/3 border-y-2 cursor-pointer" >
-      <div className="flex justify-between bg-gray-100 p-4" onClick={handleClickArrow}>
+    <div className="border-y-2 cursor-pointer">
+      <div
+        className="flex justify-between bg-gray-100 p-4"
+        onClick={handleClickArrow}
+      >
         <div>
-          <p className="text-2xl font-semibold">{index}. {title}</p>
+          <p className="text-2xl font-semibold">
+            {index}. {title}
+          </p>
           <div className="flex gap-x-2">
-            <p>{seenVideo} / {totalVideos} |</p>
-            <p>37 mins</p>
+            <p>
+             Completed {seenVideo} / {totalVideos} videos
+            </p>
+            <p></p>
           </div>
         </div>
-        <div >
-          {isHidden ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon/>}
+        <div>
+          {isHidden ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
         </div>
       </div>
       {!isHidden && (
-        <div className=" ">
+        <div className="">
           {videos?.map((video, index) => (
-            <Video index={index+1} key={video._id} title={video.videoTitle} isChecked={video.isFinish}/>
+            <Video
+              index={index + 1}
+              key={video._id}
+              title={video.videoTitle}
+              isChecked={video.isFinish}
+              onClick={(video, module) =>
+                handleVideoClick(video.videoUrl,module._id, video.videoTitle)
+              }
+              videoLength={video.videoLength}
+            />
           ))}
         </div>
       )}
@@ -40,6 +64,7 @@ Module.propTypes = {
   index: PropTypes.number,
   seenVideo: PropTypes.number,
   totalVideos: PropTypes.number,
+  handleVideoClick: PropTypes.func,
 };
 
 export default Module;
