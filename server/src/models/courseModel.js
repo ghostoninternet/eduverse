@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { COURSE_STATUS } from "../constants/course.js";
 const { Schema } = mongoose;
 
 const courseSchema = new Schema({
@@ -13,6 +14,7 @@ const courseSchema = new Schema({
   courseInstructor: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
+    ref: 'Users'
   },
   courseDescription: {
     type: String,
@@ -50,9 +52,13 @@ const courseSchema = new Schema({
   },
   courseStatus: {
     type: String,
-    enum: ['public', 'draft'],
+    enum: [COURSE_STATUS.PUBLIC, COURSE_STATUS.DRAFT],
     required: true,
-  }
+  },
+  isDeleted: {
+    type: Boolean,
+    default: false,
+  },
 }, {
   timestamps: true
 });
