@@ -15,7 +15,7 @@ const createNewEnrolledCourse = async (req, res, next) => {
 }
 
 const updateEnrolledCourseVideoProgress = async (req, res, next) => {
-  const { userId } = req.userId
+  const { userId } = req
   const { courseId } = req.params
   const updatedEnrolledCourseProgress = await enrolledCourseService.updateEnrolledCourseVideoProgress(userId, courseId, req.body)
   res.status(200).json(updatedEnrolledCourseProgress)
