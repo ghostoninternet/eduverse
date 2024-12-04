@@ -160,6 +160,16 @@ const countNumberOfCourses = async (filter = {}) => {
     });
 };
 
+const findOneCourse = async (filter = {}) => {
+  return await Courses.findOne(filter)
+    .lean()
+    .then((data) => data)
+    .catch((err) => {
+      console.log(err);
+      throw new CustomError.DatabaseError();
+    });
+};
+
 const findCourses = async (filter = {}, limit = 12, page = 1) => {
   return await Courses.find(filter)
     .skip((page - 1) * limit)
@@ -221,6 +231,7 @@ const deleteCourse = async (courseId) => {
 
 export default {
   countNumberOfCourses,
+  findOneCourse,
   findCourses,
   findRecommendedCourses,
   findFreeCourses,

@@ -11,11 +11,11 @@ courseRouter.get('/popular', asyncHandler(courseControllers.getMostPopularCourse
 
 // For instructor, optimized later :v
 courseRouter.get('/instructor', asyncHandler(courseControllers.getInstructorCourses))
-courseRouter.get('/instructor/:courseId', asyncHandler(courseControllers.getInstructorCourseDetail))
 courseRouter.get('/instructor/search', asyncHandler(courseControllers.searchInstructorCourses))
 courseRouter.post('/instructor', asyncHandler(courseControllers.createNewCourse))
-courseRouter.put('/instructor/:exerciseId', asyncHandler(courseControllers.updateCourse))
-courseRouter.delete('/instructor/:exerciseId', asyncHandler(courseControllers.deleteCourse))
+courseRouter.get('/instructor/:courseId', asyncHandler(courseControllers.getInstructorCourseDetail))
+courseRouter.put('/instructor/:courseId', asyncHandler(courseControllers.updateCourse))
+courseRouter.delete('/instructor/:courseId', asyncHandler(courseControllers.deleteCourse))
 
 //the parameter :courseId will include /search, /recommended, /free, /popular route above, so adjust at the end
 courseRouter.get('/:courseSlug', asyncHandler(courseControllers.getCourseDetail))
