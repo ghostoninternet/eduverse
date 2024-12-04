@@ -118,7 +118,7 @@ const searchCourses = async (queryParams, limit, page) => {
       let instructor = await userDaos.findOneUser(foundCourse.courseInstructor)
       foundCourse = {
         ...foundCourse, 
-      courseInstructor: instructor.username, 
+      courseInstructor: instructor?.username, 
       }
       return excludeObjectKeys(foundCourse, [
         'coursePrice',

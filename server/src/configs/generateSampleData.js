@@ -164,29 +164,50 @@ export default async function generateSampleData() {
     console.log("Generating Courses....")
     for (let i = 0; i < 500; i++) {
       const courseCategory = []
+      const freeCourse = 20;
       for (let j = 0; j < getRandomNumber(4); j++) {
         courseCategory.push(getRandomElement(categories)._id)
       }
-
-      const course = await Courses.create({
-        courseTitle: `Course ${i + 1}`,
-        courseSlug: `course-${i + 1}`,
-        courseInstructor: getRandomElement(instructors),
-        courseDescription: faker.lorem.paragraph(5),
-        courseImgUrl: faker.image.avatar(),
-        courseCategory,
-        coursePrice: Number.parseFloat(faker.finance.amount({
-          min: 0.00,
-          max: 49.99,
-        })),
-        courseModules: [],
-        courseReviews: [],
-        courseReviewCount: 0,
-        courseRatingAvg: 0,
-        courseLearnerCount: 0,
-        courseStatus: 'public'
-      });
-      courses.push(course._id);
+      if(i < freeCourse){
+        const course = await Courses.create({
+          courseTitle: `Course ${i + 1}`,
+          courseSlug: `course-${i + 1}`,
+          courseInstructor: getRandomElement(instructors),
+          courseDescription: faker.lorem.paragraph(5),
+          courseImgUrl: faker.image.avatar(),
+          courseCategory,
+          coursePrice: 0.00,
+          courseModules: [],
+          courseReviews: [],
+          courseReviewCount: 0,
+          courseRatingAvg: 0,
+          courseLearnerCount: 0,
+          courseStatus: 'public'
+        });
+        courses.push(course._id);
+      }else{
+        const course = await Courses.create({
+          courseTitle: `Course ${i + 1}`,
+          courseSlug: `course-${i + 1}`,
+          courseInstructor: getRandomElement(instructors),
+          courseDescription: faker.lorem.paragraph(5),
+          courseImgUrl: faker.image.avatar(),
+          courseCategory,
+          coursePrice: Number.parseFloat(faker.finance.amount({
+            min: 0.01,
+            max: 9.99,
+          })),
+          courseModules: [],
+          courseReviews: [],
+          courseReviewCount: 0,
+          courseRatingAvg: 0,
+          courseLearnerCount: 0,
+          courseStatus: 'public'
+        });
+        courses.push(course._id);
+      }
+      
+      
     }
     console.log("Finish Generating Courses")
 
@@ -197,10 +218,19 @@ export default async function generateSampleData() {
       for (let i2 = 0; i2 < 4; i2++) {
         const moduleVideoLessons = []
         for (let j = 0; j < Math.floor(Math.random() * 10); j++) {
+          const videoUrl = [
+            "https://www.youtube.com/watch?v=GxmfcnU3feo",
+            "https://www.youtube.com/watch?v=09n__iJvTeY",
+            "https://www.youtube.com/watch?v=HNBCKzaRpQU",
+            "https://www.youtube.com/watch?v=EjEDfymRSIw",
+            "https://www.youtube.com/watch?v=8_ZjWWp_BUM",
+            "https://www.youtube.com/watch?v=JQbASNZ4v-U",
+            "https://www.youtube.com/watch?v=__AApNgsAbE&t=174s"
+          ]
           moduleVideoLessons.push({
             videoTitle: `Lesson ${j + 1}`,
-            videoUrl: `https://youtu.be/N5HxbW_OcJI?si=5P3UEJO2nwe_pwTu`,
-            videoLength: Math.floor(Math.random() * 60) + 10,
+            videoUrl: videoUrl[j],
+            videoLength: Math.floor(Math.random() * 10) + 10,
           })
         }
         const module = await Modules.create({

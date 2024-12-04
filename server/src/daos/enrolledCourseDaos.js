@@ -33,7 +33,7 @@ const updateEnrolledCourse = async (
     {
       new: true,
     }
-  )
+  ).lean()
     .then((data) => data)
     .catch((err) => {
       console.log(err);
