@@ -32,6 +32,10 @@ const moduleSchema = new Schema({
     type: [mongoose.Schema.Types.ObjectId],
     default: []
   },
+  isDeleted: {
+    type: Boolean,
+    default: false,
+  },
 }, {
   timestamps: true
 });
