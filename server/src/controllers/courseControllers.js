@@ -56,9 +56,12 @@ const searchCourses = async (req, res, next) => {
   res.status(200).json(searchRequest)
 }
 
+// Note: All code below are using userId in query params. I know this approach is not appropriate
+// but for testing purpose, I will just leave it here. Next week when we enhance the project, I will
+// move this to another place.
 const getInstructorCourses = async (req, res, next) => {
-  const { limit, page } = req.query
-  const { userId } = req.userId
+  const { userId, limit, page } = req.query
+  // const { userId } = req.userId
   const foundCourses = await courseServices.getInstructorCourses(userId, limit, page)
   res.status(200).json(foundCourses)
 }
@@ -70,8 +73,8 @@ const getInstructorCourseDetail = async (req, res, next) => {
 }
 
 const searchInstructorCourses = async (req, res, next) => {
-  const { query, limit, page } = req.query
-  const { userId } = req.params
+  const { userId, query, limit, page } = req.query
+  // const { userId } = req.params
   const foundCourses = await courseServices.searchInstructorCourses(userId, query, limit, page)
   res.status(200).json(foundCourses)
 }
