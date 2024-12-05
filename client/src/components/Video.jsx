@@ -1,9 +1,9 @@
 import React from 'react'
 import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
 import PropTypes from "prop-types";
-const Video = ({title, index,isChecked, onClick, videoLength, }) => {
+const Video = ({title, index,isChecked, onClick, videoLength, isPlaying}) => {
   return (
-    <div className='flex p-4 gap-x-4 items-center cursor-pointer hover:bg-gray-100' onClick={onClick}>
+    <div className={`flex p-4 gap-x-4 items-center cursor-pointer hover:bg-gray-300 ${isPlaying && "bg-gray-300 "}`} onClick={onClick}> 
       <div className=''>
         <input type='checkbox' style={{ width: '20px', height: '20px' }} className='cursor-pointer' disabled checked={isChecked} />
       </div>
