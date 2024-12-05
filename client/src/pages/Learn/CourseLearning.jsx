@@ -45,13 +45,14 @@ const CourseLearning = () => {
     window.location.hash = "overview";
     setIsTab("Overview");
   };
-
+  const [update, setUpdate] = useState(true)
   const handleProgressVideo = async(progress) => {
     if(playedRef.current){
       const duration = playedRef.current.getDuration();
       const playedSeconds = progress.playedSeconds;
       if ( playedSeconds / duration > 0.99) {
         // Call the API to mark the video as completed
+        setUpdate(!update)
        await updateEnrolledCourseVideoProgress(
           authState?.user._id.toString(),      
           params.courseId,
@@ -60,8 +61,9 @@ const CourseLearning = () => {
             videoTitle: currentVideo?.videoTitle
           }
         )
+      }
     }
-  }
+     
 }
   useEffect(() => {
     const fetchedEnrolledCourse = async () => {
@@ -93,7 +95,7 @@ const CourseLearning = () => {
     };
 
     fetchedEnrolledCourse();
-  }, [params.courseId, currentVideo]);
+  }, [params.courseId, update]);
 
 
   const handleVideoClick = (videoTitle, moduleId, videoUrl, videoId) => {

@@ -15,7 +15,6 @@ const updateEnrolledCourseVideoProgress = async (
       body: JSON.stringify({moduleId: updatedData.moduleId, videoTitle: updatedData.videoTitle}),
     });
     const json = await response.json();
-    console.log(json)
     return json;
   } catch (error) {
     console.error(error);
