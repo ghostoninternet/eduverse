@@ -84,7 +84,7 @@ const NavBar = () => {
           value={search}
           type="text"
           placeholder="Search for courses"
-          className="h-12 p-4 border-2 rounded-full shadow-md w-full"
+          className="h-12 p-4 border-2 rounded-full shadow-md text-xl w-full"
         />
         <button className="absolute right-2.5 top-1.5 border rounded-full p-1 bg-blue-600 text-white hover:bg-blue-700">
           <SearchIcon />
@@ -98,6 +98,7 @@ const NavBar = () => {
               instructorName={searchedCourse.courseInstructor}
               avgRating={searchedCourse.courseRatingAvg}
               handleClick={() => handlecourseBarClick(searchedCourse.courseSlug)}
+              courseImgUrl={searchedCourse.courseImgUrl}
             />
             )
           })}
