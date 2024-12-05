@@ -10,17 +10,18 @@ const Module = ({
   seenVideo,
   totalVideos,
   handleVideoClick,
-  module,
+  moduleId,
+  currentVideoId,
 }) => {
-  const [isHidden, setIsHidden] = useState("true");
-  const handleClickArrow = () => {
-    setIsHidden(!isHidden);
-  };
+  const [isHidden, setIsHidden] = useState(true)
+  const handleModuleClick = () => {
+    setIsHidden(!isHidden)
+  }
   return (
     <div className="border-y-2 cursor-pointer">
       <div
         className="flex justify-between bg-gray-100 p-4"
-        onClick={handleClickArrow}
+        onClick={handleModuleClick}
       >
         <div>
           <p className="text-2xl font-semibold">
@@ -34,21 +35,22 @@ const Module = ({
           </div>
         </div>
         <div>
-          {isHidden ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
+          {(isHidden) ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
         </div>
       </div>
-      {!isHidden && (
+      {(!isHidden) && (
         <div className="">
           {videos?.map((video, index) => (
             <Video
               index={index + 1}
-              key={video._id}
-              title={video.videoTitle}
-              isChecked={video.isFinish}
-              onClick={(video, module) =>
-                handleVideoClick(video.videoUrl,module._id, video.videoTitle)
+              key={video?._id}
+              title={video?.videoTitle}
+              isChecked={video?.isFinish}
+              onClick={() => 
+                handleVideoClick(video?.videoTitle, moduleId, video?.videoUrl, video?._id)
               }
-              videoLength={video.videoLength}
+              isPlaying={currentVideoId === video?._id}
+              videoLength={video?.videoLength}
             />
           ))}
         </div>
@@ -65,6 +67,8 @@ Module.propTypes = {
   seenVideo: PropTypes.number,
   totalVideos: PropTypes.number,
   handleVideoClick: PropTypes.func,
+  moduleId: PropTypes.string,
+  currentVideoId: PropTypes.string
 };
 
 export default Module;

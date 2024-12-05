@@ -14,21 +14,27 @@ const CourseLearning = () => {
   const navigate = useNavigate();
   const { authState } = useAuth();
   const videoRef = useRef(null);
+  const playedRef = useRef(null);
   const [newReview, setNewReview] = useState({
     content: "",
     rating: 0,
   });
   const [enrolledCoursesDetail, setEnrolledCourseDetail] = useState({});
+
   const [currentVideo, setCurrentVideo] = useState({
+    videoId: null,
     moduleId: null,
     videoTitle: null,
-    videoUrl: "https://www.youtube.com/watch?v=GxmfcnU3feo",
+    videoUrl: null,
+    isPlaying: false,
   });
+  
+
   const [isTab, setIsTab] = useState("Overview");
   useEffect(() => {
     if (window.location.hash) {
-      window.location.hash = ""; // Clear the hash on page load
-      setIsTab("Overview"); // Set the default tab to 'home'
+      window.location.hash = "";
+      setIsTab("Overview");
     }
   }, []);
   const handleRatingClick = () => {
@@ -40,6 +46,23 @@ const CourseLearning = () => {
     setIsTab("Overview");
   };
 
+  const handleProgressVideo = async(progress) => {
+    if(playedRef.current){
+      const duration = playedRef.current.getDuration();
+      const playedSeconds = progress.playedSeconds;
+      if ( playedSeconds / duration > 0.99) {
+        // Call the API to mark the video as completed
+       await updateEnrolledCourseVideoProgress(
+          authState?.user._id.toString(),      
+          params.courseId,
+          {
+            moduleId: currentVideo?.moduleId,
+            videoTitle: currentVideo?.videoTitle
+          }
+        )
+    }
+  }
+}
   useEffect(() => {
     const fetchedEnrolledCourse = async () => {
       try {
@@ -47,24 +70,49 @@ const CourseLearning = () => {
           params.courseId
         );
         setEnrolledCourseDetail(response);
+        for (let i = 0; i < response?.courseModulesProgress.length; i++) {
+          const unfinishedVideo = response?.courseModulesProgress[
+            i
+          ]?.moduleVideoProgress?.find((video) => !video.isFinish);
+          if (unfinishedVideo) {
+            setCurrentVideo({
+              videoId: unfinishedVideo._id,
+              moduleId: response?.courseModulesProgress?.[i].moduleId,
+              videoTitle: unfinishedVideo.videoTitle,
+              videoUrl: unfinishedVideo.videoUrl,
+              isPlaying: true,
+            });
+            break;
+          } else {
+            continue;
+          }
+        }
       } catch (error) {
         console.error("Error fetching courses:", error);
       }
     };
 
     fetchedEnrolledCourse();
-  }, [params.courseId]);
+  }, [params.courseId, currentVideo]);
 
-  const handleVideoClick = (videoUrl, moduleId, videoTitle) => {
-    setCurrentVideo({ moduleId, videoTitle, videoUrl });
+
+  const handleVideoClick = (videoTitle, moduleId, videoUrl, videoId) => {
+    setCurrentVideo({
+      videoTitle: videoTitle,
+      moduleId: moduleId,
+      videoUrl: videoUrl,
+      videoId: videoId,
+      isPlaying: true,
+    });
     videoRef.current.scrollIntoView({ behavior: "smooth" });
   };
   const handleCancelReview = () => {
     setNewReview({
       content: "",
       rating: 0,
-    })
-  }
+    });
+  };
+ 
   if (!authState) {
     navigate("/signin");
     return null;
@@ -90,11 +138,13 @@ const CourseLearning = () => {
         {/* video player */}
         <div className="flex justify-center bg-gray-600" ref={videoRef}>
           <ReactPlayer
+            ref={playedRef}
             url={currentVideo.videoUrl}
             width="100%"
             height={520}
             playing={false}
             controls
+            onProgress={handleProgressVideo}
           />
         </div>
 
@@ -180,58 +230,60 @@ const CourseLearning = () => {
           </div>
         ) : (
           <div className="">
-          <div className="bg-white p-8 rounded-md shadow-md ">
-            <h2 className="text-4xl font-semibold mb-4">Leave a Review</h2>
-            <textarea
-              value={newReview.content}
-              onChange={(e) =>
-                setNewReview({ ...newReview, content: e.target.value })
-              }
-              className="w-full border rounded-md p-3 mb-4 text-xl"
-              rows="6"
-              placeholder="Write your review..."
-            ></textarea>
-            <div className="flex items-center mb-4">
-              <p className="mr-4 text-2xl">Rating:</p>
-              {[1, 2, 3, 4, 5].map((star) => (
-                <StarIcon
-                  fontSize="large"
-                  key={star}
-                  className={`cursor-pointer ${
-                    newReview.rating >= star
-                      ? "text-blue-600"
-                      : "text-gray-300"
-                  }`}
-                  onClick={() => setNewReview({ ...newReview, rating: star })}
-                />
-              ))}
+            <div className="bg-white p-8 rounded-md shadow-md ">
+              <h2 className="text-4xl font-semibold mb-4">Leave a Review</h2>
+              <textarea
+                value={newReview.content}
+                onChange={(e) =>
+                  setNewReview({ ...newReview, content: e.target.value })
+                }
+                className="w-full border rounded-md p-3 mb-4 text-xl"
+                rows="6"
+                placeholder="Write your review..."
+              ></textarea>
+              <div className="flex items-center mb-4">
+                <p className="mr-4 text-2xl">Rating:</p>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <StarIcon
+                    fontSize="large"
+                    key={star}
+                    className={`cursor-pointer ${
+                      newReview.rating >= star
+                        ? "text-blue-600"
+                        : "text-gray-300"
+                    }`}
+                    onClick={() => setNewReview({ ...newReview, rating: star })}
+                  />
+                ))}
+              </div>
+              {newReview.content.length > 0 && newReview.rating > 0 ? (
+                <div className="flex justify-end gap-4">
+                  <button
+                    className="px-4 text-xl py-2 bg-gray-300 text-gray-700 rounded-md"
+                    onClick={handleCancelReview}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    // onClick={handleSubmitReview}
+                    className="px-4 text-xl py-2 bg-green-500 text-white rounded-md"
+                  >
+                    Submit
+                  </button>
+                </div>
+              ) : (
+                <div className="flex justify-end gap-4">
+                  <button
+                    disabled
+                    // onClick={handleSubmitReview}
+                    className="px-4 text-xl py-2 bg-gray-500 text-white rounded-md"
+                  >
+                    Submit
+                  </button>
+                </div>
+              )}
             </div>
-            {newReview.content.length > 0 && newReview.rating > 0 ? <div className="flex justify-end gap-4">
-              
-              <button
-                className="px-4 text-xl py-2 bg-gray-300 text-gray-700 rounded-md"
-                onClick={handleCancelReview}
-              >
-                Cancel
-              </button>
-              <button
-                // onClick={handleSubmitReview}
-                className="px-4 text-xl py-2 bg-green-500 text-white rounded-md"
-              >
-                Submit
-              </button>
-            </div> : <div className="flex justify-end gap-4">
-              <button
-              disabled
-                // onClick={handleSubmitReview}
-                className="px-4 text-xl py-2 bg-gray-500 text-white rounded-md"
-              >
-                Submit
-              </button>
-            </div>}
-            
           </div>
-        </div>
         )}
       </div>
 
@@ -246,26 +298,22 @@ const CourseLearning = () => {
             {enrolledCoursesDetail.courseModulesProgress?.map(
               (module, index) => {
                 let count = 0;
-                module.moduleVideoProgress.forEach((module) => {
-                  if (module.isFinish == true) {
+                module.moduleVideoProgress.map((video) => {
+                  if (video.isFinish == true) {
                     count++;
                   }
                 });
                 return (
                   <Module
+                    moduleId={module?.moduleId}
                     index={index + 1}
-                    key={module._id}
-                    title={module.moduleTitle}
-                    videos={module.moduleVideoProgress}
-                    totalVideos={module.moduleVideoProgress.length}
+                    key={module?.moduleId}
+                    title={module?.moduleTitle}
+                    videos={module?.moduleVideoProgress}
+                    totalVideos={module?.moduleVideoProgress?.length}
                     seenVideo={count}
-                    handleVideoClick={(video, module) =>
-                      handleVideoClick(
-                        authState.user._id,
-                        module._id,
-                        video.videoUrl
-                      )
-                    }
+                    currentVideoId={currentVideo?.videoId}
+                    handleVideoClick={handleVideoClick}
                   />
                 );
               }
