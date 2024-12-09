@@ -80,7 +80,8 @@ const searchInstructorCourses = async (req, res, next) => {
 }
 
 const createNewCourse = async (req, res, next) => {
-  const { userId } = req.params
+  const { userId } = req.query
+  // const { userId } = req.params
   const newCourse = await courseServices.createNewCourse(userId, req.body)
   res.status(200).json(newCourse) 
 }

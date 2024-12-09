@@ -1,5 +1,12 @@
 import reviewServices from "../services/reviewServices.js"
 
+const getInstructorCourseReview = async (req, res, next) => {
+  const { courseId } = req.params
+  const { limit, page } = req.query
+  const courseReviews = await reviewServices.getInstructorCourseReview(courseId, limit, page)
+  res.status(200).json(courseReviews)
+}
+
 const getCourseReviews = async (req, res, next) => {
   const { courseSlug } = req.params
   const { limit = 3, page = 1 } = req.query
@@ -26,6 +33,7 @@ const deleteCourseReview = async (req, res, next) => {
 }
 
 export default {
+  getInstructorCourseReview,
   getCourseReviews,
   createCourseReview,
   updateCourseReview,
