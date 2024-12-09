@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react"
-import ManagementTable from "../../components/Tables/Table"
-import DeleteConfirmModal from "../../components/Modals/Confirmation/DeleteConfirmModal"
-import CourseDetailModal from "../../components/Modals/Courses/CourseDetailModal"
-import { MODULE_MANAGEMENT_TABLE_HEADER } from "../../constants/module"
-import AddNewModuleModal from "../../components/Modals/Module/AddNewModule"
-import ModuleDetailModal from "../../components/Modals/Module/ModuleDetailModal"
+import ManagementTable from "../../../components/Tables/Table"
+import DeleteConfirmModal from "../../../components/Modals/Confirmation/DeleteConfirmModal"
+import CourseDetailModal from "../../../components/Modals/Courses/CourseDetailModal"
+import { MODULE_MANAGEMENT_TABLE_HEADER } from "../../../constants/module"
+import AddNewModuleModal from "../../../components/Modals/Module/AddNewModule"
+import ModuleDetailModal from "../../../components/Modals/Module/ModuleDetailModal"
 
 function ModuleManagement() {
   const [modules, setModules] = useState([])

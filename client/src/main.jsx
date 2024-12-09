@@ -12,9 +12,9 @@ import Profile from "./pages/Profile";
 import AuthProvider from "./contexts/authContext.jsx";
 import CourseProvider from "./contexts/CourseContext.jsx";
 import InstructorMainLayout from "./layouts/InstructorMainLayout.jsx";
-import CourseManagement from "./pages/CourseManagement/CourseManagement.jsx";
+import CourseManagement from "./pages/Instructor/CourseManagement/CourseManagement.jsx";
 import CourseLearning from "./pages/Learn/CourseLearning.jsx";
-import ModuleManagement from "./pages/ModuleManagement/ModuleManagement.jsx";
+import ModuleManagement from "./pages/Instructor/ModuleManagement/ModuleManagement.jsx";
 
 const router = createBrowserRouter([
   {
