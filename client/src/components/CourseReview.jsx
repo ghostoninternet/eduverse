@@ -1,57 +1,56 @@
+/* eslint-disable react/prop-types */
 import { useState } from 'react'
 import DeleteConfirmModal from './Modals/Confirmation/DeleteConfirmModal'
 
 function CourseReview({
-  userName,
-  userAvatar,
-  reviewContent,
-  reviewRating,
-  reviewDate,
+  courseReview,
   isEditMode,
+  handleDeleteReview,
 }) {
   const [isOpenDelete, setIsOpenDelete] = useState(false)
+  const [selectReview, setSelectReview] = useState(null)
 
-  const handleDeleteComment = () => {
-    console.log("Deleted!")
-    setIsOpenDelete(false)
+  const handleConfirmDeleteReview = async () => {
+    await handleDeleteReview(selectReview)
   }
 
-  const handleCancelDeleteComment= () => {
+  const handleCancelDeleteReview = () => {
     console.log("Cancel delete!")
     setIsOpenDelete(false)
   }
+
   return (
     <article className="my-2 p-3 text-base bg-slate-200 rounded-lg">
       <div className="flex justify-between items-center mb-2">
         <div className="flex items-center">
           <p className="inline-flex items-center mr-3 text-sm text-gray-900 font-semibold"><img
             className="mr-2 w-6 h-6 rounded-full"
-            src="https://flowbite.com/docs/images/people/profile-picture-2.jpg"
-            alt="Michael Gough" />Michael Gough</p>
-          <p className="text-sm"><time pubdate datetime="2022-02-08"
-            title="February 8th, 2022">Feb. 8, 2022</time></p>
+            src={courseReview.userInfo.avatarUrl}
+            alt="Michael Gough" />{courseReview.userInfo.username}</p>
+          <p className="text-sm">{(new Date(courseReview.createdAt)).toUTCString()}</p>
         </div>
         {
           isEditMode ? (
-            <button onClick={() => setIsOpenDelete(true)} className='py-1 px-2 text-sm bg-red-500 text-white rounded-xl font-bold'>Delete</button>
+            <button onClick={() => {
+              setSelectReview(courseReview._id)
+              setIsOpenDelete(true)
+            }} className='py-1 px-2 text-sm bg-red-500 text-white rounded-xl font-bold'>Delete</button>
           ) : (
             null
           )
         }
       </div>
       <p className="text-sm">
-        Very straight-to-point article. Really worth time reading. Thank you! But tools are just the
-        instruments for the UX designers. The knowledge of the design tools are as important as the
-        creation of the design strategy.
+        {courseReview.reviewContent}
       </p>
       <div className='flex gap-1'>
-        <p className='font-bold'>Rating: 5</p>
+        <p className='font-bold'>Rating: {courseReview.ratingStar}</p>
       </div>
       <DeleteConfirmModal 
         isOpen={isOpenDelete}
         confirmMessage={"Are you sure you want to delete this comment ?"}
-        handleDelete={handleDeleteComment}
-        handleCancel={handleCancelDeleteComment}
+        handleDelete={handleConfirmDeleteReview}
+        handleCancel={handleCancelDeleteReview}
       />
     </article>
   )
