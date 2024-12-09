@@ -10,6 +10,7 @@ import exerciseDaos from "../daos/exerciseDaos.js"
 import userDaos from "../daos/userDaos.js"
 import formatValue from "../utils/formatValue.js"
 import Courses from "../models/courseModel.js"
+import { COURSE_STATUS } from "../constants/course.js"
 
 //GET COURSE
 /*recommended course  */
@@ -182,7 +183,8 @@ const getInstructorCourses = async (instructorId, limit = 10, page = 1) => {
     pagination: {
       totalPages: totalPages,
       currentPage: page,
-      limitPerPage: limit
+      limitPerPage: limit,
+      totalCourses: totalCourses,
     }
   }
 }
@@ -266,12 +268,13 @@ const searchInstructorCourses = async (instructorId, query, limit, page) => {
   }
 
   // Calculate pagination
-  const totalCourses = await courseDaos.countNumberOfCourses({ courseInstructor: instructorId })
+  const totalCourses = await courseDaos.countNumberOfCourses(filter)
   const totalPages = Math.ceil(totalCourses / limit)
 
   return {
     data: transformedCourses,
     pagination: {
+      totalCourses: totalCourses,
       totalPages: totalPages,
       currentPage: page,
       limitPerPage: limit
@@ -299,6 +302,7 @@ const createNewCourse = async (instructorId, newCourseData) => {
     courseSlug: slugify(newCourseData.courseTitle.toLowerCase()),
     courseCategory: categories,
     courseInstructor: new mongoose.Types.ObjectId(instructorId),
+    courseStatus: COURSE_STATUS.DRAFT,
   }
   const newCourse = await courseDaos.createNewCourse(newCourseDocument)
 
@@ -326,20 +330,11 @@ const updateCourse = async (courseId, updateCourseData) => {
     categories.push(foundCategory._id)
   }
 
-  // Find course modules
-  const modules = []
-  for (let i = 0; i < updateCourseData.courseModules.length; i++) {
-    let foundModule = await moduleDaos.findModuleById(updateCourseData.courseModules[i])
-    if (!foundModule) throw new CustomError.NotFoundError("No module found!")
-    modules.push(foundModule._id)
-  }
-
   // Update course
   let updateCourseDocument = {
     ...updateCourseData,
     courseSlug: slugify(updateCourseData.courseTitle.toLowerCase()),
     courseCategory: categories,
-    courseModules: modules,
     courseInstructor: new mongoose.Types.ObjectId(foundCourse.courseInstructor),
   }
   const updatedCourse = await courseDaos.updateCourse(courseId, updateCourseDocument)
