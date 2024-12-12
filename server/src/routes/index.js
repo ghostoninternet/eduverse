@@ -8,6 +8,10 @@ import enrolledCourseRouter from './enrolledCourse.js'
 import userRouter from './user.js'
 import categoryRouter from './category.js'
 import uploadRouter from './upload.js'
+<<<<<<< HEAD
+=======
+import paymentRouter from './payment.js'
+>>>>>>> 0641170b64c5e5a0fafcd54dc8759daba7a182ae
 const router = express.Router()
 
 router.use('/auth', authRouter)
@@ -19,5 +23,6 @@ router.use('/enrolled-courses', enrolledCourseRouter)
 router.use('/user', userRouter)
 router.use('/category', categoryRouter)
 router.use('/upload', uploadRouter)
+router.use('/payment', paymentRouter)
 
 export default router

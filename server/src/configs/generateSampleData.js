@@ -116,7 +116,7 @@ export default async function generateSampleData() {
     for (let i = 0; i < 500; i++) {
       const rawPassword = faker.internet.password(); 
       const username = faker.person.fullName();
-      const email = `example-v${i}@gmail.com`;
+      const email = `example-user-v${i}@gmail.com`;
       fs.appendFileSync(userAccount, `Account: ${username}, ${email}, ${rawPassword}\n`);
       const user = await Users.create({
         username: username,
@@ -142,7 +142,7 @@ export default async function generateSampleData() {
     for (let i = 0; i < 10; i++) {
       const rawPassword = faker.internet.password(); 
       const username = faker.person.fullName();
-      const email = `example-v${i}@gmail.com`;
+      const email = `example-instructor-v${i}@gmail.com`;
       fs.appendFileSync(instructorAccount, `Account: ${username}, ${email}, ${rawPassword}\n`);
       const instructor = await Users.create({
         username: username,

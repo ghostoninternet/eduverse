@@ -1,5 +1,3 @@
-// 3. Update enrolled course
-
 import mongoose from "mongoose"
 import CustomError from "../errors/customError.js"
 import userDaos from "../daos/userDaos.js"

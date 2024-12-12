@@ -139,7 +139,6 @@ const CourseLearning = () => {
       rating: 0,
     });
   };
-
   if (!authState) {
     navigate("/signin");
     return null;
@@ -352,11 +351,14 @@ const CourseLearning = () => {
                     seenVideo={count}
                     currentVideoId={currentVideo?.videoId}
                     handleVideoClick={handleVideoClick}
+<<<<<<< HEAD
                     handleExerciseClick={(exerciseId) =>
                       handleExerciseClick(params.courseId, exerciseId)
                     }
                     exercises={module?.moduleExerciseProgress}
                     exerciseId={currentExercise?.exerciseId}
+=======
+>>>>>>> 0641170b64c5e5a0fafcd54dc8759daba7a182ae
                   />
                 );
               }
