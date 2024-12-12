@@ -1,31 +1,28 @@
-import express from "express";
-import mongoose from "mongoose";
-import bodyParser from "body-parser";
-import User from "./src/models/userModel.js"; //use for testing connection
-import "dotenv/config";
-import registerRoute from "./src/routes/auth/registerRoute.js";
-import loginRoute from "./src/routes/auth/loginRoute.js";
-import secretRoute from "./src/routes/secretRoute.js";
-const app = express();
+import express from "express"
+import ENV from "./src/configs/index.js"
+import DatabaseInit from "./src/configs/database.js"
+import router from "./src/routes/index.js"
+import errorHandler from "./src/middlewares/errorHandler.js"
+import cookieParser from "cookie-parser"
+import cors from 'cors'
+function Application() {
+  const app = express()
+  const PORT = ENV.PORT
+  app.use(express.urlencoded({extended: true}))
+  app.use('/api/payment/webhook', express.raw({ type: "*/*" }))
+  app.use(express.json())
+  app.use(cookieParser())
+  app.use(cors({
+    origin: 'http://localhost:5173', // Your client URL
+    credentials: true, // Allow credentials to be sent
+  }));
+  app.use('/api', router)
+  
+  app.use(errorHandler)
 
-//connect db
-try {
-  await mongoose.connect(process.env.URI);
-  console.log("MongoDB connected");
-} catch (error) {
-  res.send(error);
+  app.listen(PORT, () => {
+    console.log(`Server start on http://localhost:${PORT}`)
+  });
 }
 
-//test the connection
-// const result = await User.find({});
-// console.log(result);
-
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
-app.use("/", registerRoute);
-app.use("/", loginRoute);
-app.use("/", secretRoute);
-app.listen(8000, () => {
-  console.log("Server start on http://localhost:8000");
-});
+DatabaseInit(Application)
