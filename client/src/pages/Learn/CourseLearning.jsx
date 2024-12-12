@@ -55,37 +55,32 @@ const CourseLearning = () => {
     window.location.hash = "overview";
     setIsTab("Overview");
   };
-  const [update, setUpdate] = useState(true);
-  const handleProgressVideo = async (progress) => {
-    if (playedRef.current) {
+  const [update, setUpdate] = useState(true)
+  const handleProgressVideo = async(progress) => {
+    if(playedRef.current){
       const duration = playedRef.current.getDuration();
       const playedSeconds = progress.playedSeconds;
-      if (playedSeconds / duration > 0.99) {
+      if ( playedSeconds / duration > 0.99) {
         // Call the API to mark the video as completed
-        setUpdate(!update);
-        await updateEnrolledCourseVideoProgress(
-          authState?.user._id.toString(),
+        setUpdate(!update)
+       await updateEnrolledCourseVideoProgress(
+          authState?.user._id.toString(),      
           params.courseId,
           {
             moduleId: currentVideo?.moduleId,
-            videoTitle: currentVideo?.videoTitle,
+            videoTitle: currentVideo?.videoTitle
           }
-        );
+        )
       }
     }
-  };
+     
+}
   useEffect(() => {
     const fetchedEnrolledCourse = async () => {
       try {
-        const queryParams = new URLSearchParams(location.search);
-        const exerciseIdValue = queryParams.get("exercise");
-
         const response = await getEnrolledCourseList.getEnrolledCourseDetail(
           params.courseId
         );
-        const fetchedExercise = await getExerciseDetail(exerciseIdValue);
-        setQuizes(fetchedExercise);
-        setCurrentExercise({ exerciseId: exerciseIdValue });
         setEnrolledCourseDetail(response);
         for (let i = 0; i < response?.courseModulesProgress.length; i++) {
           const unfinishedVideo = response?.courseModulesProgress[
@@ -110,11 +105,10 @@ const CourseLearning = () => {
     };
 
     fetchedEnrolledCourse();
-  }, [params.courseId, update, location.search]);
+  }, [params.courseId, update]);
+
 
   const handleVideoClick = (videoTitle, moduleId, videoUrl, videoId) => {
-    navigate(location.pathname);
-    setDisplayType("video");
     setCurrentVideo({
       videoTitle: videoTitle,
       moduleId: moduleId,
@@ -123,15 +117,6 @@ const CourseLearning = () => {
       isPlaying: true,
     });
     videoRef.current.scrollIntoView({ behavior: "smooth" });
-  };
-  const handleStartClick = () => {
-    setIsReady(!isReady);
-  };
-  const handleExerciseClick = (courseId, exerciseId) => {
-    navigate(`/enrolledCourse/${courseId}?exercise=${exerciseId}`);
-    setIsReady(false);
-    setDisplayType("exercise");
-    exerciseRef.current.scrollIntoView({ behavior: "smooth" });
   };
   const handleCancelReview = () => {
     setNewReview({
@@ -162,28 +147,17 @@ const CourseLearning = () => {
           </h1>
         </div>
         {/* video player */}
-        {displayType === "video" ? (
-          <div className="flex justify-center bg-gray-600" ref={videoRef}>
-            <ReactPlayer
-              ref={playedRef}
-              url={currentVideo.videoUrl}
-              width="100%"
-              height={520}
-              playing={false}
-              controls
-              onProgress={handleProgressVideo}
-            />
-          </div>
-        ) : (
-          <div ref={exerciseRef}>
-            <ExerciseDetail
-              quizes={quizes.exerciseQuizes}
-              exerciseName={quizes.exerciseName}
-              isReady={isReady}
-              handleStartClick={handleStartClick}
-            />
-          </div>
-        )}
+        <div className="flex justify-center bg-gray-600" ref={videoRef}>
+          <ReactPlayer
+            ref={playedRef}
+            url={currentVideo.videoUrl}
+            width="100%"
+            height={520}
+            playing={false}
+            controls
+            onProgress={handleProgressVideo}
+          />
+        </div>
 
         {/* Overview + rating bar*/}
         <div className="flex border-b-2">
@@ -352,6 +326,7 @@ const CourseLearning = () => {
                     currentVideoId={currentVideo?.videoId}
                     handleVideoClick={handleVideoClick}
 <<<<<<< HEAD
+<<<<<<< HEAD
                     handleExerciseClick={(exerciseId) =>
                       handleExerciseClick(params.courseId, exerciseId)
                     }
@@ -359,6 +334,8 @@ const CourseLearning = () => {
                     exerciseId={currentExercise?.exerciseId}
 =======
 >>>>>>> 0641170b64c5e5a0fafcd54dc8759daba7a182ae
+=======
+>>>>>>> 0260a688f98c7a16ff7ae2764c6a2137a00f7fe3
                   />
                 );
               }

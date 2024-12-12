@@ -347,7 +347,7 @@ const Learn = () => {
           </div>
           <div className="w-2/3 flex flex-col gap-y-10 mb-10">
             <div className="text-xl">
-              Showing {(reviews?.pagination?.currentPage - 1) * queryParams + reviews?.data?.length}/
+              Showing {(reviews.pagination.currentPage - 1) * queryParams + reviews?.data?.length}/
               {courseDetail?.courseReviewCount}
             </div>
             {reviews?.data?.map((review) => (
