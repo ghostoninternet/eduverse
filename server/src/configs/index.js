@@ -10,6 +10,9 @@ const ENV = {
   'API_KEY': process.env.API_KEY,
   'API_SECRET': process.env.API_SECRET,
   'CLOUDINARY_URL': process.env.CLOUDINARY_URL,
+  'STRIPE_API_KEY': process.env.STRIPE_API_KEY,
+  'CLIENT_URL': process.env.CLIENT_URL,
+  'STRIPE_WEBHOOK_SECRET': process.env.STRIPE_WEBHOOK_SECRET,
 }
 
 export default ENV

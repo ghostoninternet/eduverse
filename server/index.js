@@ -1,4 +1,4 @@
-import express, { application } from "express"
+import express from "express"
 import ENV from "./src/configs/index.js"
 import DatabaseInit from "./src/configs/database.js"
 import router from "./src/routes/index.js"
