@@ -1,5 +1,3 @@
-// 3. Update enrolled course
-
 import mongoose from "mongoose"
 import CustomError from "../errors/customError.js"
 import userDaos from "../daos/userDaos.js"
@@ -104,7 +102,7 @@ const createNewEnrolledCourse = async (userId, courseId) => {
       isFinish: false,
       moduleVideoProgress: foundModule.moduleVideoLessons.map(moduleVideo => {
         return {
-          videoTitle: moduleVideo.videoTitle,
+          ...moduleVideo,
           isFinish: false
         }
       }),
