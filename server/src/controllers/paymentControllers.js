@@ -1,7 +1,7 @@
 import paymentServices from "../services/paymentServices.js"
 
 const createCheckoutSession = async (req, res, next) => {
-  const checkoutSession = await paymentServices.createCheckoutSession(req.params.courseId)
+  const checkoutSession = await paymentServices.createCheckoutSession(req.userId, req.params.courseId)
   res.status(200).json(checkoutSession)
 }
 
