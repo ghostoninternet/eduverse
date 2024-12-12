@@ -1,4 +1,5 @@
 import Stripe from "stripe"
+import mongoose from "mongoose"
 import ENV from "../configs/index.js"
 import courseDaos from "../daos/courseDaos.js"
 import CustomError from "../errors/customError.js"
@@ -8,7 +9,7 @@ import enrolledCourseService from "./enrolledCourseService.js"
 const stripe = new Stripe(ENV.STRIPE_API_KEY)
 const clientUrl = ENV.CLIENT_URL
 
-const createCheckoutSession = async (courseId) => {
+const createCheckoutSession = async (userId, courseId) => {
   const foundCourse = await courseDaos.findCourseById(courseId)
   if (!foundCourse) throw new CustomError.NotFoundError("No course found!")
   const amountInCents = Math.round(Number.parseFloat(foundCourse.coursePrice) * 100)
@@ -30,7 +31,8 @@ const createCheckoutSession = async (courseId) => {
     ],
     mode: 'payment',
     metadata: {
-      courseId: foundCourse._id
+      courseId: foundCourse._id.toString(),
+      userId: userId.toString(),
     },
     success_url: `${clientUrl}/payment?success=true`,
     cancel_url: `${clientUrl}/payment?cancelled=true`,
@@ -45,11 +47,12 @@ const handleStripeWebhook = async (request) => {
     const event = stripe.webhooks.constructEvent(request.body, signature, ENV.STRIPE_WEBHOOK_SECRET)
     if (event.type === "checkout.session.completed") {
       const courseId = event.data.object.metadata?.courseId
+      const userId = event.data.object.metadata?.userId
       const foundCourse = await courseDaos.findCourseById(courseId)
       if (!foundCourse) throw new NotFoundError("No course found!")
       const newPayment = {
-        userId: request.userId,
-        courseId: courseId,
+        userId: new mongoose.Types.ObjectId(userId),
+        courseId: new mongoose.Types.ObjectId(courseId),
         paymentPrice: foundCourse.coursePrice,
         paymentType: "CREDIT_CARD",
       }
