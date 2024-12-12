@@ -3,6 +3,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import Video from "./Video";
 import PropTypes from "prop-types";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import ExerciseBar from "./ExerciseBar";
 const Module = ({
   title,
   videos,
@@ -12,11 +13,14 @@ const Module = ({
   handleVideoClick,
   moduleId,
   currentVideoId,
+  handleExerciseClick,
+  exercises,
+  exerciseId
 }) => {
-  const [isHidden, setIsHidden] = useState(true)
+  const [isHidden, setIsHidden] = useState(true);
   const handleModuleClick = () => {
-    setIsHidden(!isHidden)
-  }
+    setIsHidden(!isHidden);
+  };
   return (
     <div className="border-y-2 cursor-pointer">
       <div
@@ -29,30 +33,48 @@ const Module = ({
           </p>
           <div className="flex gap-x-2">
             <p>
-             Completed {seenVideo} / {totalVideos} videos
+              Completed {seenVideo} / {totalVideos} videos
             </p>
             <p></p>
           </div>
         </div>
         <div>
-          {(isHidden) ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
+          {isHidden ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}
         </div>
       </div>
-      {(!isHidden) && (
-        <div className="">
-          {videos?.map((video, index) => (
-            <Video
-              index={index + 1}
-              key={video?._id}
-              title={video?.videoTitle}
-              isChecked={video?.isFinish}
-              onClick={() => 
-                handleVideoClick(video?.videoTitle, moduleId, video?.videoUrl, video?._id)
-              }
-              isPlaying={currentVideoId === video?._id}
-              videoLength={video?.videoLength}
-            />
-          ))}
+      {!isHidden && (
+        <div>
+          <div className="">
+            {videos?.map((video, index) => (
+              <Video
+                index={index + 1}
+                key={video?._id}
+                title={video?.videoTitle}
+                isChecked={video?.isFinish}
+                onClick={() =>
+                  handleVideoClick(
+                    video?.videoTitle,
+                    moduleId,
+                    video?.videoUrl,
+                    video?._id
+                  )
+                }
+                isPlaying={currentVideoId === video?._id}
+                videoLength={video?.videoLength}
+              />
+            ))}
+          </div>
+          <div>
+            {exercises?.map((exercise) => (
+              <ExerciseBar
+                key={exercise._id}
+                handleExerciseClick={() => handleExerciseClick(exercise.exerciseId)}
+                exerciseName={exercise.exerciseName}
+                exerciseDuration={exercise.exerciseDuration}
+                isPlaying={exerciseId == exercise.exerciseId}
+              />
+            ))}
+          </div>
         </div>
       )}
     </div>
@@ -68,7 +90,8 @@ Module.propTypes = {
   totalVideos: PropTypes.number,
   handleVideoClick: PropTypes.func,
   moduleId: PropTypes.string,
-  currentVideoId: PropTypes.string
+  currentVideoId: PropTypes.string,
+  exercises: PropTypes.array,
 };
 
 export default Module;
