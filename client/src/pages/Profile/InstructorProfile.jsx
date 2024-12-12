@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/authContext";
 import getUser from "../../apis/getUser";
 
-export const Infor = ({ title, description }) => {
+export const Infor = (props) => {
   return (
-    <div className="flex flex-col gap-y-4 border-2 p-6 bg-white rounded-md">
-      <h2 className="text-xl font-semibold">{title}</h2>
-      <p className="text-base">{description || "No details provided."}</p>
+    <div className="flex flex-col gap-y-4 w-5/6 border-2 p-6 bg-white rounded-md">
+      <h2 className="text-xl font-semibold">{props.title}</h2>
+      <p className="text-base">{props.description || "No details provided."}</p>
     </div>
   );
 };
@@ -57,21 +57,31 @@ const Profile = () => {
           <h2 className="text-2xl font-semibold">{authState.user.username}</h2>
           <p className="text-lg">{authState.user.email}</p>
         </div>
+<<<<<<< HEAD
        
+=======
+
+>>>>>>> 50344c4d1b9232480b7c573152d6f5cd3fe8f8b7
         <div className="w-2/3 mt-20 flex flex-col gap-y-10">
           {/* Personal Information Section */}
           <div className="flex flex-col gap-y-6">
             <h2 className="text-3xl font-semibold">Personal Information</h2>
+<<<<<<< HEAD
             <Infor title="Full Name" description={authState.user.fullName} />
+=======
+>>>>>>> 50344c4d1b9232480b7c573152d6f5cd3fe8f8b7
             <Infor title="Email" description={authState.user.email} />
             <Infor
               title="Location"
               description={authState.user.location || "Unknown"}
             />
+<<<<<<< HEAD
             <Infor
               title="Bio"
               description={authState.user.bio || "No bio provided."}
             />
+=======
+>>>>>>> 50344c4d1b9232480b7c573152d6f5cd3fe8f8b7
           </div>
 
           {/* Professional Section */}
@@ -89,7 +99,11 @@ const Profile = () => {
             />
           </div>
 
+<<<<<<< HEAD
           {/* Social Media Section */}
+=======
+          {/* Social Media Section
+>>>>>>> 50344c4d1b9232480b7c573152d6f5cd3fe8f8b7
           <div className="flex flex-col gap-y-6">
             <h2 className="text-3xl font-semibold">Social Media</h2>
             <Infor
@@ -102,7 +116,11 @@ const Profile = () => {
               title="GitHub"
               description={authState.user.github || "No GitHub profile linked."}
             />
+<<<<<<< HEAD
           </div>
+=======
+          </div> */}
+>>>>>>> 50344c4d1b9232480b7c573152d6f5cd3fe8f8b7
         </div>
       </div>
     </div>
