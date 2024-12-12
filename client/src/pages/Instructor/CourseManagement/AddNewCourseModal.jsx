@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState } from 'react'
-import MultiSelectDropdown from '../../Input/MultiSelectDropdown ';
+import MultiSelectDropdown from '../../../components/Input/MultiSelectDropdown ';
 import uploadImage from '../../../apis/upload';
 
 function AddNewCourseModal({
@@ -40,7 +40,7 @@ function AddNewCourseModal({
         formData.append('image', e.target.files[0]);
         const response = await uploadImage(formData);
         const courseImgUrl = response.data;
-        setNewCourseData({...newCourseData, courseImgUrl: courseImgUrl });
+        setNewCourseData({ ...newCourseData, courseImgUrl: courseImgUrl });
       } catch (error) {
         console.log(error);
       }
@@ -73,7 +73,7 @@ function AddNewCourseModal({
             <input
               value={newCourseData.courseTitle}
               onChange={(e) => {
-                setNewCourseData({...newCourseData, courseTitle: e.target.value})
+                setNewCourseData({ ...newCourseData, courseTitle: e.target.value })
               }}
               placeholder='Enter course title'
               className="w-3/5 border-2 px-2 py-1 border-black rounded-xl"
@@ -84,7 +84,7 @@ function AddNewCourseModal({
             <textarea
               value={newCourseData.courseDescription}
               onChange={(e) => {
-                setNewCourseData({...newCourseData, courseDescription: e.target.value})
+                setNewCourseData({ ...newCourseData, courseDescription: e.target.value })
               }}
               placeholder='Enter course description'
               className="w-3/5 border-2 px-2 py-1 border-black rounded-xl"
@@ -108,7 +108,7 @@ function AddNewCourseModal({
             <input
               value={newCourseData.coursePrice}
               onChange={(e) => {
-                setNewCourseData({...newCourseData, coursePrice: e.target.value})
+                setNewCourseData({ ...newCourseData, coursePrice: e.target.value })
               }}
               placeholder='Enter the price'
               className="w-3/5 border-2 px-2 py-1 border-black rounded-xl"
