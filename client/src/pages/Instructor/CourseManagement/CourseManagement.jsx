@@ -1,10 +1,10 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react"
 import Table from "../../../components/Tables/Table"
-import AddNewCourseModal from "../../../components/Modals/Courses/AddNewCourseModal"
+import AddNewCourseModal from "./AddNewCourseModal"
 import { COURSE_MANAGEMENT_TABLE_HEADER } from "../../../constants/course"
 import DeleteConfirmModal from "../../../components/Modals/Confirmation/DeleteConfirmModal"
-import CourseDetailModal from "../../../components/Modals/Courses/CourseDetailModal"
+import CourseDetailModal from "./CourseDetailModal"
 import { createNewCourse, deleteCourse, editCourse, getInstructorCourse, searchInstructorCourse } from "../../../apis/course/instructorCourse"
 import Spinner from "../../../components/Spinner/Spinner"
 import { getCategory } from "../../../apis/category"
