@@ -38,6 +38,8 @@ const getEnrolledCourseDetail = async (userId, courseId) => {
         'updatedAt',
       ])
       exercises.push(foundExercise)
+      enrolledCourse.courseModulesProgress[i].moduleExerciseProgress[j].exerciseName = foundExercise.exerciseName
+      enrolledCourse.courseModulesProgress[i].moduleExerciseProgress[j].exerciseDuration = foundExercise.exerciseDuration
     }
 
     foundModule.moduleExercises = exercises
