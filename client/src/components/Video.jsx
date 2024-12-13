@@ -23,5 +23,6 @@ Video.propTypes = {
   isChecked: PropTypes.bool,
   onClick: PropTypes.func,
   videoLength: PropTypes.number,
+  isPlaying: PropTypes.bool
 };
 export default Video
