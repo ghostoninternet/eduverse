@@ -4,6 +4,7 @@ import userDaos from "../daos/userDaos.js"
 import CustomError from "../errors/customError.js"
 import formatValue from "../utils/formatValue.js"
 import includeObjectKeys from "../utils/includeObjectKeys.js"
+import mongoose from "mongoose";
 
 const recalculateRatingAvg = async (courseId, course) => {
   const allReviews = await reviewDaos.findAllCourseReviews(courseId)
@@ -176,11 +177,17 @@ const getCourseReviews = async (courseSlug, limit, page) => {
 
 const createCourseReview = async (userId, newReviewData) => {
   // Check course exist
+  const courseId = mongoose.Types.ObjectId.isValid(newReviewData.courseId)
+    ? newReviewData.courseId
+    : null;
+
+  if (!courseId) {
+    throw new CustomError.BadRequestError("Invalid courseId!");
+  }
   const foundCourse = await courseDaos.findCourseById(newReviewData.courseId)
   if (!foundCourse) {
     throw new CustomError.NotFoundError("No course found!")
   }
-
   // Create new review document to insert to MongoDB
   const newReviewDocument = {
     ...newReviewData,
@@ -189,19 +196,17 @@ const createCourseReview = async (userId, newReviewData) => {
   const newReview = await reviewDaos.createCourseReview(newReviewDocument)
 
   // Recalculate rating average and update number of reviews
-  await recalculateRatingAvg(foundCourse._id, foundCourse)
+  //await recalculateRatingAvg(foundCourse._id, foundCourse)
 
   // Find user info
   let foundUser = await userDaos.findOneUser({ _id: newReview.userId })
   if (foundUser) {
-    foundUser = includeObjectKeys(foundUser, [
-      'username',
-      'avatarUrl',
-    ])
-    newReview.userId = foundUser
+    foundUser = {
+      username: foundUser.username,
+      avatarUrl: foundUser.avatarUrl,
+    };
+    newReview.userId = foundUser;
   }
-
-  return newReview
 }
 
 const updateCourseReview = async (reviewId, userId, updateCourseReviewData) => {
