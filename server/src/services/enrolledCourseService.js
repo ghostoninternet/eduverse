@@ -227,9 +227,9 @@ const updateEnrolledCourseExerciseProgress = async (userId, courseId, updateData
   if (!foundEnrolledCourse) throw new CustomError.NotFoundError("No enrolled course found!")
 
   foundEnrolledCourse.courseModulesProgress = foundEnrolledCourse.courseModulesProgress.map(moduleProgress => {
-    if (moduleProgress.moduleId == new mongoose.Types.ObjectId(updateData.moduleId)) {
+    if (moduleProgress.moduleId.equals(updateData.moduleId)) {
       moduleProgress.moduleExerciseProgress = moduleProgress.moduleExerciseProgress.map(exerciseProgress => {
-        if (exerciseProgress.exerciseId == new mongoose.Types.ObjectId(updateData.exerciseId)) {
+        if (exerciseProgress.exerciseId.equals(updateData.exerciseId)) {
           exerciseProgress.userScore = updateData.userScore
           exerciseProgress.hasPassed = updateData.hasPassed
           exerciseProgress.previousSubmitDate = new Date()
