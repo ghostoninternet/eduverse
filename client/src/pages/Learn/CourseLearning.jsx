@@ -126,6 +126,7 @@ const CourseLearning = () => {
     videoRef.current.scrollIntoView({ behavior: "smooth" });
   };
   const handleStartClick = () => {
+    setIsSubmitted(false)
     setIsReady(!isReady);
   };
   const handleExerciseClick = (courseId, exerciseId) => {
@@ -155,7 +156,7 @@ const CourseLearning = () => {
       setNewReview({ content: "", rating: 0 });
 
       const updatedReviews = await getCourseReview(enrolledCoursesDetail.slug, 1);
-      setReviews(updatedReviews);
+      setNewReview(updatedReviews);
 
       alert("Review submitted successfully!");
     } catch (error) {
@@ -169,11 +170,17 @@ const CourseLearning = () => {
       rating: 0,
     });
   };
-
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const handleSubmitAnswer = () => {
+    setIsSubmitted(true);
+  };
+  
   if (!authState) {
     navigate("/signin");
     return null;
   }
+
+  
 
   return (
     <div className="flex">
@@ -212,6 +219,8 @@ const CourseLearning = () => {
               exerciseName={quizes.exerciseName}
               isReady={isReady}
               handleStartClick={handleStartClick}
+              handleSubmitAnswer={handleSubmitAnswer}
+              isSubmitted={isSubmitted}
             />
           </div>
         )}
