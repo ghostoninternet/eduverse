@@ -11,6 +11,8 @@ import { useNavigate } from "react-router";
 import updateEnrolledCourseVideoProgress from "../../apis/enrolled-course/updateEnrolledCourseVideoProgress";
 import ExerciseDetail from "../../components/ExerciseDetail";
 import getExerciseDetail from "../../apis/exercise/getExerciseDetail";
+import createCourseReview from "../../apis/review/createCourseReview";
+
 const CourseLearning = () => {
   let location = useLocation();
   let params = useParams();
@@ -83,6 +85,7 @@ const CourseLearning = () => {
         const response = await getEnrolledCourseList.getEnrolledCourseDetail(
           params.courseId
         );
+        console.log("Enrolled Course Detail:", response); // Kiểm tra dữ liệu được trả về
         const fetchedExercise = await getExerciseDetail(exerciseIdValue);
         setQuizes(fetchedExercise);
         setCurrentExercise({ exerciseId: exerciseIdValue });
@@ -133,6 +136,38 @@ const CourseLearning = () => {
     setDisplayType("exercise");
     exerciseRef.current.scrollIntoView({ behavior: "smooth" });
   };
+
+  const handleSubmitReview = async () => {
+    if (!newReview.content || newReview.rating === 0) {
+      alert("Please provide both content and a rating.");
+      return;
+    }
+    console.log("Sending courseId:", enrolledCoursesDetail._id);
+    const reviewData = {
+      courseId: enrolledCoursesDetail.courseId, // ID khóa học
+      reviewContent: newReview.content,
+      ratingStar: newReview.rating,
+    };
+  
+    try {
+      const response = await createCourseReview(authState.user._id, reviewData); // Gửi review đến backend
+      console.log("Review created:", response);
+  
+      // Reset form sau khi gửi thành công
+      setNewReview({ content: "", rating: 0 });
+  
+      // Reload danh sách review nếu cần
+      const updatedReviews = await getCourseReview(enrolledCoursesDetail.slug, 1);
+      setReviews(updatedReviews);
+  
+      alert("Review submitted successfully!");
+    } catch (error) {
+      console.error("Failed to submit review:", error);
+      alert("Failed to submit review. Please try again.");
+    }
+  };
+  
+  
   const handleCancelReview = () => {
     setNewReview({
       content: "",
@@ -303,7 +338,7 @@ const CourseLearning = () => {
                     Cancel
                   </button>
                   <button
-                    // onClick={handleSubmitReview}
+                    onClick={handleSubmitReview}
                     className="px-4 text-xl py-2 bg-green-500 text-white rounded-md"
                   >
                     Submit
@@ -313,7 +348,7 @@ const CourseLearning = () => {
                 <div className="flex justify-end gap-4">
                   <button
                     disabled
-                    // onClick={handleSubmitReview}
+                    onClick={handleSubmitReview}
                     className="px-4 text-xl py-2 bg-gray-500 text-white rounded-md"
                   >
                     Submit
