@@ -65,17 +65,10 @@ const Profile = () => {
           <div className="flex flex-col gap-y-6">
             <h2 className="text-3xl font-semibold">Personal Information</h2>
 
-            <Infor title="Full Name" description={authState.user.fullName} />
-
             <Infor title="Email" description={authState.user.email} />
             <Infor
               title="Location"
               description={authState.user.location || "Unknown"}
-            />
-
-            <Infor
-              title="Bio"
-              description={authState.user.bio || "No bio provided."}
             />
 
           </div>

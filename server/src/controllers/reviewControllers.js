@@ -1,4 +1,5 @@
 import reviewServices from "../services/reviewServices.js"
+import mongoose from "mongoose";
 
 const getInstructorCourseReview = async (req, res, next) => {
   const { courseId } = req.params
@@ -14,11 +15,32 @@ const getCourseReviews = async (req, res, next) => {
   res.status(200).json(courseReviews)
 }
 
-const createCourseReview = async (req, res, next) => {
-  const { userId } = req.userId
-  const newCourseReview = await reviewServices.createCourseReview(userId, req.body)
-  res.status(200).json(newCourseReview)
-}
+const createCourseReview = async (req, res) => {
+  try {
+    const { userId } = req.query;
+    const { courseId, reviewContent, ratingStar } = req.body;
+
+    console.log("Received userId:", userId);
+    console.log("Received body:", req.body);
+
+    if (!userId || !courseId || !reviewContent || !ratingStar) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    // Kiểm tra courseId hợp lệ
+    if (!mongoose.Types.ObjectId.isValid(courseId)) {
+      return res.status(400).json({ message: "Invalid courseId!" });
+    }
+
+    const newReviewData = { courseId, reviewContent, ratingStar };
+    const savedReview = await reviewServices.createCourseReview(userId, newReviewData);
+
+    res.status(201).json(savedReview);
+  } catch (error) {
+    console.error("Error creating review:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
 
 const updateCourseReview = async (req, res, next) => {
   const { reviewId } = req.params
