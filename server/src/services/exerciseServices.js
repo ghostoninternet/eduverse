@@ -40,11 +40,11 @@ const getExerciseDetail = async (exerciseId) => {
   if (!foundExercise) throw new CustomError.NotFoundError("No exercise found!")
 
   let foundModule = await moduleDaos.findModuleById(foundExercise.exerciseModule)
-  if (foundModule) {
-    foundExercise.exerciseModule = foundModule.moduleTitle
-  } else {
-    foundExercise.exerciseModule = null
-  }
+  // if (foundModule) {
+  //   foundExercise.exerciseModule = foundModule.moduleTitle
+  // } else {
+  //   foundExercise.exerciseModule = null
+  // }
 
   return excludeObjectKeys(foundExercise, [
     'exerciseInstructor',

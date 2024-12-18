@@ -29,7 +29,7 @@ const updateEnrolledCourseExerciseProgress = async (req, res, next) => {
 }
 
 const deleteEnrolledCourse = async (req, res, next) => {
-  const { userId } = req.userId
+  const { userId } = req
   const { courseId } = req.params
   const deletedResult = await enrolledCourseService.deleteEnrolledCourse(userId, courseId)
   res.status(200).json({

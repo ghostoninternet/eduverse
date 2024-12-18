@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import Video from "./Video";
 import PropTypes from "prop-types";
@@ -70,8 +70,9 @@ const Module = ({
                 key={exercise._id}
                 handleExerciseClick={() => handleExerciseClick(exercise.exerciseId)}
                 exerciseName={exercise.exerciseName}
-                exerciseDuration={exercise.exerciseDuration}
                 isPlaying={exerciseId == exercise.exerciseId}
+                latestSubmitDate={exercise?.previousSubmitDate}
+                isChecked={exercise?.hasPassed}
               />
             ))}
           </div>
@@ -92,6 +93,8 @@ Module.propTypes = {
   moduleId: PropTypes.string,
   currentVideoId: PropTypes.string,
   exercises: PropTypes.array,
+  handleExerciseClick: PropTypes.func,
+  exerciseId: PropTypes.string,
 };
 
 export default Module;
