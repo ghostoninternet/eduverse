@@ -9,7 +9,6 @@ import moduleDaos from "../daos/moduleDaos.js"
 import exerciseDaos from "../daos/exerciseDaos.js"
 import userDaos from "../daos/userDaos.js"
 import formatValue from "../utils/formatValue.js"
-import Courses from "../models/courseModel.js"
 import { COURSE_STATUS } from "../constants/course.js"
 
 //GET COURSE
@@ -31,8 +30,26 @@ const getMostPopularCourses = async (categoryId) => {
   return result
 }
 
+const getAllInstructorCourseTitles = async (instructorId) => {
+  const allCourses = await courseDaos.findAllCourses({
+    courseInstructor: new mongoose.Types.ObjectId(instructorId),
+  })
+  const courseTitles = []
+  for (let i = 0; i < allCourses.length; i++) {
+    courseTitles.push({
+      courseTitle: allCourses[i].courseTitle,
+      courseId: allCourses[i]._id,
+    })
+  }
+  return courseTitles
+}
+
 const getCourseDetail = async (courseSlug) => {
-  let foundCourse = await courseDaos.findCourseBySlug(courseSlug)
+  const filter = {
+    courseSlug: courseSlug,
+    courseStatus: COURSE_STATUS.PUBLIC,
+  }
+  let foundCourse = await courseDaos.findCourseBySlug(filter)
   if (!foundCourse) {
     return {}
   }
@@ -93,7 +110,7 @@ const searchCourses = async (queryParams, limit, page) => {
   let { query, courseCategory } = queryParams
 
   let filter = {
-    $text: { $search: query },
+    $text: { $search: `"${query}"` },
   }
 
   if (courseCategory) {
@@ -101,13 +118,17 @@ const searchCourses = async (queryParams, limit, page) => {
       courseCategory = [courseCategory]
     }
 
-    const categoryIds = await Promise.all(
-      courseCategory.map(async (category) => await categoryDaos.findCategoryByName(category).then(data => data._id))
-    )
+    const categoryIds = []
+    for (let i = 0; i < courseCategory.length; i++) {
+      const foundCategory = await categoryDaos.findCategoryByName(courseCategory[i])
+      if (foundCategory) categoryIds.push(foundCategory._id)
+    }
 
     filter = {
       ...filter,
       courseCategory: { $in: categoryIds },
+      courseStatus: COURSE_STATUS.PUBLIC,
+      isDeleted: false,
     }
   }
 
@@ -164,6 +185,7 @@ const getInstructorCourses = async (instructorId, limit = 10, page = 1) => {
 
     // Exclude unnecessary keys from found course
     const transformedCourse = excludeObjectKeys(foundCourses[i], [
+      'courseDescription',
       'courseInstructor',
       'courseImgUrl',
       'courseModules',
@@ -235,12 +257,20 @@ const getInstructorCourseDetail = async (courseId) => {
 
 const searchInstructorCourses = async (instructorId, query, limit, page) => {
   let filter = {
-    $text: { $search: query },
+    $text: { $search: `"${query}"` },
     courseInstructor: new mongoose.Types.ObjectId(instructorId)
   }
 
-  let foundCourses = await courseDaos.findCourses(filter, limit, page)
-  if (foundCourses.length == 0) return []
+  let foundCourses = await courseDaos.findCourses(filter, limit, page);
+  if (foundCourses.length === 0) return {
+    data: [],
+    pagination: {
+      totalCourses: 0,
+      totalPages: 0,
+      currentPage: page,
+      limitPerPage: limit
+    }
+  };
 
   // Populate data of course category and exclude unnecessary fields.
   const transformedCourses = []
@@ -257,6 +287,7 @@ const searchInstructorCourses = async (instructorId, query, limit, page) => {
 
     // Exclude unnecessary keys from found course
     const transformedCourse = excludeObjectKeys(foundCourses[i], [
+      'courseDescription',
       'courseInstructor',
       'courseImgUrl',
       'courseModules',
@@ -285,7 +316,10 @@ const searchInstructorCourses = async (instructorId, query, limit, page) => {
 const createNewCourse = async (instructorId, newCourseData) => {
   // Check course availability
   const { courseTitle } = newCourseData
-  const foundCourse = await courseDaos.findOneCourse({ courseTitle: courseTitle })
+  const foundCourse = await courseDaos.findOneCourse({
+    courseTitle: courseTitle,
+    courseInstructor: new mongoose.Types.ObjectId(instructorId)
+  })
   if (foundCourse) throw new CustomError.BadRequestError("There's already a course with the same name")
 
   // Get course category IDs
@@ -383,6 +417,7 @@ const deleteCourse = async (courseId) => {
 }
 
 export default {
+  getAllInstructorCourseTitles,
   getCourseDetail,
   searchCourses,
   getFreeCourses,

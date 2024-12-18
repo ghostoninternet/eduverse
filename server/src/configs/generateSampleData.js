@@ -11,6 +11,7 @@ import Payments from '../models/paymentModel.js';
 import Reviews from '../models/reviewModel.js';
 import Users from '../models/userModel.js';
 import fs from 'fs'
+import { USER_GENDER, USER_ROLE } from '../constants/user.js';
 
 const getRandomElement = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
@@ -122,13 +123,13 @@ export default async function generateSampleData() {
         username: username,
         email: email,
         password: await bcrypt.hash(rawPassword, 10),
-        gender: getRandomElement(["Male", "Female"]),
+        gender: getRandomElement([USER_GENDER.MALE, USER_GENDER.FEMALE]),
         avatarUrl: faker.image.avatar(),
         location: faker.location.city() + ", " + faker.location.country(),
         jobTitle: faker.person.jobTitle(),
         organization: faker.company.name(),
         enrolledCourses: [],
-        role: 'user',
+        role: USER_ROLE.USER,
       });
       users.push(user._id)
     }
@@ -148,13 +149,13 @@ export default async function generateSampleData() {
         username: username,
         email: email,
         password: await bcrypt.hash(rawPassword, 10),
-        gender: getRandomElement(["Male", "Female"]),
+        gender: getRandomElement([USER_GENDER.MALE, USER_GENDER.FEMALE]),
         avatarUrl: faker.image.avatar(),
         location: faker.location.city() + ", " + faker.location.country(),
         jobTitle: faker.person.jobTitle(),
         organization: faker.company.name(),
         enrolledCourses: [],
-        role: 'instructor',
+        role: USER_ROLE.INSTRUCTOR,
       });
       instructors.push(instructor._id)
     }

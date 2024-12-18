@@ -1,7 +1,20 @@
 import Modules from "../models/moduleModel.js"
+import CustomError from "../errors/customError.js"
+
+const findAllModules = async (filter) => {
+  return await Modules.find(filter)
+    .lean()
+    .then(data => data)
+    .catch(err => {
+      console.log(err)
+      throw new CustomError.DatabaseError()
+    })
+}
 
 const findModules = async (filter = {}, limit = 10, page = 1) => {
-  return await Modules.find(filter).skip((page - 1) * limit).limit(limit)
+  return await Modules.find(filter)
+    .skip((page - 1) * limit).limit(limit)
+    .lean()
     .then(data => data)
     .catch(err => {
       console.log(err)
@@ -11,6 +24,15 @@ const findModules = async (filter = {}, limit = 10, page = 1) => {
 
 const findModuleById = async (moduleId) => {
   return await Modules.findById(moduleId).lean()
+    .then(data => data)
+    .catch(err => {
+      console.log(err)
+      throw new CustomError.DatabaseError()
+    })
+}
+
+const findOneModule = async (filter={}) => {
+  return await Modules.findOne(filter).lean()
     .then(data => data)
     .catch(err => {
       console.log(err)
@@ -28,7 +50,7 @@ const countNumberOfModule = async (filter) => {
 }
 
 const findModuleByInstructor = async (instructorId, limit = 10, page = 1) => {
-  return await Modules.find({ moduleInstructor: instructorId }).skip((page - 1) * limit).limit(limit)
+  return await Modules.find({ moduleInstructor: instructorId }).skip((page - 1) * limit).limit(limit).lean()
     .then(data => data)
     .catch(err => {
       console.log(err)
@@ -38,7 +60,7 @@ const findModuleByInstructor = async (instructorId, limit = 10, page = 1) => {
 
 const createNewModule = async (newModuleDocument) => {
   return await Modules.create(newModuleDocument)
-    .then(data => data)
+    .then(data => data.toObject())
     .catch(err => {
       console.log(err)
       throw new CustomError.DatabaseError()
@@ -51,7 +73,7 @@ const updateModule = async (moduleId, updateModuleDocument) => {
     updateModuleDocument,
     { new: true }
   )
-    .then(data => data)
+    .then(data => data.toObject())
     .catch(err => {
       console.log(err)
       throw new CustomError.DatabaseError()
@@ -68,9 +90,11 @@ const deleteModuleById = async (moduleId) => {
 }
 
 export default {
+  findAllModules,
   findModules,
   findModuleById,
   findModuleByInstructor,
+  findOneModule,
   countNumberOfModule,
   createNewModule,
   updateModule,

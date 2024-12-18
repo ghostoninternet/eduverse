@@ -1,10 +1,15 @@
 import Courses from "../models/courseModel.js";
 import CustomError from "../errors/customError.js";
+import { COURSE_STATUS } from "../constants/course.js";
 const findRecommendedCourses = async (categoryId) => {
   if (categoryId) {
     return await Courses.aggregate([
       {
-        $match: { courseCategory: { $all: [categoryId] } },
+        $match: {
+          courseCategory: { $all: [categoryId] },
+          courseStatus: COURSE_STATUS.PUBLIC,
+          isDeleted: false,
+        },
       },
       {
         $sort: { courseRatingAvg: -1 }, //-1: sort descending
@@ -28,6 +33,12 @@ const findRecommendedCourses = async (categoryId) => {
     ]);
   } else {
     return await Courses.aggregate([
+      {
+        $match: {
+          courseStatus: COURSE_STATUS.PUBLIC,
+          isDeleted: false,
+        }
+      },
       {
         $sort: { courseRatingAvg: -1 }, //-1: sort descending
       },
@@ -55,7 +66,12 @@ const findFreeCourses = async (categoryId) => {
   if (categoryId) {
     return await Courses.aggregate([
       {
-        $match: { courseCategory: { $all: [categoryId] }, coursePrice: 0 },
+        $match: {
+          courseCategory: { $all: [categoryId] },
+          coursePrice: 0,
+          courseStatus: COURSE_STATUS.PUBLIC,
+          isDeleted: false,
+        },
       },
       {
         $sort: { courseRatingAvg: -1 },
@@ -79,7 +95,11 @@ const findFreeCourses = async (categoryId) => {
   } else {
     return await Courses.aggregate([
       {
-        $match: { coursePrice: 0 },
+        $match: {
+          coursePrice: 0,
+          courseStatus: COURSE_STATUS.PUBLIC,
+          isDeleted: false,
+        },
       },
       {
         $sort: { courseRatingAvg: -1 },
@@ -107,7 +127,11 @@ const findMostPopularCourses = async (categoryId) => {
   if (categoryId) {
     return await Courses.aggregate([
       {
-        $match: { courseCategory: { $all: [categoryId] } },
+        $match: {
+          courseCategory: { $all: [categoryId] },
+          courseStatus: COURSE_STATUS.PUBLIC,
+          isDeleted: false,
+        },
       },
       {
         $sort: { courseLearnerCount: -1 }, //sort by descending
@@ -130,6 +154,12 @@ const findMostPopularCourses = async (categoryId) => {
     ]);
   } else {
     return await Courses.aggregate([
+      {
+        $match: {
+          courseStatus: COURSE_STATUS.PUBLIC,
+          isDeleted: false,
+        },
+      },
       {
         $sort: { courseLearnerCount: -1 }, //sort by descending
       },
@@ -170,6 +200,15 @@ const findOneCourse = async (filter = {}) => {
     });
 };
 
+const findAllCourses = async (filter={}) => {
+  return await Courses.find(filter).lean()
+    .then((data) => data)
+    .catch((err) => {
+      console.log(err);
+      throw new CustomError.DatabaseError();
+    });
+}
+
 const findCourses = async (filter = {}, limit = 12, page = 1) => {
   return await Courses.find(filter)
     .skip((page - 1) * limit)
@@ -182,8 +221,8 @@ const findCourses = async (filter = {}, limit = 12, page = 1) => {
     });
 };
 
-const findCourseBySlug = async (courseSlug) => {
-  return await Courses.findOne({courseSlug: courseSlug}).lean()
+const findCourseBySlug = async (filter) => {
+  return await Courses.findOne(filter).lean()
     .then((data) => data)
     .catch((err) => {
       console.log(err);
@@ -240,5 +279,6 @@ export default {
   createNewCourse,
   updateCourse,
   deleteCourse,
-  findCourseBySlug
+  findCourseBySlug,
+  findAllCourses,
 };

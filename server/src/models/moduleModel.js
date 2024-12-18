@@ -40,6 +40,8 @@ const moduleSchema = new Schema({
   timestamps: true
 });
 
+moduleSchema.index({ moduleTitle: 1 })
+
 const Modules = mongoose.model("Modules", moduleSchema);
 
 export default Modules;
