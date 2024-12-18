@@ -56,14 +56,18 @@ const searchCourses = async (req, res, next) => {
   res.status(200).json(searchRequest)
 }
 
-// Note: All code below are using userId in query params. I know this approach is not appropriate
-// but for testing purpose, I will just leave it here. Next week when we enhance the project, I will
-// move this to another place.
+
 const getInstructorCourses = async (req, res, next) => {
-  const { userId, limit, page } = req.query
-  // const { userId } = req.userId
+  const { limit, page } = req.query
+  const { userId } = req.user
   const foundCourses = await courseServices.getInstructorCourses(userId, limit, page)
   res.status(200).json(foundCourses)
+}
+
+const getAllInstructorCourseTitles = async (req, res, next) => {
+  const { userId } = req.user
+  const foundCourseTitles = await courseServices.getAllInstructorCourseTitles(userId)
+  res.status(200).json(foundCourseTitles)
 }
 
 const getInstructorCourseDetail = async (req, res, next) => {
@@ -73,15 +77,14 @@ const getInstructorCourseDetail = async (req, res, next) => {
 }
 
 const searchInstructorCourses = async (req, res, next) => {
-  const { userId, query, limit, page } = req.query
-  // const { userId } = req.params
+  const { query, limit, page } = req.query
+  const { userId } = req.user
   const foundCourses = await courseServices.searchInstructorCourses(userId, query, limit, page)
   res.status(200).json(foundCourses)
 }
 
 const createNewCourse = async (req, res, next) => {
-  const { userId } = req.query
-  // const { userId } = req.params
+  const { userId } = req.user
   const newCourse = await courseServices.createNewCourse(userId, req.body)
   res.status(200).json(newCourse) 
 }
@@ -105,6 +108,7 @@ export default {
   getRecommendedCourses,
   getFreeCourses,
   getMostPopularCourses,
+  getAllInstructorCourseTitles,
   getCourseDetail,
   getInstructorCourses,
   getInstructorCourseDetail,

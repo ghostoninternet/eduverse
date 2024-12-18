@@ -1,13 +1,15 @@
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
 import CustomError from '../errors/customError.js'
 import generateToken from "../utils/generateToken.js"
 import userDaos from "../daos/userDaos.js"
 import ENV from "../configs/index.js"
-import jwt from 'jsonwebtoken'
+import excludeObjectKeys from '../utils/excludeObjectKeys.js'
+import { ACCESS_TOKEN_EXPIRE, REFRESH_TOKEN_EXPIRE } from '../constants/authenticate.js'
 const ACCESS_TOKEN_SECRET_KEY = ENV.AT_SECRET_KEY
 const REFRESH_TOKEN_SECRET_KEY = ENV.RT_SECRET_KEY
 
-const register = async ({ username, email, password, avatarUrl }) => {
+const register = async ({ username, email, password, role }) => {
   const foundUser = await userDaos.findOneUser({ email: email })
   if (foundUser) throw new CustomError.UserAlreadyExistError()
 
@@ -17,22 +19,21 @@ const register = async ({ username, email, password, avatarUrl }) => {
     password: hashPassword,
     username: username,
     avatarUrl: "https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg",
-    isActive: true
+    role: role,
   }
-
   const newUser = await userDaos.createNewUser(userDocument)
 
   const payload = {
     userId: newUser._id,
     email: newUser.email,
     username: newUser.username,
+    role: newUser.role,
   }
-
-  const accessToken = generateToken(payload, ACCESS_TOKEN_SECRET_KEY, "1h")
-  const refreshToken = generateToken(payload, REFRESH_TOKEN_SECRET_KEY, "7d")
+  const accessToken = generateToken(payload, ACCESS_TOKEN_SECRET_KEY, ACCESS_TOKEN_EXPIRE)
+  const refreshToken = generateToken(payload, REFRESH_TOKEN_SECRET_KEY, REFRESH_TOKEN_EXPIRE)
 
   return {
-    user: newUser,
+    user: excludeObjectKeys(newUser, ['password', '__v']),
     accessToken,
     refreshToken
   }
@@ -45,20 +46,19 @@ const login = async ({ email, password }) => {
   const compareResult = await bcrypt.compare(password, foundUser.password)
   if (!compareResult) throw new CustomError.BadRequestError("Password is incorrect!")
 
+
   const payload = {
     userId: foundUser._id,
     email: foundUser.email,
     username: foundUser.username,
-    gender: foundUser.gender,
-    avatarUrl: foundUser.avatarUrl,
-    location: foundUser.location,
+    role: foundUser.role,
   }
 
-  const accessToken = generateToken(payload, ACCESS_TOKEN_SECRET_KEY, "1h")
-  const refreshToken = generateToken(payload, REFRESH_TOKEN_SECRET_KEY, "7d")
+  const accessToken = generateToken(payload, ACCESS_TOKEN_SECRET_KEY, ACCESS_TOKEN_EXPIRE)
+  const refreshToken = generateToken(payload, REFRESH_TOKEN_SECRET_KEY, REFRESH_TOKEN_EXPIRE)
 
   return {
-    user: foundUser,
+    user: excludeObjectKeys(foundUser, ['password', '__v']),
     accessToken,
     refreshToken
   }
@@ -76,16 +76,13 @@ const refreshToken = async (refreshToken) => {
       userId: foundUser._id,
       email: foundUser.email,
       username: foundUser.username,
-      gender: foundUser.gender,
-      avatarUrl: foundUser.avatarUrl,
-      location: foundUser.location,
+      role: foundUser.role,
     }
 
-    const newAccessToken = generateToken(payload, ACCESS_TOKEN_SECRET_KEY, "3s")
-    // const newRefreshToken = generateToken(payload, REFRESH_TOKEN_SECRET_KEY, "7d")
+    const newAccessToken = generateToken(payload, ACCESS_TOKEN_SECRET_KEY, ACCESS_TOKEN_EXPIRE)
 
     return {
-      user: foundUser,
+      user: excludeObjectKeys(foundUser, ['password', '__v']),
       accessToken: newAccessToken,
       refreshToken: refreshToken,
     }
@@ -102,8 +99,8 @@ const refreshToken = async (refreshToken) => {
   }
 }
 
-const getUser = async(userId) => {
-  const user = await userDaos.findOneUser({_id: userId})
+const getUser = async (userId) => {
+  const user = await userDaos.findOneUser({ _id: userId })
   return user;
 }
 

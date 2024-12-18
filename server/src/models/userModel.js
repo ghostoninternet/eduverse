@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { USER_GENDER, USER_ROLE } from "../constants/user.js";
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
@@ -16,8 +17,8 @@ const userSchema = new Schema({
   },
   gender: {
     type: String,
-    enum: ["Male", "Female"],
-    default: "Male",
+    enum: [USER_GENDER.MALE, USER_GENDER.FEMALE],
+    default: USER_GENDER.MALE,
   },
   avatarUrl: {
     type: String,
@@ -37,7 +38,8 @@ const userSchema = new Schema({
   },
   enrolledCourses: {
     type: [mongoose.Schema.Types.ObjectId],
-    default: []
+    default: [],
+    ref: 'EnrolledCourses'
   },
   preferences: {
     type: {
@@ -51,8 +53,8 @@ const userSchema = new Schema({
   },
   role: {
     type: String,
-    enum: ['instructor', 'user'],
-    default: 'user',
+    enum: [USER_ROLE.USER, USER_ROLE.ADMIN, USER_ROLE.INSTRUCTOR],
+    default: USER_ROLE.USER,
   }
 }, {
   timestamps: true

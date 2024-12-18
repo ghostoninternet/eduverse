@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
 import ENV from "../configs/index.js";
-import CustomError from '../errors/customError.js';
 import userDaos from "../daos/userDaos.js";
 
 const ACCESS_TOKEN_SECRET_KEY = ENV.AT_SECRET_KEY;
@@ -24,7 +23,7 @@ const authToken = async (req, res, next) => {
       return res.status(404).json({ message: "User does not exist!" });
     }
 
-    req.userId = userId;
+    req.user = decode;
     next(); // Proceed to the next middleware or route handler
 
   } catch (err) {

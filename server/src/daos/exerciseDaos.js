@@ -18,8 +18,17 @@ const findExerciseById = async (exerciseId) => {
     })
 }
 
-const findExercises = async (filter, limit = 10, page = 1) => {
-  return await Exercises.find(filter).skip((page - 1) * limit).limit(limit)
+const findOneExercise = async (filter) => {
+  return await Exercises.findOne(filter).lean()
+    .then(data => data)
+    .catch(err => {
+      console.log(err)
+      throw new CustomError.DatabaseError()
+    })
+}
+
+const findExercises = async (filter) => {
+  return await Exercises.find(filter).lean()
     .then(data => data)
     .catch(err => {
       console.log(err)
@@ -29,7 +38,7 @@ const findExercises = async (filter, limit = 10, page = 1) => {
 
 const createNewExercise = async (newExerciseDocument) => {
   return await Exercises.create(newExerciseDocument)
-    .then(data => data)
+    .then(data => data.toObject())
     .catch(err => {
       console.log(err)
       throw new CustomError.DatabaseError()
@@ -42,7 +51,7 @@ const updateExercise = async (exerciseId, updateExerciseData) => {
     updateExerciseData,
     { new: true }
   )
-    .then(data => data)
+    .then(data => data.toObject())
     .catch(err => {
       console.log(err)
       throw new CustomError.DatabaseError()
@@ -60,6 +69,7 @@ const deleteExercise = async (exerciseId) => {
 
 export default {
   countExercises,
+  findOneExercise,
   findExercises,
   findExerciseById,
   createNewExercise,

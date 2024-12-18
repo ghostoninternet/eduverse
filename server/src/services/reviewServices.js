@@ -4,7 +4,6 @@ import userDaos from "../daos/userDaos.js"
 import CustomError from "../errors/customError.js"
 import formatValue from "../utils/formatValue.js"
 import includeObjectKeys from "../utils/includeObjectKeys.js"
-import mongoose from "mongoose";
 
 const recalculateRatingAvg = async (courseId, course) => {
   const allReviews = await reviewDaos.findAllCourseReviews(courseId)
@@ -12,93 +11,14 @@ const recalculateRatingAvg = async (courseId, course) => {
   const ratingScore = allReviews.reduce((prevResult, currentValue) => {
     return prevResult + currentValue.ratingStar
   }, 0)
-  ratingAvg = ratingScore / allReviews.length
+  ratingAvg = Number.parseFloat((ratingScore / allReviews.length).toFixed(2))
   course.courseRatingAvg = ratingAvg
-  course.courseReviewCount += 1
   await courseDaos.updateCourse(courseId, course)
 }
 
-const getInstructorCourseReview = async (courseId, limit, page) => {
+const getCourseReviews = async (courseId, limit, page) => {
   // Check course exist
   const foundCourse = await courseDaos.findCourseById(courseId)
-  if (!foundCourse) throw new CustomError.NotFoundError("No course found!")
-  
-  // Find reviews
-  let foundReviews = await reviewDaos.findCourseReviews({ courseId: foundCourse._id }, limit, page)
-  if (foundReviews.length == 0) return []
-  let allReviews = await reviewDaos.findAllCourseReviews(foundCourse._id)
-  if (allReviews.length == 0) return []
-  // Find user info
-  for (let i = 0; i < foundReviews.length; i++) {
-    let foundUser = await userDaos.findOneUser({ _id: foundReviews[i].userId })
-    if (foundUser) {
-      foundUser = includeObjectKeys(foundUser, [
-        'username',
-        'avatarUrl',
-      ])
-      //  foundReviews[i] = {...foundReviews[i], userId: foundUser};
-      foundReviews[i].userInfo = foundUser;
-    }
-  }
-  // Calculate number of pages and current page
-  const totalReviews = await reviewDaos.countNumberOfReviews({ courseId: foundCourse._id })
-  const totalPages = Math.ceil(totalReviews / limit)
-
-  let totalStar = 0;
-  let oneStar = 0;
-  let twoStar = 0;
-  let threeStar = 0;
-  let fourStar = 0;
-  let fiveStar = 0;
-
-  allReviews.forEach((review) => {
-    totalStar += review.ratingStar
-    switch(review.ratingStar){
-      case 1: {
-        oneStar++;
-        break;
-      }
-      case 2 : {
-        twoStar++;
-        break;
-      }
-      case 3 : {
-        threeStar++;
-        break;
-      }
-      case 4 : {
-        fourStar++;
-        break;
-      }
-      case 5 : {
-        fiveStar++;
-        break;
-      }
-    }
-  })
-  const avgRating = totalStar/(totalReviews)
-  await courseDaos.updateCourse({_id: foundCourse._id}, {courseRatingAvg: formatValue(avgRating), courseReviewCount: totalReviews})
-  return {
-    data: foundReviews,
-    rating: {
-      oneStar: formatValue(oneStar/totalReviews * 100),   //percentage = number of 1 star / total Reviews
-      twoStar: formatValue(twoStar/totalReviews * 100),
-      threeStar: formatValue(threeStar/totalReviews * 100),
-      fourStar: formatValue(fourStar/totalReviews * 100),
-      fiveStar: formatValue(fiveStar/totalReviews * 100)
-    },
-    pagination: {
-      totalReviews,
-      totalPages,
-      currentPage: page,
-      limitPerPage: limit,
-    }
-  }
-}
-
-const getCourseReviews = async (courseSlug, limit, page) => {
-  // Check course exist
-  const foundCourse = await courseDaos.findCourseBySlug(courseSlug)
   if (!foundCourse) {
     throw new CustomError.NotFoundError("No course found!")
   }
@@ -133,39 +53,39 @@ const getCourseReviews = async (courseSlug, limit, page) => {
 
   allReviews.forEach((review) => {
     totalStar += review.ratingStar
-    switch(review.ratingStar){
+    switch (review.ratingStar) {
       case 1: {
         oneStar++;
         break;
       }
-      case 2 : {
+      case 2: {
         twoStar++;
         break;
       }
-      case 3 : {
+      case 3: {
         threeStar++;
         break;
       }
-      case 4 : {
+      case 4: {
         fourStar++;
         break;
       }
-      case 5 : {
+      case 5: {
         fiveStar++;
         break;
       }
     }
   })
-  const avgRating = totalStar/(totalReviews)
-  await courseDaos.updateCourse({_id: foundCourse._id}, {courseRatingAvg: formatValue(avgRating), courseReviewCount: totalReviews})
+  const avgRating = totalStar / (totalReviews)
+  await courseDaos.updateCourse({ _id: foundCourse._id }, { courseRatingAvg: formatValue(avgRating), courseReviewCount: totalReviews })
   return {
     data: foundReviews,
     rating: {
-      oneStar: formatValue(oneStar/totalReviews * 100),   //percentage = number of 1 star / total Reviews
-      twoStar: formatValue(twoStar/totalReviews * 100),
-      threeStar: formatValue(threeStar/totalReviews * 100),
-      fourStar: formatValue(fourStar/totalReviews * 100),
-      fiveStar: formatValue(fiveStar/totalReviews * 100)
+      oneStar: formatValue(oneStar / totalReviews * 100),   //percentage = number of 1 star / total Reviews
+      twoStar: formatValue(twoStar / totalReviews * 100),
+      threeStar: formatValue(threeStar / totalReviews * 100),
+      fourStar: formatValue(fourStar / totalReviews * 100),
+      fiveStar: formatValue(fiveStar / totalReviews * 100)
     },
     pagination: {
       totalPages,
@@ -176,14 +96,6 @@ const getCourseReviews = async (courseSlug, limit, page) => {
 }
 
 const createCourseReview = async (userId, newReviewData) => {
-  // Check course exist
-  const courseId = mongoose.Types.ObjectId.isValid(newReviewData.courseId)
-    ? newReviewData.courseId
-    : null;
-
-  if (!courseId) {
-    throw new CustomError.BadRequestError("Invalid courseId!");
-  }
   const foundCourse = await courseDaos.findCourseById(newReviewData.courseId)
   if (!foundCourse) {
     throw new CustomError.NotFoundError("No course found!")
@@ -196,7 +108,11 @@ const createCourseReview = async (userId, newReviewData) => {
   const newReview = await reviewDaos.createCourseReview(newReviewDocument)
 
   // Recalculate rating average and update number of reviews
-  //await recalculateRatingAvg(foundCourse._id, foundCourse)
+  await recalculateRatingAvg(foundCourse._id, foundCourse)
+  foundCourse.courseReviewCount += 1
+  await courseDaos.updateCourse(foundCourse._id, {
+    courseReviewCount: foundCourse.courseReviewCount
+  })
 
   // Find user info
   let foundUser = await userDaos.findOneUser({ _id: newReview.userId })
@@ -207,13 +123,15 @@ const createCourseReview = async (userId, newReviewData) => {
     };
     newReview.userId = foundUser;
   }
+
+  return newReview
 }
 
 const updateCourseReview = async (reviewId, userId, updateCourseReviewData) => {
   // Check review exist
   const foundReview = await reviewDaos.findCourseReviewById(reviewId)
   if (!foundReview) {
-    throw new CustomError.NotFoundError("No course found!")
+    throw new CustomError.NotFoundError("No review found!")
   }
 
   // Check course exist
@@ -228,7 +146,7 @@ const updateCourseReview = async (reviewId, userId, updateCourseReviewData) => {
   }
   const updatedCourseReview = await reviewDaos.updateCourseReview(reviewId, updateCourseReviewDocument)
 
-  if (foundReview.ratingStar !== updateCourseReviewData.ratingStar) {
+  if (updateCourseReviewData?.ratingStar && foundReview.ratingStar !== updateCourseReviewData?.ratingStar) {
     // Recalculate rating average and update number of reviews
     await recalculateRatingAvg(foundCourse._id, foundCourse)
   }
@@ -260,15 +178,18 @@ const deleteCourseReview = async (reviewId) => {
 
   // Delete review
   await reviewDaos.deleteCourseReview(reviewId)
-
+  
   // Recalculate rating average and update number of reviews
-  await recalculateRatingAvg(foundCourse._id, foundCourse)
+  recalculateRatingAvg(foundCourse._id, foundCourse)
+  foundCourse.courseReviewCount -= 1
+  courseDaos.updateCourse(foundCourse._id, {
+    courseReviewCount: foundCourse.courseReviewCount
+  })
 
   return true
 }
 
 export default {
-  getInstructorCourseReview,
   getCourseReviews,
   createCourseReview,
   updateCourseReview,

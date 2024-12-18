@@ -1,13 +1,18 @@
+import { IS_COOKIE_HTTP_ONLY, IS_COOKIE_SECURE, TOKEN_COOKIE_MAX_AGE } from "../constants/authenticate.js";
 import authServices from "../services/authServices.js";
 
 const register = async (req, res, next) => {
   const authenticatedData = await authServices.register(req.body)
   res.cookie("accessToken", authenticatedData.accessToken, {
-    httpOnly: true
+    httpOnly: IS_COOKIE_HTTP_ONLY,
+    secure: IS_COOKIE_SECURE,
+    maxAge: TOKEN_COOKIE_MAX_AGE,
   })
 
   res.cookie("refreshToken", authenticatedData.refreshToken, {
-    httpOnly: true
+    httpOnly: IS_COOKIE_HTTP_ONLY,
+    secure: IS_COOKIE_SECURE,
+    maxAge: TOKEN_COOKIE_MAX_AGE,
   })
   res.status(200).json({
     message: "Successfully signup!",
@@ -18,11 +23,15 @@ const register = async (req, res, next) => {
 const login = async (req, res, next) => {
   const authenticatedData = await authServices.login(req.body)
   res.cookie("accessToken", authenticatedData.accessToken, {
-    httpOnly: true
+    httpOnly: IS_COOKIE_HTTP_ONLY,
+    secure: IS_COOKIE_SECURE,
+    maxAge: TOKEN_COOKIE_MAX_AGE,
   })
 
   res.cookie("refreshToken", authenticatedData.refreshToken, {
-    httpOnly: true
+    httpOnly: IS_COOKIE_HTTP_ONLY,
+    secure: IS_COOKIE_SECURE,
+    maxAge: TOKEN_COOKIE_MAX_AGE,
   })
   res.status(200).json({
     message: "Successfully login!",
@@ -45,9 +54,6 @@ const refreshToken = async (req, res, next) => {
     httpOnly: true
   })
 
-  // res.cookie("refreshToken", authenticatedData.refreshToken, {
-  //   httpOnly: true
-  // })
   res.status(200).json({
     message: "Successfully refresh!",
     data: authenticatedData.user

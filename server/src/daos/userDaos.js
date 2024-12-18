@@ -2,7 +2,6 @@ import CustomError from '../errors/customError.js'
 import userModel from "../models/userModel.js"
 import getSelectData from "../utils/getSelectData.js"
 
-// Fix do not return user password in userService
 const findOneUser = async (filter) => {
   return await userModel.findOne(filter).lean()
     .then(data => data)
@@ -23,7 +22,7 @@ const findManyUsers = async (filter, select) => {
 
 const createNewUser = async (userDocument) => {
   return await userModel.create(userDocument)
-    .then(data => data)
+    .then(data => data.toObject())
     .catch(err => {
       console.log(err)
       throw new CustomError.DatabaseError("Something went wrong in createNewUser")

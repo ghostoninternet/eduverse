@@ -4,39 +4,41 @@ import moduleDaos from "../daos/moduleDaos.js"
 import excludeObjectKeys from "../utils/excludeObjectKeys.js"
 import CustomError from "../errors/customError.js"
 
-const getExercises = async (instructorId, limit=10, page=1) => {
-  let foundExercises = await exerciseDaos.findExercises({ exerciseInstructor: instructorId }, limit, page)
+const getExercises = async (instructorId, moduleId) => {
+  const foundModule = await moduleDaos.findModuleById(moduleId)
+  if (!foundModule) throw new CustomError.NotFoundError('No module found!')
+
+  const foundExercises = await exerciseDaos.findExercises({
+    exerciseInstructor: new mongoose.Types.ObjectId(instructorId),
+    exerciseModule: new mongoose.Types.ObjectId(moduleId),
+  })
   if (foundExercises.length == 0) return []
 
-  foundExercises = foundExercises.map(async (foundExercise) => {
-    let foundModule = await moduleDaos.findModuleById(foundExercise.exerciseModule)
-    if (foundModule) {
-      foundExercise.exerciseModule = foundModule.moduleTitle
-    } else {
-      foundExercise.exerciseModule = null
+  const transformedExercises = []
+  for (let i = 0; i < foundExercises.length; i++) {
+    const foundExercise = foundExercises[i]
+    const exerciseInfo = {
+      ...foundExercise,
+      exerciseModule: excludeObjectKeys(foundModule, [
+        'moduleExercises',
+        'createdAt',
+        'updatedAt',
+        '__v',
+        'moduleVideoLessons',
+      ])
     }
-    return excludeObjectKeys(foundExercise, [
-      'exerciseInstructor',
-      'exerciseQuizes',
-      'updatedAt'
-    ])
-  })
 
-  const totalExercises = await exerciseDaos.countExercises({ exerciseInstructor: instructorId })
-  const totalPages = Math.ceil(totalExercises / limit)
-
-  return {
-    data: foundExercises,
-    pagination: {
-      totalPages: totalPages,
-      currentPage: page,
-      limitPerPage: limit,
-    }
+    transformedExercises.push(exerciseInfo)
   }
+
+  return transformedExercises
 }
 
-const getExerciseDetail = async (exerciseId) => {
-  const foundExercise = await exerciseDaos.findExerciseById(exerciseId)
+const getExerciseDetail = async (exerciseId, instructorId) => {
+  const foundExercise = await exerciseDaos.findOneExercise({
+    exerciseInstructor: new mongoose.Types.ObjectId(instructorId),
+    _id: new mongoose.Types.ObjectId(exerciseId),
+  })
   if (!foundExercise) throw new CustomError.NotFoundError("No exercise found!")
 
   let foundModule = await moduleDaos.findModuleById(foundExercise.exerciseModule)
@@ -52,44 +54,15 @@ const getExerciseDetail = async (exerciseId) => {
   ])
 }
 
-const searchExercise = async (query, limit, page) => {
-  const filter = {
-    $text: { $search: query }
-  }
-
-  const foundExercises = await exerciseDaos.findExercises(filter, limit, page)
-  if (foundExercises.length == 0) return []
-
-  foundExercises = foundExercises.map(async (foundExercise) => {
-    let foundModule = await moduleDaos.findModuleById(foundExercise.exerciseModule)
-    if (foundModule) {
-      foundExercise.exerciseModule = foundModule.moduleTitle
-    } else {
-      foundExercise.exerciseModule = null
-    }
-    return excludeObjectKeys(foundExercise, [
-      'exerciseInstructor',
-      'exerciseQuizes',
-      'updatedAt'
-    ])
-  })
-  
-  const totalExercises = await exerciseDaos.countExercises(filter)
-  const totalPages = Math.ceil(totalExercises / limit)
-
-  return {
-    data: foundExercises,
-    pagination: {
-      totalPages: totalPages,
-      currentPage: page,
-      limitPerPage: limit,
-    }
-  }
-}
-
 const createNewExercise = async (instructorId, newExerciseData) => {
   const foundModule = await moduleDaos.findModuleById(newExerciseData.exerciseModule)
   if (!foundModule) throw new CustomError.NotFoundError("No module found!")
+
+  const foundExercise = await exerciseDaos.findOneExercise({
+    exerciseName: newExerciseData.exerciseName,
+    exerciseModule: new mongoose.Types.ObjectId(newExerciseData.exerciseModule)
+  })
+  if (foundExercise) throw new CustomError.BadRequestError("There's already an exercise with the same name in this module")
 
   const newExerciseDocument = {
     ...newExerciseData,
@@ -102,23 +75,36 @@ const createNewExercise = async (instructorId, newExerciseData) => {
   const updateModuleData = {
     $push: { moduleExercises: newExercise._id }
   }
-  
   const updatedModule = await moduleDaos.updateModule(newExercise.exerciseModule, updateModuleData)
-  newExercise.exerciseModule = updatedModule.moduleTitle
+  newExercise.exerciseModule = excludeObjectKeys(updatedModule, [
+    'moduleExercises',
+    'createdAt',
+    'updatedAt',
+    '__v',
+    'moduleVideoLessons',
+  ])
 
   return excludeObjectKeys(newExercise, [
-      'exerciseInstructor',
-      'exerciseQuizes',
-      'updatedAt'
-    ])
+    'exerciseInstructor',
+    'exerciseQuizes',
+    'updatedAt'
+  ])
 }
 
 const updateExercise = async (exerciseId, instructorId, updateExerciseData) => {
   const foundExercise = await exerciseDaos.findExerciseById(exerciseId)
   if (!foundExercise) throw new CustomError.NotFoundError("No exercise found!")
-  
+
   const foundModule = await moduleDaos.findModuleById(updateExerciseData.exerciseModule)
   if (!foundModule) throw new CustomError.NotFoundError("No module found!")
+
+  if (updateExerciseData?.exerciseName) {
+    const foundSameNameExercise = await exerciseDaos.findOneExercise({
+      exerciseName: updateExerciseData?.exerciseName,
+      exerciseModule: new mongoose.Types.ObjectId(updateExerciseData.exerciseModule),
+    })
+    if (foundSameNameExercise) throw new CustomError.BadRequestError("There's already an exercise with the same name in this module")
+  }
 
   const updateExerciseDocument = {
     ...updateExerciseData,
@@ -127,9 +113,15 @@ const updateExercise = async (exerciseId, instructorId, updateExerciseData) => {
   }
 
   const updatedExercise = await exerciseDaos.updateExercise(exerciseId, updateExerciseDocument)
-  updatedExercise.exerciseModule = foundModule.moduleTitle
+  updatedExercise.exerciseModule = excludeObjectKeys(foundModule, [
+    'moduleExercises',
+    'createdAt',
+    'updatedAt',
+    '__v',
+    'moduleVideoLessons',
+  ])
 
-  return excludeObjectKeys(updateExercise, [
+  return excludeObjectKeys(updatedExercise, [
     'exerciseInstructor',
     'exerciseQuizes',
     'updatedAt'
@@ -139,15 +131,15 @@ const updateExercise = async (exerciseId, instructorId, updateExerciseData) => {
 const deleteExercise = async (exerciseId) => {
   const foundExercise = await exerciseDaos.findExerciseById(exerciseId)
   if (!foundExercise) throw new CustomError.NotFoundError("No exercise found!")
+  if (foundExercise.isDeleted) throw new CustomError.BadRequestError("Exercise has already been deleted!")
 
-  const deletedExercise = await exerciseDaos.deleteExercise(exerciseId)
-
-  if (!deleteExercise) throw new CustomError.InternalServerError("Something went wrong")
+  const deletedExercise = await exerciseDaos.updateExercise(exerciseId, { isDeleted: true })
+  if (!deletedExercise) throw new CustomError.InternalServerError("Something went wrong")
 
   const updateModuleData = {
     $pull: { moduleExercises: deletedExercise._id }
   }
-  await moduleDaos.updateModule(deletedExercise._id, updateModuleData)
+  moduleDaos.updateModule(deletedExercise._id, updateModuleData)
 
   return true
 }
@@ -155,7 +147,6 @@ const deleteExercise = async (exerciseId) => {
 export default {
   getExercises,
   getExerciseDetail,
-  searchExercise,
   createNewExercise,
   updateExercise,
   deleteExercise,
