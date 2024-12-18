@@ -22,14 +22,14 @@ const updateEnrolledCourseVideoProgress = async (req, res, next) => {
 }
 
 const updateEnrolledCourseExerciseProgress = async (req, res, next) => {
-  const { userId } = req.userId
+  const { userId } = req
   const { courseId } = req.params
   const updatedEnrolledCourseProgress = await enrolledCourseService.updateEnrolledCourseExerciseProgress(userId, courseId, req.body)
   res.status(200).json(updatedEnrolledCourseProgress)
 }
 
 const deleteEnrolledCourse = async (req, res, next) => {
-  const { userId } = req.userId
+  const { userId } = req
   const { courseId } = req.params
   const deletedResult = await enrolledCourseService.deleteEnrolledCourse(userId, courseId)
   res.status(200).json({

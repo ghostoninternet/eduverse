@@ -1,12 +1,18 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import Choice from "./Choice";
 import PropTypes from "prop-types";
-const Question = ({ choices, index, question, isAnswer, isSubmitted }) => {
+const Question = ({ choices, index, question, isAnswer, isSubmitted, onCorrectAnswer}) => {
   const labels = ["A", "B", "C", "D"];
   const [isSelected, setIsSelected] = useState("");
   const handleSelectChoice = (choice) => {
     setIsSelected(choice);
   };
+  useEffect(() => {
+    if (isSubmitted) {
+      const isCorrect = isSelected === isAnswer;
+      onCorrectAnswer(isCorrect); 
+    }
+  }, [isSubmitted]);
   return (
     <div className="flex flex-col gap-y-4 mt-10">
       <h2 className="text-2xl font-semibold italic">
@@ -34,5 +40,6 @@ Question.propTypes = {
   question: PropTypes.string,
   isAnswer: PropTypes.string,
   isSubmitted: PropTypes.bool,
+  onCorrectAnswer: PropTypes.func
 };
 export default Question;

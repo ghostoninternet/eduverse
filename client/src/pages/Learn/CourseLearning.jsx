@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import ReactPlayer from "react-player";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { Link } from "react-router-dom";
@@ -12,6 +12,7 @@ import updateEnrolledCourseVideoProgress from "../../apis/enrolled-course/update
 import ExerciseDetail from "../../components/ExerciseDetail";
 import getExerciseDetail from "../../apis/exercise/getExerciseDetail";
 import createCourseReview from "../../apis/review/createCourseReview";
+import updateExerciseProgress from "../../apis/exercise/updateExerciseProgress";
 const CourseLearning = () => {
   let location = useLocation();
   let params = useParams();
@@ -28,6 +29,8 @@ const CourseLearning = () => {
   const [displayType, setDisplayType] = useState("video");
   const [enrolledCoursesDetail, setEnrolledCourseDetail] = useState({});
   const [quizes, setQuizes] = useState([]);
+  const [score, setScore] = useState(0);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [currentVideo, setCurrentVideo] = useState({
     videoId: null,
     moduleId: null,
@@ -111,7 +114,7 @@ const CourseLearning = () => {
     };
 
     fetchedEnrolledCourse();
-  }, [params.courseId, update, location.search]);
+  }, [params.courseId, update, location.search, score, isSubmitted]);
 
   const handleVideoClick = (videoTitle, moduleId, videoUrl, videoId) => {
     navigate(location.pathname);
@@ -126,7 +129,8 @@ const CourseLearning = () => {
     videoRef.current.scrollIntoView({ behavior: "smooth" });
   };
   const handleStartClick = () => {
-    setIsSubmitted(false)
+    setCorrectCount(0);
+    setIsSubmitted(false);
     setIsReady(!isReady);
   };
   const handleExerciseClick = (courseId, exerciseId) => {
@@ -155,7 +159,10 @@ const CourseLearning = () => {
       // Reset form sau khi gửi thành công
       setNewReview({ content: "", rating: 0 });
 
-      const updatedReviews = await getCourseReview(enrolledCoursesDetail.slug, 1);
+      const updatedReviews = await getCourseReview(
+        enrolledCoursesDetail.slug,
+        1
+      );
       setNewReview(updatedReviews);
 
       alert("Review submitted successfully!");
@@ -170,17 +177,62 @@ const CourseLearning = () => {
       rating: 0,
     });
   };
-  const [isSubmitted, setIsSubmitted] = useState(false);
+
   const handleSubmitAnswer = () => {
     setIsSubmitted(true);
   };
-  
+
+  const [correctCount, setCorrectCount] = useState(0);
+  const handleCorrectAnswer = (isCorrect) => {
+    // Increment count if correct
+    if (isCorrect) {
+      setCorrectCount((prev) => prev + 1);
+    }
+  };
+
+
+  useEffect(() => {
+    const tempScore = (correctCount / quizes?.exerciseQuizes?.length) * 100;
+    console.log(tempScore);
+    setScore(tempScore);
+  }, [correctCount]);
+
+  useEffect(() => {
+    console.log(score);
+  }, [score]);
+
+  useEffect(() => {
+    const updateEx = async () => {
+      try {
+        const exerciseIdValue = new URLSearchParams(location.search).get(
+          "exercise"
+        );
+        await updateExerciseProgress(
+          authState?.user._id.toString(),
+          params.courseId,
+          {
+            moduleId: quizes.exerciseModule,
+            exerciseId: exerciseIdValue,
+            userScore: score,
+            hasPassed: score >= 50,
+          }
+        );
+      } catch (error) {
+        console.error("Error updating exercise progress:", error);
+      }
+    };
+
+    if (isSubmitted) {
+      updateEx(); // Call the function
+    }
+  }, [
+    isSubmitted, score
+  ]);
+
   if (!authState) {
     navigate("/signin");
     return null;
   }
-
-  
 
   return (
     <div className="flex">
@@ -221,6 +273,7 @@ const CourseLearning = () => {
               handleStartClick={handleStartClick}
               handleSubmitAnswer={handleSubmitAnswer}
               isSubmitted={isSubmitted}
+              onCorrectAnswer={handleCorrectAnswer}
             />
           </div>
         )}

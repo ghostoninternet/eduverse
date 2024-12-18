@@ -1,11 +1,12 @@
-import React from "react";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import formatDate from "../helpers/formatDate"
+import PropTypes from 'prop-types'
 const Exercise = ({
   isPlaying,
   handleExerciseClick,
-  exerciseDuration,
   exerciseName,
+  latestSubmitDate,
+  isChecked
 }) => {
   return (
     <div
@@ -19,6 +20,7 @@ const Exercise = ({
           type="checkbox"
           style={{ width: "20px", height: "20px" }}
           disabled
+          checked = {isChecked}
         />
       </div>
       <div className="w-11/12 flex items-center gap-x-2">
@@ -26,13 +28,19 @@ const Exercise = ({
         <div className="flex flex-col gap-y-1">
           <div className="flex gap-x-3 text-xl">
             <h3 className="">{exerciseName}</h3>
-            <p className="text-xl">・Highest Score 0/100 points</p>
           </div>
-          <p>Last submitted: {formatDate("2024-12-12T02:21:12.585Z")}</p>
+          <p>Last submitted: {formatDate(latestSubmitDate)}</p>
         </div>
       </div>
     </div>
   );
 };
+
+Exercise.propTypes = {
+  isPlaying: PropTypes.bool,
+  handleExerciseClick: PropTypes.func,
+  exerciseName: PropTypes.string,
+  latestSubmitDate: PropTypes.string,
+}
 
 export default Exercise;

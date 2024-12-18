@@ -1,15 +1,16 @@
-import React, { useState } from "react";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import Question from "./Question";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
 const ExerciseDetail = ({
   quizes,
   exerciseName,
   isReady,
   handleStartClick,
   isSubmitted,
-  handleSubmitAnswer
+  handleSubmitAnswer,
+  onCorrectAnswer
 }) => {
   
   return (
@@ -39,24 +40,30 @@ const ExerciseDetail = ({
       {isReady ? (
         <div className="flex flex-col">
           <div>
-            {quizes?.map((quiz, index) => (
-              <Question
-                key={index}
-                choices={quiz.choices}
-                isAnswer={quiz.answer}
-                question={quiz.question}
-                index={index + 1}
-                isSubmitted={isSubmitted}
-              />
-            ))}
+            {quizes?.map((quiz, index) => {
+              return (
+                <Question
+                  key={index}
+                  choices={quiz.choices}
+                  isAnswer={quiz.answer}
+                  question={quiz.question}
+                  index={index + 1}
+                  isSubmitted={isSubmitted}
+                  onCorrectAnswer={onCorrectAnswer}
+                />
+              );
+            })}
           </div>
-          <button className="place-self-end border px-4 py-2 mt-6 text-xl font-semibold rounded-md bg-blue-500 text-white" onClick={handleSubmitAnswer}>
+          <button
+            className="place-self-end border px-4 py-2 mt-6 text-xl font-semibold rounded-md bg-blue-500 text-white"
+            onClick={handleSubmitAnswer}
+          >
             Submit
           </button>
         </div>
       ) : (
         <p className="flex justify-center items-center p-20 text-xl">
-          If you are ready, please click "Start" button!
+          If you are ready, please click &quot;Start&quot; button!
         </p>
       )}
     </div>
@@ -68,5 +75,7 @@ ExerciseDetail.propTypes = {
   quizes: PropTypes.array,
   isReady: PropTypes.bool,
   handleStartClick: PropTypes.func,
+  handleSubmitAnswer: PropTypes.func,
+  isSubmitted: PropTypes.bool,
 };
 export default ExerciseDetail;

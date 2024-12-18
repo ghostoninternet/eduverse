@@ -90,7 +90,7 @@ const NavBar = () => {
           <SearchIcon />
         </button>
         <div className="absolute w-full">
-          {searchedCourses.data?.map((searchedCourse) => {
+          {searchedCourses?.data?.map((searchedCourse) => {
             return (
               <CourseBar
               key={searchedCourse._id}
