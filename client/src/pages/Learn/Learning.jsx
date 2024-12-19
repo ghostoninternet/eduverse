@@ -20,11 +20,7 @@ const Learn = () => {
   });
   const [courseDetail, setCourseDetail] = useState({});
   const [isEnrollPopupOpen, setIsEnrollPopupOpen] = useState(false); // State Enroll popup
-  const [isLeaveReviewOpen, setIsLeaveReviewOpen] = useState(false); // State popup Leave Review
-  const [newReview, setNewReview] = useState({
-    content: "",
-    rating: 0,
-  });
+
   useEffect(() => {
     if (
       3 * queryParams ===
@@ -86,36 +82,6 @@ const Learn = () => {
     setIsSection("Reviews");
   };
 
-  const handleLeaveReviewClick = () => setIsLeaveReviewOpen(true);
-
-  const handleCloseLeaveReview = () => {
-    setIsLeaveReviewOpen(false);
-    setNewReview({ content: "", rating: 0 });
-  };
-
-  // Hàm gửi review
-  const handleSubmitReview = () => {
-    if (newReview.content && newReview.rating > 0) {
-      const newReviewData = {
-        _id: `${reviews.data.length + 1}`,
-        userId: {
-          avatarUrl: "https://via.placeholder.com/50",
-          username: "Current User",
-        },
-        reviewContent: newReview.content,
-        createdAt: new Date().toISOString(),
-        ratingStar: newReview.rating,
-      };
-      setReviews((prev) => ({
-        ...prev,
-        data: [...prev.data, newReviewData],
-      }));
-      handleCloseLeaveReview();
-      alert("Review submitted successfully!");
-    } else {
-      alert("Please provide both content and rating.");
-    }
-  };
   // Quản lý Enroll popup
   const handleEnrollClick = () => setIsEnrollPopupOpen(true);
   const handleCloseEnrollPopup = () => setIsEnrollPopupOpen(false);
@@ -347,7 +313,7 @@ const Learn = () => {
           </div>
           <div className="w-2/3 flex flex-col gap-y-10 mb-10">
             <div className="text-xl">
-              Showing {(reviews.pagination.currentPage - 1) * queryParams + reviews?.data?.length}/
+              Showing {(reviews?.pagination?.currentPage - 1) * queryParams + reviews?.data?.length}/
               {courseDetail?.courseReviewCount}
             </div>
             {reviews?.data?.map((review) => (
@@ -396,51 +362,6 @@ const Learn = () => {
                 className="px-4 py-2 bg-blue-500 text-white rounded-md"
               >
                 Confirm
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* Popup Leave Review */}
-      {isLeaveReviewOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-8 rounded-md shadow-md w-1/3">
-            <h2 className="text-2xl font-semibold mb-4">Leave a Review</h2>
-            <textarea
-              value={newReview.content}
-              onChange={(e) =>
-                setNewReview({ ...newReview, content: e.target.value })
-              }
-              className="w-full border rounded-md p-3 mb-4"
-              rows="4"
-              placeholder="Write your review..."
-            ></textarea>
-            <div className="flex items-center mb-4">
-              <p className="mr-4">Rating:</p>
-              {[1, 2, 3, 4, 5].map((star) => (
-                <StarIcon
-                  key={star}
-                  className={`cursor-pointer ${
-                    newReview.rating >= star
-                      ? "text-yellow-400"
-                      : "text-gray-300"
-                  }`}
-                  onClick={() => setNewReview({ ...newReview, rating: star })}
-                />
-              ))}
-            </div>
-            <div className="flex justify-end gap-4">
-              <button
-                onClick={handleCloseLeaveReview}
-                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSubmitReview}
-                className="px-4 py-2 bg-green-500 text-white rounded-md"
-              >
-                Submit
               </button>
             </div>
           </div>
