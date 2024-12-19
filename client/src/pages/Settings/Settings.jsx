@@ -1,32 +1,12 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import EditIcon from "@mui/icons-material/Edit";
-import { useAuth } from "../../contexts/authContext";
-import getUser from "../../apis/getUser";
+import { useAuth } from "../../contexts/AuthContext";
 import updateUser from "../../apis/user/updateUser";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+
 const Settings = () => {
   const { authState, setAuthState } = useAuth();
-  console.log(authState);
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const userData = await getUser();
-        setAuthState(userData);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        setAuthState(null);
-        navigate("/"); // Redirect to home on error
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUser();
-  }, [setAuthState, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -57,9 +37,9 @@ const Settings = () => {
     }
   };
 
-  if (loading) {
-    return <div>Loading...</div>; 
-  }
+  // if (loading) {
+  //   return <div>Loading...</div>; 
+  // }
 
   if (!authState) {
     navigate("/");
@@ -68,10 +48,10 @@ const Settings = () => {
 
   return (
     <div className="bg-slate-200">
-      <div key={authState.user._id} className="flex min-h-screen">
+      <div key={authState._id} className="flex min-h-screen">
         <div className="w-1/3 flex flex-col items-center mt-20 gap-y-4">
           <img
-            src={authState.user?.avatarUrl}
+            src={authState.avatarUrl}
             width={300}
             height={300}
             className="shadow-lg"
@@ -91,7 +71,7 @@ const Settings = () => {
               <div className="flex flex-col gap-y-1">
                 <label className="text-xl">Full Name</label>
                 <input
-                  value={authState.user.username}
+                  value={authState.username}
                   onChange={(e) =>
                     setAuthState((prev) => ({
                       ...prev,
@@ -104,7 +84,7 @@ const Settings = () => {
               <div className="flex flex-col gap-y-1">
                 <label className="text-xl">Email</label>
                 <input
-                  value={authState.user.email}
+                  value={authState.email}
                   disabled
                   className="border-2 border-gray-500 p-2 text-xl"
                 />
@@ -113,7 +93,7 @@ const Settings = () => {
                 <label className="text-xl">Gender</label>
                 <select
                   className="border-2 border-gray-500 p-2 text-xl"
-                  value={authState.user.gender}
+                  value={authState.gender}
                   onChange={(e) =>
                     setAuthState((prev) => ({
                       ...prev,
@@ -128,7 +108,7 @@ const Settings = () => {
               <div className="flex flex-col gap-y-1">
                 <label className="text-xl">Address</label>
                 <input
-                  value={authState.user.location}
+                  value={authState.location}
                   onChange={(e) =>
                     setAuthState((prev) => ({
                       ...prev,
@@ -141,7 +121,7 @@ const Settings = () => {
               <div className="flex flex-col gap-y-1">
                 <label className="text-xl">Theme</label>
                 <input
-                  value={authState.user.preferences.theme}
+                  value={authState.preferences.theme}
                   onChange={(e) =>
                     setAuthState((prev) => ({
                       ...prev,
@@ -160,7 +140,7 @@ const Settings = () => {
               <div className="flex flex-col gap-y-1">
                 <label className="text-xl">Language</label>
                 <input
-                  value={authState.user.preferences.language}
+                  value={authState.preferences.language}
                   onChange={(e) =>
                     setAuthState((prev) => ({
                       ...prev,
@@ -187,7 +167,6 @@ const Settings = () => {
           </div>
         </div>
       </div>
-      <ToastContainer />
     </div>
   );
 };

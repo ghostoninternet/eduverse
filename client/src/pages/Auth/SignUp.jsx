@@ -1,11 +1,16 @@
-import React, { useState } from "react";
-import "../Auth/SignUpForm.jsx";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-function SignupForm() {
+import { USER_ROLE } from "../../constants/user";
+import { signUpApi } from "../../apis/auth";
+import { useAuth } from "../../contexts/AuthContext";
+
+function Signup() {
   const [username, setUsername] = useState();
+  const [role, setRole] = useState(USER_ROLE.USER.value);
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [message, setMessage] = useState();
+  const { setAuthState } = useAuth()
   const navigate = useNavigate();
 
   const validateEmail = (e) => {
@@ -27,23 +32,14 @@ function SignupForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const url = "http://localhost:8000/api/auth/register";
+    const data = { username, email, password, role }
     try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, email, password }),
-      });
-
-      const json = await response.json();
-      console.log(json);
-
-      if (json.statusCode === "400") {
-        setMessage(json.message);
+      const response = await signUpApi(data)
+      if (response?.data) {
+        setAuthState(response.data)
+        navigate('/', { replace: true })
       } else {
-        navigate("/signin");
+        setMessage(response.message);
       }
     } catch (error) {
       console.error("Error during sign in:", error);
@@ -53,7 +49,7 @@ function SignupForm() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-200">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center mb-3">Sign up</h2>
+        <h2 className="text-2xl font-bold text-center mb-3">Sign Up</h2>
         <p className="mb-8 text-center">
           Have an account?{" "}
           <Link to={"/signin"} className="hover:text-blue-400 hover:underline">
@@ -99,9 +95,13 @@ function SignupForm() {
           </div>
           <div className="flex flex-col justify-between gap-x-3 mb-7">
             <p className="font-semibold">Role</p>
-            <select className="p-2 border-2 border-gray-300 rounded-md w-full">
-              <option>Instrutor</option>
-              <option>Student</option>
+            <select 
+              value={role}
+              onChange={(e) => setRole(e.target.value)} 
+              className="p-2 border-2 border-gray-300 rounded-md w-full"
+            >
+              <option value={USER_ROLE.USER.value}>{USER_ROLE.USER.label}</option>
+              <option value={USER_ROLE.INSTRUCTOR.value}>{USER_ROLE.INSTRUCTOR.label}</option>
             </select>
           </div>
           {/* Join Button */}
@@ -115,4 +115,4 @@ function SignupForm() {
   );
 }
 
-export default SignupForm;
+export default Signup;

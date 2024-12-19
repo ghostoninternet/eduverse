@@ -60,24 +60,9 @@ const refreshToken = async (req, res, next) => {
   })
 }
 
-
-const getUser = async (req, res, next) => {
-
-  const user = await authServices.getUser(req.userId);
-  if (!user) {
-    return res.status(404).json({ message: 'User not found' });
-  }
-
-  // Send the user profile data as a response
-  res.status(200).json({
-    user: user
-  });
-}
-
 export default {
   register,
   login,
   logout,
   refreshToken,
-  getUser
 }

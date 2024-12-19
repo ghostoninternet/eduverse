@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../contexts/authContext";
+import { toast } from "react-toastify";
+import { useAuth } from "../../contexts/AuthContext";
+import { signInApi } from "../../apis/auth";
+
 const SignIn = () => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [message, setMessage] = useState();
-  const {setAuthState} = useAuth();
+  const { setAuthState } = useAuth();
   const navigate = useNavigate();
 
   const validateEmail = (e) => {
@@ -26,27 +29,16 @@ const SignIn = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const url = "http://localhost:8000/api/auth/login";
-
+    const data = { email, password }
     try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-        credentials: 'include'
-      });
-      
-      const json = await response.json();
-      if (response.status === 200) {
-        setAuthState(json)
-        window.location.href = "/";
+      const response = await signInApi(data)
+      if (response?.data) {
+        setAuthState(response.data)
+        toast(response.message, { type: "success" })
+        navigate('/', { replace: true })
       } else {
-        setMessage(json.message);
+        setMessage(response.message);
       }
-
-      // Navigate to another route after successful login
     } catch (error) {
       console.error("Error during sign in:", error);
     }
@@ -57,7 +49,7 @@ const SignIn = () => {
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h2 className="text-2xl font-bold text-center mb-3">Sign in</h2>
         <p className="mb-8 text-center">
-          Haven't got an account yet?{" "}
+          Haven&apos;t got an account yet?{" "}
           <Link to={"/signup"} className="hover:text-blue-400 hover:underline">
             Sign up here!
           </Link>
@@ -87,14 +79,6 @@ const SignIn = () => {
               className="w-full border rounded-md p-2"
             />
             <small className="text-gray-500">Between 8-24 characters</small>
-          </div>
-
-          <div className="flex flex-col justify-between gap-x-3 mb-7">
-            <p className="font-semibold">Role</p>
-            <select className="p-2 border-2 border-gray-300 rounded-md w-full">
-              <option>Instructor</option>
-              <option>Student</option>
-            </select>
           </div>
 
           {/* Sign-in Button */}

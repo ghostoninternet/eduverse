@@ -9,29 +9,36 @@ export function useAuth() {
 }
 
 function AuthProvider({ children }) {
-    const [authState, setAuthState] = useState({});
-    
-    useEffect(() => {
-      const fetchUser = async () => {
-        try {
-          const userData = await getUser();
-          setAuthState(userData);
-          console.log(userData)
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-          setAuthState(null);
-        }
-      };
+  const [authState, setAuthState] = useState()
+  const [isLoading, setIsLoading] = useState(true)
   
-      fetchUser();
-    }, []); 
-    
-    return (
-      <AuthContext.Provider value={{ authState, setAuthState }}>
-        {children}
-      </AuthContext.Provider>
-    );
-  }
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userData = await getUser();
+        setAuthState(userData)
+        setIsLoading(false)
+        console.log(userData)
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setAuthState(null);
+        setIsLoading(false)
+      }
+    };
+    fetchUser();
+  }, []);
+
+  return (
+    <AuthContext.Provider value={{
+      authState,
+      setAuthState,
+      isLoading,
+      setIsLoading,
+    }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
   
 
 AuthProvider.propTypes = {
