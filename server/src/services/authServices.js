@@ -99,13 +99,7 @@ const refreshToken = async (refreshToken) => {
   }
 }
 
-const getUser = async (userId) => {
-  const user = await userDaos.findOneUser({ _id: userId })
-  return user;
-}
-
 export default {
-  getUser,
   register,
   login,
   refreshToken

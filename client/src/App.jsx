@@ -1,4 +1,3 @@
-import React from "react";
 import "./index.css";
 import "./output.css";
 import Header from "./components/Header.jsx";

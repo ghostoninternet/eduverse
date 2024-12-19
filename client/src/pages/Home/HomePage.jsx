@@ -1,25 +1,25 @@
-import React, { useEffect, useState } from "react";
-import { useAuth } from "../../contexts/authContext";
+import { useEffect, useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";
 import MyLearningTab from "../../components/Home/MyLearningTab";
 import HomeTab from "../../components/Home/HomeTab";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useCourse } from "../../contexts/CourseContext";
 import { useLocation } from 'react-router'
 const HomePage = () => {
   const navigate = useNavigate()
   let location = useLocation()
+
   const [activeItem, setActiveItem] = useState("home");
   const [recommendedCourses, setRecommendedCourses] = useState([]);
   const [freeCourses, setFreeCourses] = useState([]);
   const [popularCourses, setPopularCourses] = useState([]);
   const { authState } = useAuth();
 
-
   const handleCourseClick = (course) => {
     navigate(`/learn/${course.courseSlug}`);
   };
 
-  
+
   useEffect(() => {
     let hash = window.location.hash;
     if (hash){
@@ -28,8 +28,6 @@ const HomePage = () => {
     }
   },[])
 
-  
-  
   useEffect(() => {
     const fetchRecommendedCourses = async () => {
       try {
@@ -44,7 +42,6 @@ const HomePage = () => {
 
     fetchRecommendedCourses();
   }, [location.search]);
-
   useEffect(() => {
     const fetchFreeCourses = async () => {
       try {
@@ -59,7 +56,6 @@ const HomePage = () => {
 
     fetchFreeCourses();
   }, [location.search]);
-
   useEffect(() => {
     const fetchPopularCourses = async () => {
       try {

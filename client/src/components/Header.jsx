@@ -3,13 +3,13 @@ import NavBar from "./NavBar";
 import Menu from "./Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { useAuth } from "../contexts/authContext";
+import { useAuth } from "../contexts/AuthContext";
+
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSearch, setIsSearch] = useState(false);
-  
-  
   const { authState } = useAuth();
+
   const handleClick = () => {
     setIsOpen(!isOpen);
   };

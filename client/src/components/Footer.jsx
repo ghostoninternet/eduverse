@@ -1,5 +1,3 @@
-
-
 const Footer = () => {
   return (
     <div className="h-16 flex items-center border-t-2 border-gray-500">
