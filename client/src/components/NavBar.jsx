@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import SchoolIcon from "@mui/icons-material/School";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useNavigate } from "react-router-dom";
@@ -106,12 +104,6 @@ const NavBar = () => {
       </div>
 
       <div className="max-sm:hidden flex gap-x-6">
-        <button>
-          <ShoppingCartIcon color="primary" fontSize="large" />
-        </button>
-        <button>
-          <NotificationsIcon color="primary" fontSize="large" />
-        </button>
         {authState ? (
           <div>
             <div
@@ -120,7 +112,7 @@ const NavBar = () => {
             >
               <div>
                 <img
-                  src={authState?.user?.avatarUrl}
+                  src={authState?.avatarUrl}
                   width={40}
                   height={40}
                   className="rounded-full"
