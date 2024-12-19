@@ -55,13 +55,13 @@ const router = createBrowserRouter([
         children: [
           {
             path: '',
-            element: <Settings/>
+            element: <Settings />
           }
         ]
       },
       {
         path: "/profile",
-        element: <ProtectedRoute allowedRoles={[USER_ROLE.USER.value]}/>,
+        element: <ProtectedRoute allowedRoles={[USER_ROLE.USER.value]} />,
         children: [
           {
             path: '',
@@ -81,18 +81,36 @@ const router = createBrowserRouter([
   },
   {
     path: "/instructor",
-    element: <ProtectedRoute allowedRoles={[USER_ROLE.INSTRUCTOR.value]}>
-      <InstructorMainLayout />
-    </ProtectedRoute>,
+    element: <ProtectedRoute allowedRoles={[USER_ROLE.INSTRUCTOR.value]} />,
     children: [
       {
-        path: "course-management",
-        element: <CourseManagement />,
+        path: '',
+        element: <InstructorMainLayout />,
+        children: [
+          {
+            path: "course-management",
+            element: <ProtectedRoute allowedRoles={[USER_ROLE.INSTRUCTOR.value]} />,
+            children: [
+              {
+                path: '',
+                element: <CourseManagement />,
+              }
+            ]
+          },
+          {
+            path: "module-management",
+            element: <ProtectedRoute allowedRoles={[USER_ROLE.INSTRUCTOR.value]} />,
+            children: [
+              {
+                path: '',
+                element: <ModuleManagement />,
+              }
+            ]
+          },
+        ]
+
       },
-      {
-        path: "module-management",
-        element: <ModuleManagement />,
-      },
+
     ],
   },
 ]);

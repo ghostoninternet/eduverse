@@ -3,13 +3,22 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuth } from "../../contexts/AuthContext";
 import { signInApi } from "../../apis/auth";
+import { USER_ROLE } from "../../constants/user";
 
 const SignIn = () => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [message, setMessage] = useState();
-  const { setAuthState } = useAuth();
+  const { authState, setAuthState } = useAuth();
   const navigate = useNavigate();
+
+  if (authState) {
+    if (authState.role == USER_ROLE.INSTRUCTOR) {
+      navigate('/instructor/course-management', { replace: true })
+    } else {
+      navigate('/', { replace: true })
+    }
+  }
 
   const validateEmail = (e) => {
     const input = e.target;
@@ -35,7 +44,11 @@ const SignIn = () => {
       if (response?.data) {
         setAuthState(response.data)
         toast(response.message, { type: "success" })
-        navigate('/', { replace: true })
+        if (response.data.role === USER_ROLE.USER) {
+          navigate('/', { replace: true })
+        } else {
+          navigate('/instructor/course-management', { replace: true })
+        }
       } else {
         setMessage(response.message);
       }

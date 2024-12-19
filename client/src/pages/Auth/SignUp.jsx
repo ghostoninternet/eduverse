@@ -10,8 +10,16 @@ function Signup() {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const [message, setMessage] = useState();
-  const { setAuthState } = useAuth()
+  const { authState, setAuthState } = useAuth()
   const navigate = useNavigate();
+
+  if (authState) {
+    if (authState.role == USER_ROLE.INSTRUCTOR) {
+      navigate('/instructor/course-management', { replace: true })
+    } else {
+      navigate('/', { replace: true })
+    }
+  }
 
   const validateEmail = (e) => {
     const input = e.target;
@@ -37,7 +45,11 @@ function Signup() {
       const response = await signUpApi(data)
       if (response?.data) {
         setAuthState(response.data)
-        navigate('/', { replace: true })
+        if (response.data.role === USER_ROLE.USER) {
+          navigate('/', { replace: true })
+        } else {
+          navigate('/instructor/course-management', { replace: true })
+        }
       } else {
         setMessage(response.message);
       }
