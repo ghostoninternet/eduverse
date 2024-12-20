@@ -221,7 +221,7 @@ const findCourses = async (filter = {}, limit = 12, page = 1) => {
     });
 };
 
-const findCourseBySlug = async (filter) => {
+const findCourseBySlug = async (filter={}) => {
   return await Courses.findOne(filter).lean()
     .then((data) => data)
     .catch((err) => {
