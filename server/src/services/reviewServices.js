@@ -143,6 +143,10 @@ const updateCourseReview = async (reviewId, userId, updateCourseReviewData) => {
     throw new CustomError.NotFoundError("No review found!");
   }
 
+  //Check ownership
+  if (!foundReview.userId.equals(userId)) {
+    throw new CustomError.ForbiddenError("You are not authorized to edit this review!");
+  }
   // Check course exist
   const foundCourse = await courseDaos.findCourseById(foundReview.courseId);
   if (!foundCourse) {
@@ -178,11 +182,21 @@ const updateCourseReview = async (reviewId, userId, updateCourseReviewData) => {
   return updatedCourseReview;
 };
 
-const deleteCourseReview = async (reviewId) => {
+const deleteCourseReview = async (reviewId, userId) => {
+  console.log("Service: Deleting review with ID:", reviewId); // Log reviewId
+  console.log("Service: Current userId:", userId); // Log userId
+  if (!mongoose.Types.ObjectId.isValid(reviewId)) {
+    throw new CustomError.BadRequestError("Invalid review ID");
+  }
   // Check review exist
   const foundReview = await reviewDaos.findCourseReviewById(reviewId);
   if (!foundReview) {
     throw new CustomError.NotFoundError("No review found!");
+  }
+
+  // Check ownership
+  if (!foundReview.userId.equals(userId)) {
+    throw new CustomError.ForbiddenError("You are not authorized to delete this review!");
   }
   // Check course exist
   const foundCourse = await courseDaos.findCourseById(foundReview.courseId);
