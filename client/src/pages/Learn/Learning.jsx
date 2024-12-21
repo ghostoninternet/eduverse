@@ -92,7 +92,12 @@ const Learn = () => {
   // Quản lý Enroll popup
   const handleEnrollClick = () => setIsEnrollPopupOpen(true);
   const handleCloseEnrollPopup = () => setIsEnrollPopupOpen(false);
-
+  const handleDeleteReview = (reviewId) => {
+    setReviews((prev) => ({
+      ...prev,
+      data: prev.data.filter((review) => review._id !== reviewId),
+    }));
+  };
   const handleSeeMore = () => {
     const newQueryParams = queryParams + 1;
     setQueryParams(newQueryParams);
@@ -120,7 +125,7 @@ const Learn = () => {
 
   return (
     <div className="">
-      <div className="bg-blue-100 px-16 h-[calc(100vh-3rem)] flex items-center">
+      <div className="bg-blue-100 px-16 h-[calc(80vh-2rem)] flex items-center">
         <div className="w-5/12">
           <h2 className="text-5xl font-semibold leading-tight">
             {loading ? "loading..." : courseDetail.courseTitle}
@@ -163,7 +168,7 @@ const Learn = () => {
             {loading ? (
               <CircularProgress />
             ) : (
-              <img src={courseDetail.courseImgUrl} className="w-3/4" />
+              <img src={courseDetail.courseImgUrl} className="w-1/2 max-h-[500px] rounded-md object-cover" alt="Course Image" />
             )}
           </div>
         </div>
@@ -358,12 +363,14 @@ const Learn = () => {
             </div>
             {reviews?.data?.map((review) => (
               <Review
-                key={review._id}
-                avatarUrl={review.userId.avatarUrl}
-                username={review.userId.username}
-                reviewContent={review.reviewContent}
-                createdAt={review.createdAt}
-                star={review.ratingStar}
+              key={review._id}
+              avatarUrl={review.userId.avatarUrl}
+              username={review.userId.username}
+              reviewContent={review.reviewContent}
+              createdAt={review.createdAt}
+              star={review.ratingStar}
+              reviewId={review._id}
+              onDelete={handleDeleteReview}
               />
             ))}
             {isMore && (

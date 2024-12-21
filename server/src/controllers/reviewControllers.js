@@ -23,7 +23,13 @@ const updateCourseReview = async (req, res, next) => {
 }
 
 const deleteCourseReview = async (req, res, next) => {
-  const deletedCourseReview = await reviewServices.deleteCourseReview(req.params.reviewId)
+  const { reviewId } = req.params;
+  const { userId } = req.user;
+
+  console.log("Backend: Received reviewId:", reviewId); // Log reviewId từ frontend
+  console.log("Backend: Current userId:", userId); // Log userId từ token
+
+  const deletedCourseReview = await reviewServices.deleteCourseReview(reviewId, userId)
   res.status(200).json(deletedCourseReview)
 }
 
