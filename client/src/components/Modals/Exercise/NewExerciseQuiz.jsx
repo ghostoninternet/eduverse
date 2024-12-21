@@ -1,6 +1,8 @@
-import React, { useState } from 'react'
+/* eslint-disable react/prop-types */
+import { useState } from 'react'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import DeleteIcon from '@mui/icons-material/Delete'
+import { toast } from 'react-toastify'
 
 function NewExerciseQuiz({
   isOpen,
@@ -10,21 +12,46 @@ function NewExerciseQuiz({
 }) {
   const [newQuiz, setNewQuiz] = useState({
     question: '',
-    options: [],
+    choices: [],
     anwser: '',
   })
 
   const handleDeleteQuiz = (index) => {
     setNewQuiz({
       ...newQuiz,
-      options: [...newQuiz.options.slice(0, index), ...newQuiz.options.slice(index+1)]
+      choices: [...newQuiz.choices.slice(0, index), ...newQuiz.choices.slice(index + 1)]
     })
+  }
+
+  const handleValidateQuiz = () => {
+    if (newQuiz.question == '') {
+      toast('Please provide the question for this quiz!', {
+        type: 'error',
+        autoClose: 2000,
+      })
+      return false
+    }
+    if (newQuiz.choices.length < 4) {
+      toast('Number of quiz choices must be larger than 4', {
+        type: 'error',
+        autoClose: 2000,
+      })
+      return false
+    }
+    if (!newQuiz.choices.includes(newQuiz.anwser)) {
+      toast('The answer provided is not available in choices!', {
+        type: 'error',
+        autoClose: 2000,
+      })
+      return false
+    }
+    return true
   }
 
   const refreshState = () => {
     setNewQuiz({
       question: '',
-      options: [],
+      choices: [],
       anwser: '',
     })
   }
@@ -63,17 +90,17 @@ function NewExerciseQuiz({
             <label className="w-2/5 font-bold text-base md:text-xl">Options</label>
             <div className='w-3/5'>
               {
-                newQuiz.options.map((option, index) => (
+                newQuiz.choices.map((option, index) => (
                   <>
                     <input
                       key={index}
                       value={option}
                       className="w-3/5 border-2 px-2 py-1 border-black rounded-xl mb-2"
                       onChange={(event) => {
-                        newQuiz.options[index] = event.target.value
+                        newQuiz.choices[index] = event.target.value
                         setNewQuiz({
                           ...newQuiz,
-                          options: [...newQuiz.options]
+                          choices: [...newQuiz.choices]
                         })
                       }}
                     />
@@ -86,12 +113,16 @@ function NewExerciseQuiz({
                   </>
                 ))
               }
-              <button onClick={() => setNewQuiz({
-                ...newQuiz,
-                options: [...newQuiz.options, '']
-              })} className='border-black border-2 rounded-xl w-3/5'>
-                <AddCircleIcon />
-              </button>
+              {
+                newQuiz.choices.length < 4 && (
+                  <button onClick={() => setNewQuiz({
+                    ...newQuiz,
+                    choices: [...newQuiz.choices, '']
+                  })} className='border-black border-2 rounded-xl w-3/5'>
+                    <AddCircleIcon />
+                  </button>
+                )
+              }
             </div>
           </div>
 
@@ -113,10 +144,12 @@ function NewExerciseQuiz({
         </div>
         <div className="flex justify-center">
           <button onClick={handleCancel} className="mx-5 px-2 py-1 bg-gray-500 font-bold text-white rounded-lg">Cancel</button>
-          <button onClick={() => { 
-            handleAdd(newQuiz)
-            refreshState()
-            setIsOpen(false)
+          <button onClick={() => {
+            if (handleValidateQuiz()) {
+              handleAdd(newQuiz)
+              refreshState()
+              setIsOpen(false)
+            }
           }} className="mx-5 px-2 py-1 bg-blue-700 font-bold text-white rounded-lg">Add</button>
         </div>
       </div>

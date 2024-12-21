@@ -1,9 +1,10 @@
 import customFetch from "../helpers/customFetch";
 
+const BASE_URL = 'http://localhost:8000/api/upload'
+
 const uploadImage = async(formData) => {
-    const url = "http://localhost:8000/api/upload/image";
     try {
-        const response = await customFetch(url, {
+        const response = await customFetch(`${BASE_URL}/image`, {
           method: "POST",
           body: formData,
         });
@@ -17,5 +18,19 @@ const uploadImage = async(formData) => {
         console.error(error.message);
     }
 } 
+
+export const uploadVideo = async (formData) => {
+    try {
+        const response = await customFetch(`${BASE_URL}/video`, {
+            method: "POST",
+            body: formData
+        })
+        const responseData = await response.json()
+        return responseData
+    } catch (error) {
+        console.log(error)
+        throw new Error(error)
+    }
+}
 
 export default uploadImage;
