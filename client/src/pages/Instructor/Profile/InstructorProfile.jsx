@@ -1,4 +1,5 @@
-import { useAuth } from "../../../contexts/authContext";
+import { useAuth } from "../../../contexts/AuthContext.jsx";
+import { UppercaseFirstLetter } from "../../../utils/string.js";
 
 export const Infor = (props) => {
   return (
@@ -15,7 +16,7 @@ const InstructorProfile = () => {
   return (
     <>
       <div className="flex pb-16">
-        <div className="w-1/3 flex flex-col items-center mt-20 gap-y-6">
+        <div className="w-1/3 flex flex-col items-center gap-y-6">
           <img
             src={authState.avatarUrl || "https://via.placeholder.com/300"}
             alt="User Avatar"
@@ -27,20 +28,17 @@ const InstructorProfile = () => {
           <p className="text-lg">{authState.email}</p>
         </div>
 
-        <div className="w-2/3 mt-20 flex flex-col gap-y-10">
-          {/* Personal Information Section */}
+        <div className="w-2/3 flex flex-col gap-y-10">
           <div className="flex flex-col gap-y-6">
             <h2 className="text-3xl font-semibold">Personal Information</h2>
-
+            <Infor title="Gender" description={UppercaseFirstLetter(authState.gender)} />
             <Infor title="Email" description={authState.email} />
             <Infor
               title="Location"
               description={authState.location || "Unknown"}
             />
-
           </div>
 
-          {/* Professional Section */}
           <div className="flex flex-col gap-y-6">
             <h2 className="text-3xl font-semibold">Professional Details</h2>
             <Infor

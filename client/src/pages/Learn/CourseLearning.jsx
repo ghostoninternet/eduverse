@@ -6,7 +6,7 @@ import StarIcon from "@mui/icons-material/Star";
 import Module from "../../components/Module";
 import getEnrolledCourseList from "../../apis/enrolled-course/getEnrolledCourseList";
 import { useParams, useLocation } from "react-router";
-import { useAuth } from "../../contexts/authContext";
+import { useAuth } from "../../contexts/AuthContext.jsx";
 import { useNavigate } from "react-router";
 import updateEnrolledCourseVideoProgress from "../../apis/enrolled-course/updateEnrolledCourseVideoProgress";
 import ExerciseDetail from "../../components/ExerciseDetail";
