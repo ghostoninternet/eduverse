@@ -143,7 +143,7 @@ const updateCourseReview = async (reviewId, userId, updateCourseReviewData) => {
     throw new CustomError.NotFoundError("No review found!");
   }
 
-  //Check ownership
+  // Check ownership
   if (!foundReview.userId.equals(userId)) {
     throw new CustomError.ForbiddenError("You are not authorized to edit this review!");
   }
@@ -205,8 +205,8 @@ const deleteCourseReview = async (reviewId, userId) => {
   }
 
   // Delete review
-  await reviewDaos.deleteCourseReview(reviewId);
-
+  await reviewDaos.deleteCourseReview(reviewId)
+  
   // Recalculate rating average and update number of reviews
   recalculateRatingAvg(foundCourse._id, foundCourse);
   foundCourse.courseReviewCount -= 1;
