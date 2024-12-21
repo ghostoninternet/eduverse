@@ -1,14 +1,43 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import MenuIcon from '@mui/icons-material/Menu'
-import { Outlet, Link, useLocation } from 'react-router-dom'
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import { INSTRUCTOR_ROUTES } from '../constants/routes.js'
 import { INSTRUCTOR_NAVBAR } from '../constants/navbar.js'
 import { useAuth } from '../contexts/AuthContext.jsx'
+import logout from '../apis/logout.js'
+import { toast } from 'react-toastify'
 
 function InstructorMainLayout() {
+  const [currentTab, setCurrentTab] = useState('')
   const location = useLocation()
-  const { authState } = useAuth()
+  const navigate = useNavigate()
+  const { authState, setAuthState } = useAuth()
   const [openSidebar, setOpenSidebar] = useState(false)
+
+  const handleLogout = async () => {
+    try {
+      const response = await logout()
+      toast(response.message, {
+        type: 'success',
+        autoClose: 2000,
+      })
+      setAuthState(null)
+      navigate('/signin', { replace: true })
+    } catch (error) {
+      toast(error.message, {
+        type: 'error',
+        autoClose: 2000,
+      })
+    }
+  }
+
+  useEffect(() => {
+    Object.keys(INSTRUCTOR_ROUTES).forEach((route) => {
+      if (INSTRUCTOR_ROUTES[route] == location.pathname) {
+        setCurrentTab(INSTRUCTOR_NAVBAR[route])
+      }
+    })
+  }, [location.pathname])
 
   return (
     <div className='lg:flex'>
@@ -35,6 +64,9 @@ function InstructorMainLayout() {
                 )
               })
             }
+            <button onClick={handleLogout} className={`block w-[90%] text-center font-bold text-lg py-1 px-2 rounded-2xl shadow-2xl bg-slate-300`}>
+              Logout
+            </button>
           </div>
 
           <div className="text-2xl font-bold text-blue-700 flex justify-center items-center py-3 px-4">
@@ -45,7 +77,7 @@ function InstructorMainLayout() {
 
       <div className='lg:hidden flex justify-between py-2 px-5 rounded-b-2xl shadow-lg'>
         <div className='text-xl font-bold'>
-          Course Management
+          {currentTab}
         </div>
         <div>
           <button onClick={() => setOpenSidebar(!openSidebar)}>
@@ -76,6 +108,9 @@ function InstructorMainLayout() {
                 )
               })
             }
+            <button onClick={handleLogout} className={`block w-[90%] text-center font-bold text-lg py-1 px-2 rounded-2xl shadow-2xl bg-slate-300`}>
+              Logout
+            </button>
           </div>
 
           <div className="text-2xl font-bold text-blue-700 flex justify-center items-center py-3 px-4">
@@ -86,7 +121,7 @@ function InstructorMainLayout() {
 
       <div className='lg:mt-10 lg:ml-10'>
         <div className='hidden lg:block lg:font-bold px-10 text-3xl'>
-          Course Management
+          {currentTab}
         </div>
         <div className='lg:w-[80vw]'>
           <Outlet />
