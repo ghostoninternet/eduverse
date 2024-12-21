@@ -20,9 +20,11 @@ const findCategoryById = async (categoryId) => {
 }
 
 const findCategoryByName = async (categoryName) => {
-  return await Categories.findOne({
-    categoryName: categoryName
-  })
+  return await Categories.aggregate([
+    {
+      $match: {categoryName: {$in : categoryName}}
+    }
+  ])
   .then(data => data)
   .catch(err => {
     console.log(err)
