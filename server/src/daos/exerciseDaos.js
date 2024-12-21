@@ -1,4 +1,5 @@
 import Exercises from "../models/exerciseModel.js"
+import CustomError from "../errors/customError.js"
 
 const countExercises = async (filter) => {
   return await Exercises.countDocuments(filter)

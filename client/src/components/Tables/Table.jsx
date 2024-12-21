@@ -13,7 +13,7 @@ function Table({
   
   const calculateCurrentDisplayRange = () => {
     const start = (currentPage - 1) * limitPerPage + 1
-    const end = currentPage * limitPerPage
+    const end = currentPage * limitPerPage < totalCourses ? currentPage * limitPerPage : totalCourses
     return (
       <span className="font-semibold text-gray-900">{start} - {end}</span>
     )
@@ -21,7 +21,6 @@ function Table({
 
   const previousPage = () => {
     if (currentPage == 1) return
-    console.log(currentPage)
     setCurrentPage(currentPage - 1)
   }
 

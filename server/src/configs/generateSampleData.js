@@ -273,8 +273,9 @@ export default async function generateSampleData() {
           })
         }
 
+        const foundModule = await Modules.findById(totalModules[i1]._id)
         const newExercise = await Exercises.create({
-          exerciseInstructor: getRandomElement(instructors),
+          exerciseInstructor: foundModule.moduleInstructor,
           exerciseModule: totalModules[i1]._id,
           exerciseName: `Exercise ${i2 + 1}`,
           exerciseQuizes,

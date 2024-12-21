@@ -3,9 +3,11 @@ import MenuIcon from '@mui/icons-material/Menu'
 import { Outlet, Link, useLocation } from 'react-router-dom'
 import { INSTRUCTOR_ROUTES } from '../constants/routes.js'
 import { INSTRUCTOR_NAVBAR } from '../constants/navbar.js'
+import { useAuth } from '../contexts/AuthContext.jsx'
 
 function InstructorMainLayout() {
   const location = useLocation()
+  const { authState } = useAuth()
   const [openSidebar, setOpenSidebar] = useState(false)
 
   return (
@@ -15,11 +17,11 @@ function InstructorMainLayout() {
         <div className='flex flex-col justify-around'>
           <div className='flex flex-col items-center gap-2 h-[15dvh]'>
             <img
-              className='w-[50%] h-96 rounded-[50%]'
-              src={'https://practicaltyping.com/wp-content/uploads/2019/02/kurisu.jpg'}
+              className='w-[40%] h-96 rounded-[50%]'
+              src={authState.avatarUrl}
             />
             <div className='text-xl font-bold mt-3'>
-              Instructor Name
+              {authState.username}
             </div>
           </div>
 
@@ -56,11 +58,11 @@ function InstructorMainLayout() {
         <div className='w-full flex flex-col justify-around'>
           <div className='flex flex-col items-center gap-2 h-[15dvh]'>
             <img
-              className='w-[50%] h-96 rounded-[50%]'
-              src={'https://practicaltyping.com/wp-content/uploads/2019/02/kurisu.jpg'}
+              className='w-[40%] h-96 rounded-[50%]'
+              src={authState.avatarUrl}
             />
             <div className='text-xl text-center font-bold mt-3'>
-              Instructor Name
+              {authState.username}
             </div>
           </div>
 
