@@ -20,11 +20,7 @@ const Learn = () => {
   });
   const [courseDetail, setCourseDetail] = useState({});
   const [isEnrollPopupOpen, setIsEnrollPopupOpen] = useState(false); // State Enroll popup
-  const [isLeaveReviewOpen, setIsLeaveReviewOpen] = useState(false); // State popup Leave Review
-  const [newReview, setNewReview] = useState({
-    content: "",
-    rating: 0,
-  });
+
   useEffect(() => {
     if (
       3 * queryParams ===

@@ -4,6 +4,8 @@ import userDaos from "../daos/userDaos.js"
 import CustomError from "../errors/customError.js"
 import formatValue from "../utils/formatValue.js"
 import includeObjectKeys from "../utils/includeObjectKeys.js"
+import mongoose from 'mongoose';
+
 
 const recalculateRatingAvg = async (courseId, course) => {
   const allReviews = await reviewDaos.findAllCourseReviews(courseId)
@@ -17,10 +19,16 @@ const recalculateRatingAvg = async (courseId, course) => {
 }
 
 const getCourseReviews = async (courseId, limit, page) => {
-  // Check course exist
-  const foundCourse = await courseDaos.findCourseById(courseId)
+  if (!mongoose.Types.ObjectId.isValid(courseId)) {
+    const course = await courseDaos.findCourseBySlug({ courseSlug: courseId });
+    if (!course) {
+      throw new CustomError.BadRequestError("Invalid course ID or slug");
+    }
+    courseId = course._id; // Chuyển đổi slug thành ObjectId
+  }
+  const foundCourse = await courseDaos.findCourseById(courseId);
   if (!foundCourse) {
-    throw new CustomError.NotFoundError("No course found!")
+    throw new CustomError.NotFoundError("No course found!");
   }
 
   // Find reviews
