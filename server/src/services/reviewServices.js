@@ -202,9 +202,9 @@ const deleteCourseReview = async (reviewId, userId) => {
   await reviewDaos.deleteCourseReview(reviewId)
   
   // Recalculate rating average and update number of reviews
-  recalculateRatingAvg(foundCourse._id, foundCourse)
+  await recalculateRatingAvg(foundCourse._id, foundCourse)
   foundCourse.courseReviewCount -= 1
-  courseDaos.updateCourse(foundCourse._id, {
+  await courseDaos.updateCourse(foundCourse._id, {
     courseReviewCount: foundCourse.courseReviewCount
   })
 

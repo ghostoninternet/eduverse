@@ -97,6 +97,18 @@ const Learn = () => {
       data: prev.data.filter((review) => review._id !== reviewId),
     }));
   };
+  const handleUpdateReview = async (reviewId, newContent, newRating) => {
+    setReviews((prev) => ({
+      ...prev,
+      data: prev.data.map((r) =>
+        r._id === reviewId ? { ...r, reviewContent: newContent, ratingStar: newRating } : r
+      ),
+    }));
+
+    // Fetch updated course details to update courseRatingAvg
+    const updatedCourseDetails = await getCourseDetail(courseSlug);
+    setCourseDetail(updatedCourseDetails);
+  };
   const handleSeeMore = () => {
     const newQueryParams = queryParams + 1;
     setQueryParams(newQueryParams);
@@ -337,7 +349,9 @@ const Learn = () => {
               star={review.ratingStar}
               reviewId={review._id}
               onDelete={handleDeleteReview}
-              />
+              onUpdate={handleUpdateReview}
+            />
+            
             ))}
             {isMore && (
               <div
