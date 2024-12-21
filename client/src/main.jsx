@@ -19,6 +19,8 @@ import CourseLearning from "./pages/Learn/CourseLearning.jsx";
 import ModuleManagement from "./pages/Instructor/ModuleManagement/ModuleManagement.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { USER_ROLE } from './constants/user.js';
+import InstructorProfile from "./pages/Instructor/Profile/InstructorProfile.jsx";
+import Dashboard from "./pages/Instructor/Dashboard/Dashboard.jsx";
 
 const router = createBrowserRouter([
   {
@@ -88,6 +90,16 @@ const router = createBrowserRouter([
         element: <InstructorMainLayout />,
         children: [
           {
+            path: "dashboard",
+            element: <ProtectedRoute allowedRoles={[USER_ROLE.INSTRUCTOR.value]} />,
+            children: [
+              {
+                path: '',
+                element: <Dashboard />,
+              }
+            ]
+          },
+          {
             path: "course-management",
             element: <ProtectedRoute allowedRoles={[USER_ROLE.INSTRUCTOR.value]} />,
             children: [
@@ -104,6 +116,16 @@ const router = createBrowserRouter([
               {
                 path: '',
                 element: <ModuleManagement />,
+              }
+            ]
+          },
+          {
+            path: "profile",
+            element: <ProtectedRoute allowedRoles={[USER_ROLE.INSTRUCTOR.value]} />,
+            children: [
+              {
+                path: '',
+                element: <InstructorProfile />,
               }
             ]
           },
