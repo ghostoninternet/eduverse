@@ -25,8 +25,8 @@ function CourseReview({
         <div className="flex items-center">
           <p className="inline-flex items-center mr-3 text-sm text-gray-900 font-semibold"><img
             className="mr-2 w-6 h-6 rounded-full"
-            src={courseReview.userInfo.avatarUrl}
-            alt="Michael Gough" />{courseReview.userInfo.username}</p>
+            src={courseReview.userId.avatarUrl}
+            alt="Michael Gough" />{courseReview.userId.username}</p>
           <p className="text-sm">{(new Date(courseReview.createdAt)).toUTCString()}</p>
         </div>
         {

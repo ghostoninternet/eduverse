@@ -9,3 +9,8 @@ export const COURSE_MANAGEMENT_TABLE_HEADER = [
   'Has Deleted',
   'Action',
 ]
+
+export const COURSE_STATUS = {
+  PUBLIC: 'public',
+  DRAFT: 'draft',
+}

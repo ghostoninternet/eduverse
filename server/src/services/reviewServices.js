@@ -88,6 +88,7 @@ const getCourseReviews = async (courseId, limit, page) => {
       fiveStar: formatValue(fiveStar / totalReviews * 100)
     },
     pagination: {
+      totalReviews,
       totalPages,
       currentPage: page,
       itemPerPage: limit,

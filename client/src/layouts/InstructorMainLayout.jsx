@@ -41,7 +41,7 @@ function InstructorMainLayout() {
 
   return (
     <div className="min-h-screen">
-      <div className={`lg:hidden fixed top-0 left-0 h-screen bg-slate-100 shadow-lg z-50 transition-all duration-300 
+      <div className={`lg:hidden fixed top-0 left-0 h-screen bg-slate-100 shadow-lg z-20 transition-all duration-300 
         ${openSidebar ? 'w-60' : 'w-0'} rounded-br-3xl rounded-tr-3xl overflow-hidden`}>
         <button onClick={() => setOpenSidebar(false)} className="absolute top-4 right-4 bg-slate-300 px-2 py-1 rounded-full">
           X

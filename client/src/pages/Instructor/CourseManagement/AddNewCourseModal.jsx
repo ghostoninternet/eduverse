@@ -1,7 +1,8 @@
 /* eslint-disable react/prop-types */
 import { useState } from 'react'
 import MultiSelectDropdown from '../../../components/Input/MultiSelectDropdown ';
-import uploadImage from '../../../apis/upload';
+import { uploadImage } from '../../../apis/upload';
+import { toast } from 'react-toastify';
 
 function AddNewCourseModal({
   category,
@@ -33,19 +34,67 @@ function AddNewCourseModal({
   };
   const isSelected = (item) => selectedItems.includes(item);
 
+  const validateData = () => {
+    if (newCourseData.courseTitle == '') {
+      toast('Please provide course title!', {
+        type: 'error',
+        autoClose: 2000,
+      })
+      return false
+    }
+    if (newCourseData.courseDescription == '') {
+      toast('Please provide course description!', {
+        type: 'error',
+        autoClose: 2000,
+      })
+      return false
+    }
+    if (newCourseData.courseImgUrl == '') {
+      toast('Please provide course image!', {
+        type: 'error',
+        autoClose: 2000,
+      })
+      return false
+    }
+    if (newCourseData.courseCategory.length == 0) {
+      toast('Please provide at least one course category!', {
+        type: 'error',
+        autoClose: 2000,
+      })
+      return false
+    }
+    return true
+  }
+
   const handleCourseImgChange = async (e) => {
     if (e.target.files) {
       try {
         const formData = new FormData();
         formData.append('image', e.target.files[0]);
         const response = await uploadImage(formData);
+        if (response?.statusCode) {
+          throw new Error(response.message)
+        }
         const courseImgUrl = response.data;
         setNewCourseData({ ...newCourseData, courseImgUrl: courseImgUrl });
+        toast('Successfully uploaded a new image', {
+          type: "success",
+          autoClose: 1000,
+        })
       } catch (error) {
         console.log(error);
+        toast(error.message, {
+          type: "error",
+          autoClose: 2000,
+        })
       }
     }
   };
+  const handleAddCourse = () => {
+    if (validateData()) {
+      handleAddNewCourse()
+    }
+  }
   const handleCancelAndClose = () => {
     setSelectedItems([])
     setShowAddNewCourse(false)
@@ -59,7 +108,7 @@ function AddNewCourseModal({
   }
 
   return (
-    <div className={`${showAddNewCourse ? '' : 'hidden'} absolute top-0 right-0 left-0 bottom-0 bg-slate-950/50 w-full h-full`}>
+    <div className={`${showAddNewCourse ? '' : 'hidden'} absolute z-50 top-0 right-0 left-0 bottom-0 bg-slate-950/50 w-full h-full`}>
       <div onClick={(e) => { e.stopPropagation() }} className="w-4/5 mx-auto mt-10 p-3 border-2 bg-white rounded-2xl lg:w-3/5">
         <div className="flex justify-between mb-4">
           <div className="font-bold text-2xl">New Course</div>
@@ -123,7 +172,7 @@ function AddNewCourseModal({
           <button onClick={handleCancelAndClose} className="mx-5 px-2 py-1 bg-gray-500 font-bold text-white rounded-lg">Cancel</button>
           <button onClick={() => {
             setSelectedItems([])
-            handleAddNewCourse()
+            handleAddCourse()
           }} className="mx-5 px-2 py-1 bg-blue-700 font-bold text-white rounded-lg">Add</button>
         </div>
       </div>
