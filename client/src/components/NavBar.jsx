@@ -153,7 +153,7 @@ const NavBar = () => {
           </div>
         ) : (
           <button
-            className="bg-blue-600 text-white border rounded-full px-4 hover:bg-blue-700"
+            className="bg-blue-600 text-white border rounded-full px-6 py-2 font-semibold hover:bg-blue-700"
             onClick={handleLoginClick}
           >
             Login

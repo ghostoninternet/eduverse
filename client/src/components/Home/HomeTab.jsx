@@ -8,15 +8,15 @@ const optionsFilterBy = [
   },
   {
     id: "2",
-    title: "Data Science",
+    title: "Entrepreneurship",
   },
   {
     id: "3",
-    title: "Computer Science",
+    title: "Data Analysis",
   },
   {
     id: "4",
-    title: "Language Learning",
+    title: "Cryptography",
   },
   {
     id: "5",
@@ -24,7 +24,7 @@ const optionsFilterBy = [
   },
   {
     id: "6",
-    title: "Machine Learning",
+    title: "Cloud Applications",
   },
 ];
 
