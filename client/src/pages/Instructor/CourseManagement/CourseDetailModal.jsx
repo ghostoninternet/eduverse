@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from 'react'
+import { toast } from 'react-toastify'
 import ModuleContent from '../../../components/Accordion/ModuleContent'
 import CourseReview from '../../../components/CourseReview'
 import MultiSelectDropdown from '../../../components/Input/MultiSelectDropdown '
@@ -7,7 +8,23 @@ import { getInstructorCourseDetail } from '../../../apis/course/instructorCourse
 import Spinner from '../../../components/Spinner/Spinner'
 import getInstructorCourseReview from '../../../apis/review/getInstructorCourseReview'
 import deleteCourseReview from '../../../apis/review/deleteCourseReview'
-import uploadImage from '../../../apis/upload'
+import { uploadImage } from '../../../apis/upload'
+import SelectDropdown from '../../../components/Input/SelectDropdown'
+import { COURSE_STATUS } from '../../../constants/course'
+
+function CourseStatus({ courseStatus }) {
+  return (
+    <div>
+      {
+        courseStatus == "draft" ? (
+          <span className="uppercase bg-slate-300 font-bold px-2 py-1 rounded-lg text-xs">{courseStatus}</span>
+        ) : (
+          <span className="uppercase bg-green-600 text-white font-bold px-2 py-1 rounded-lg text-xs">{courseStatus}</span>
+        )
+      }
+    </div>
+  )
+}
 
 function CourseDetailModal({
   courseId,
@@ -20,7 +37,12 @@ function CourseDetailModal({
   setIsEditMode,
   handleEditCourse,
 }) {
-
+  const optionCourseStatus = Object.keys(COURSE_STATUS).map(status => {
+    return {
+      value: COURSE_STATUS[status],
+      label: status
+    }
+  })
   const [courseDetail, setCourseDetail] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isFetchError, setIsFetchError] = useState(false);
@@ -29,7 +51,7 @@ function CourseDetailModal({
   const [isLoadingCourseReviews, setIsLoadingCourseReviews] = useState(true);
   const [isFetchCourseReviewError, setIsFetchCourseReviewError] = useState(false);
   const [totalReviews, setTotalReviews] = useState(0)
-  const [totalPages, setTotalPages] = useState(null)
+  const [totalPages, setTotalPages] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
   const [limitPerPage, setLimitPerPage] = useState(5)
 
@@ -54,9 +76,16 @@ function CourseDetailModal({
   };
   const isSelected = (item) => selectedItems.includes(item);
 
+  const handleChangeCourseStatus = (newStatus) => {
+    setEditCourseData({
+      ...editCourseData,
+      courseStatus: newStatus,
+    })
+  }
+
   const calculateCurrentDisplayRange = () => {
     const start = (currentPage - 1) * limitPerPage + 1
-    const end = currentPage * limitPerPage
+    const end = currentPage * limitPerPage > totalReviews ? totalReviews : currentPage * limitPerPage
     return (
       <span className="font-semibold text-gray-900">{start} - {end}</span>
     )
@@ -94,6 +123,7 @@ function CourseDetailModal({
       }),
       coursePrice: courseDetail.coursePrice,
       courseImgUrl: courseDetail.courseImgUrl,
+      courseStatus: courseDetail.courseStatus,
     })
     setIsEditMode(false)
     setOpen(false)
@@ -107,8 +137,10 @@ function CourseDetailModal({
     try {
       if (courseId) {
         const courseDetail = await getInstructorCourseDetail(courseId)
+        if (courseDetail?.statusCode) {
+          throw new Error(courseDetail.message)
+        }
         setCourseDetail(courseDetail)
-        console.log(courseDetail)
         setEditCourseData({
           courseTitle: courseDetail.courseTitle,
           courseDescription: courseDetail.courseDescription,
@@ -119,14 +151,23 @@ function CourseDetailModal({
           }),
           coursePrice: courseDetail.coursePrice,
           courseImgUrl: courseDetail.courseImgUrl,
+          courseStatus: courseDetail.courseStatus,
         })
         setSelectedItems(courseDetail.courseCategory)
         setIsFetchError(false)
+        toast('Successfully get course detail!', {
+          type: 'success',
+          autoClose: 1000,
+        })
       }
     } catch (error) {
       console.error(error)
       setCourseDetail(null)
       setIsFetchError(true)
+      toast(error.message, {
+        type: 'error',
+        autoClose: 2000,
+      })
     } finally {
       setIsLoading(false)
     }
@@ -135,27 +176,38 @@ function CourseDetailModal({
     try {
       if (courseId) {
         const responseData = await getInstructorCourseReview(courseId, limit, page)
+        if (responseData?.statusCode) {
+          throw new Error(responseData.message)
+        }
         if (responseData.length == 0) {
           setCourseReviews(null)
           setIsFetchCourseReviewError(false)
-          setCurrentPage(0)
-          setLimitPerPage(0)
-          setTotalPages(0)
-          setTotalReviews(null)
+          setTotalReviews(0)
+          setTotalPages(1)
+          setCurrentPage(1)
+          setLimitPerPage(5)
         } else {
           const courseReviews = responseData.data
           setCourseReviews(courseReviews)
           setCurrentPage(Number.parseInt(responseData.pagination.currentPage))
-          setLimitPerPage(Number.parseInt(responseData.pagination.limitPerPage))
+          setLimitPerPage(Number.parseInt(responseData.pagination.itemPerPage))
           setTotalPages(Number.parseInt(responseData.pagination.totalPages))
           setTotalReviews(Number.parseInt(responseData.pagination.totalReviews))
           setIsFetchCourseReviewError(false)
         }
+        toast('Successfully get course reviews', {
+          type: 'success',
+          autoClose: 1000,
+        })
       }
     } catch (error) {
       console.error(error)
       setCourseReviews(null)
       setIsFetchCourseReviewError(true)
+      toast(error.message, {
+        type: 'error',
+        autoClose: 2000,
+      })
     } finally {
       setIsLoadingCourseReviews(false)
     }
@@ -175,11 +227,14 @@ function CourseDetailModal({
     fetchInstructorCourseDetail()
   }, [])
   useEffect(() => {
-    fetchInstructorCourseReview(limitPerPage, currentPage)
-  }, [limitPerPage, currentPage])
+    if (courseId && limitPerPage) {
+      console.log('🚀 ~ useEffect ~ limitPerPage:', limitPerPage)
+      fetchInstructorCourseReview(limitPerPage, currentPage);
+    }
+  }, [courseId, currentPage]);
 
   return (
-    <div className={`${isOpen ? '' : 'hidden'} absolute top-0 right-0 left-0 bottom-0 bg-slate-950/50 w-full h-full`}>
+    <div className={`${isOpen ? '' : 'hidden'} absolute z-50 top-0 right-0 left-0 bottom-0 bg-slate-950/50 w-full h-full`}>
       <div onClick={(e) => { e.stopPropagation() }} className="w-4/5 max-h-[90dvh] overflow-auto mx-auto mt-10 p-3 border-2 bg-white rounded-2xl lg:px-8">
         <div className='flex justify-end'>
           <button onClick={() => {
@@ -207,7 +262,7 @@ function CourseDetailModal({
               </div>
               <div className='mb-10'>
                 <div className="flex w-full mb-2">
-                  <p className="w-2/5 font-bold text-base">Course Title</p>
+                  <p className="w-2/5 font-bold text-xl">Course Title</p>
                   {
                     isEditMode ? (
                       <input
@@ -220,12 +275,12 @@ function CourseDetailModal({
                         className="w-3/5 border-2 px-2 py-1 border-black rounded-xl"
                       />
                     ) : (
-                      <p className="w-3/5 text-base">{courseDetail.courseTitle}</p>
+                      <p className="w-3/5 text-xl">{courseDetail.courseTitle}</p>
                     )
                   }
                 </div>
                 <div className="flex w-full mb-2">
-                  <p className="w-2/5 font-bold text-base">Course Description</p>
+                  <p className="w-2/5 font-bold text-xl">Course Description</p>
                   {
                     isEditMode ? (
                       <textarea
@@ -238,12 +293,28 @@ function CourseDetailModal({
                         className="w-3/5 border-2 px-2 py-1 border-black rounded-xl"
                       />
                     ) : (
-                      <p className="w-3/5 text-base">{courseDetail.courseDescription}</p>
+                      <p className="w-3/5 text-xl">{courseDetail.courseDescription}</p>
                     )
                   }
                 </div>
                 <div className="flex w-full mb-2">
-                  <p className="w-2/5 font-bold text-base">Course Category</p>
+                  <p className="w-2/5 font-bold text-xl">Course Status</p>
+                  {
+                    isEditMode ? (
+                      <div className='relative w-3/5 border-2  border-black rounded-xl cursor-pointer'>
+                        <SelectDropdown
+                          options={optionCourseStatus}
+                          setSelectedOptions={handleChangeCourseStatus}
+                          hasDefault={false}
+                        />
+                      </div>
+                    ) : (
+                      <p className="w-3/5 text-xl"><CourseStatus courseStatus={courseDetail.courseStatus} /></p>
+                    )
+                  }
+                </div>
+                <div className="flex w-full mb-2">
+                  <p className="w-2/5 font-bold text-xl">Course Category</p>
                   {
                     isEditMode ? (
                       <div className="relative w-3/5 border-2 px-2 py-1 border-black rounded-xl cursor-pointer">
@@ -272,7 +343,7 @@ function CourseDetailModal({
 
                 </div>
                 <div className="flex w-full items-center mb-2">
-                  <p className="w-2/5 font-bold text-base">Course Price</p>
+                  <p className="w-2/5 font-bold text-xl">Course Price</p>
                   {
                     isEditMode ? (
                       <input
@@ -287,7 +358,7 @@ function CourseDetailModal({
                         className="w-3/5 border-2 px-2 py-1 border-black rounded-xl"
                       />
                     ) : (
-                      <p className="w-3/5 text-base">{courseDetail.coursePrice}$</p>
+                      <p className="w-3/5 text-xl">{courseDetail.coursePrice}$</p>
                     )
                   }
                 </div>
@@ -302,12 +373,12 @@ function CourseDetailModal({
                   )
                 }
                 <div className="flex w-full items-center mb-2">
-                  <p className="w-2/5 font-bold text-base">Rating</p>
-                  <p className="w-3/5 text-base">{courseDetail.courseRatingAvg}</p>
+                  <p className="w-2/5 font-bold text-xl">Rating</p>
+                  <p className="w-3/5 text-xl">{courseDetail.courseRatingAvg}</p>
                 </div>
                 <div className="flex w-full items-center mb-2">
-                  <p className="w-2/5 font-bold text-base">Number Of Learner</p>
-                  <p className="w-3/5 text-base">{courseDetail.courseLearnerCount}</p>
+                  <p className="w-2/5 font-bold text-xl">Number Of Learner</p>
+                  <p className="w-3/5 text-xl">{courseDetail.courseLearnerCount}</p>
                 </div>
               </div>
 
@@ -332,7 +403,7 @@ function CourseDetailModal({
                   ) : (
                     <>
                       {
-                        courseReviews.map(courseReview => (
+                        courseReviews && courseReviews.map(courseReview => (
                           <CourseReview
                             key={courseReview._id}
                             courseReview={courseReview}
