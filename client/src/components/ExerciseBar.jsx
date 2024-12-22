@@ -41,6 +41,7 @@ Exercise.propTypes = {
   handleExerciseClick: PropTypes.func,
   exerciseName: PropTypes.string,
   latestSubmitDate: PropTypes.string,
+  isChecked: PropTypes.bool
 }
 
 export default Exercise;

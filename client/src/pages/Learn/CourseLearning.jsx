@@ -119,7 +119,7 @@ const CourseLearning = () => {
     };
 
     fetchedEnrolledCourse();
-  }, [params.courseId, update, location.search, score, isSubmitted, isLoading]);
+  }, [params.courseId, update, location.search, score, isSubmitted, isLoading, currentExercise.moduleId, currentExercise.exerciseName]);
 
   const handleVideoClick = (videoTitle, moduleId, videoUrl, videoId) => {
     navigate(location.pathname);
@@ -144,6 +144,7 @@ const CourseLearning = () => {
     moduleId,
     exerciseName
   ) => {
+    setScore(0);
     setIsLoading(true);
     setCurrentExercise({
       exerciseId: exerciseId,
@@ -209,7 +210,7 @@ const CourseLearning = () => {
   useEffect(() => {
     const tempScore = (correctCount / quizes?.exerciseQuizes?.length) * 100;
     setScore(tempScore);
-  }, [correctCount]);
+  }, [correctCount, quizes?.exerciseQuizes?.length]);
 
   useEffect(() => {
     console.log(score);
@@ -236,7 +237,7 @@ const CourseLearning = () => {
     if (isSubmitted) {
       updateEx(); // Call the function
     }
-  }, [isSubmitted, score]);
+  }, [isSubmitted, score, authState?._id, currentExercise.exerciseId, currentExercise.moduleId, params.courseId]);
 
   if (!authState) {
     navigate("/signin");
