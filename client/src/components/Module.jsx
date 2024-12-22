@@ -68,7 +68,7 @@ const Module = ({
             {exercises?.map((exercise) => (
               <ExerciseBar
                 key={exercise._id}
-                handleExerciseClick={() => handleExerciseClick(exercise.exerciseId)}
+                handleExerciseClick={() => handleExerciseClick(exercise.exerciseId, exercise.exerciseName)}
                 exerciseName={exercise.exerciseName}
                 isPlaying={exerciseId == exercise.exerciseId}
                 latestSubmitDate={exercise?.previousSubmitDate}
