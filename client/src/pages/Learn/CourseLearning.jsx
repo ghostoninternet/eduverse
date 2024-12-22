@@ -10,10 +10,11 @@ import { useAuth } from "../../contexts/authContext";
 import { useNavigate } from "react-router";
 import updateEnrolledCourseVideoProgress from "../../apis/enrolled-course/updateEnrolledCourseVideoProgress";
 import ExerciseDetail from "../../components/ExerciseDetail";
-import getExerciseDetail from "../../apis/exercise/getExerciseDetail";
 import createCourseReview from "../../apis/review/createCourseReview";
 import updateExerciseProgress from "../../apis/exercise/updateExerciseProgress";
+import CircularProgress from "@mui/material/CircularProgress";
 const CourseLearning = () => {
+  const [isLoading, setIsLoading] = useState(true);
   let location = useLocation();
   let params = useParams();
   const navigate = useNavigate();
@@ -41,6 +42,7 @@ const CourseLearning = () => {
   const [currentExercise, setCurrentExercise] = useState({
     exerciseId: null,
     exerciseName: null,
+    moduleId: null,
     choices: [],
   });
 
@@ -68,7 +70,7 @@ const CourseLearning = () => {
         // Call the API to mark the video as completed
         setUpdate(!update);
         await updateEnrolledCourseVideoProgress(
-          authState?.user._id.toString(),
+          authState?._id.toString(),
           params.courseId,
           {
             moduleId: currentVideo?.moduleId,
@@ -81,15 +83,16 @@ const CourseLearning = () => {
   useEffect(() => {
     const fetchedEnrolledCourse = async () => {
       try {
-        const queryParams = new URLSearchParams(location.search);
-        const exerciseIdValue = queryParams.get("exercise");
-
         const response = await getEnrolledCourseList.getEnrolledCourseDetail(
           params.courseId
         );
-        const fetchedExercise = await getExerciseDetail(exerciseIdValue);
-        setQuizes(fetchedExercise);
-        setCurrentExercise({ exerciseId: exerciseIdValue });
+        let currentModule = response?.courseModulesProgress?.filter(
+          (module) => module.moduleId == currentExercise.moduleId
+        );
+        let isExercise = currentModule[0]?.moduleExercises?.filter(
+          (exercise) => exercise.exerciseName == currentExercise.exerciseName
+        );
+        setQuizes(isExercise?.[0]);
         setEnrolledCourseDetail(response);
         for (let i = 0; i < response?.courseModulesProgress.length; i++) {
           const unfinishedVideo = response?.courseModulesProgress[
@@ -110,11 +113,13 @@ const CourseLearning = () => {
         }
       } catch (error) {
         console.error("Error fetching courses:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchedEnrolledCourse();
-  }, [params.courseId, update, location.search, score, isSubmitted]);
+  }, [params.courseId, update, location.search, score, isSubmitted, isLoading]);
 
   const handleVideoClick = (videoTitle, moduleId, videoUrl, videoId) => {
     navigate(location.pathname);
@@ -133,7 +138,18 @@ const CourseLearning = () => {
     setIsSubmitted(false);
     setIsReady(!isReady);
   };
-  const handleExerciseClick = (courseId, exerciseId) => {
+  const handleExerciseClick = (
+    courseId,
+    exerciseId,
+    moduleId,
+    exerciseName
+  ) => {
+    setIsLoading(true);
+    setCurrentExercise({
+      exerciseId: exerciseId,
+      moduleId: moduleId,
+      exerciseName: exerciseName,
+    });
     navigate(`/enrolledCourse/${courseId}?exercise=${exerciseId}`);
     setIsReady(false);
     setDisplayType("exercise");
@@ -153,7 +169,7 @@ const CourseLearning = () => {
     };
 
     try {
-      const response = await createCourseReview(authState.user._id, reviewData);
+      const response = await createCourseReview(authState?._id, reviewData);
       console.log("Review created:", response);
 
       // Reset form sau khi gửi thành công
@@ -190,10 +206,8 @@ const CourseLearning = () => {
     }
   };
 
-
   useEffect(() => {
     const tempScore = (correctCount / quizes?.exerciseQuizes?.length) * 100;
-    console.log(tempScore);
     setScore(tempScore);
   }, [correctCount]);
 
@@ -204,15 +218,12 @@ const CourseLearning = () => {
   useEffect(() => {
     const updateEx = async () => {
       try {
-        const exerciseIdValue = new URLSearchParams(location.search).get(
-          "exercise"
-        );
         await updateExerciseProgress(
-          authState?.user._id.toString(),
+          authState?._id.toString(),
           params.courseId,
           {
-            moduleId: quizes.exerciseModule,
-            exerciseId: exerciseIdValue,
+            moduleId: currentExercise.moduleId,
+            exerciseId: currentExercise.exerciseId,
             userScore: score,
             hasPassed: score >= 50,
           }
@@ -225,9 +236,7 @@ const CourseLearning = () => {
     if (isSubmitted) {
       updateEx(); // Call the function
     }
-  }, [
-    isSubmitted, score
-  ]);
+  }, [isSubmitted, score]);
 
   if (!authState) {
     navigate("/signin");
@@ -266,15 +275,21 @@ const CourseLearning = () => {
           </div>
         ) : (
           <div ref={exerciseRef}>
-            <ExerciseDetail
-              quizes={quizes.exerciseQuizes}
-              exerciseName={quizes.exerciseName}
-              isReady={isReady}
-              handleStartClick={handleStartClick}
-              handleSubmitAnswer={handleSubmitAnswer}
-              isSubmitted={isSubmitted}
-              onCorrectAnswer={handleCorrectAnswer}
-            />
+            {isLoading || !quizes ? (
+              <div className="flex justify-center items-center min-h-[200px]">
+                <CircularProgress />
+              </div>
+            ) : (
+              <ExerciseDetail
+                quizes={quizes?.exerciseQuizes}
+                exerciseName={quizes?.exerciseName}
+                isReady={isReady}
+                handleStartClick={handleStartClick}
+                handleSubmitAnswer={handleSubmitAnswer}
+                isSubmitted={isSubmitted}
+                onCorrectAnswer={handleCorrectAnswer}
+              />
+            )}
           </div>
         )}
 
@@ -444,8 +459,13 @@ const CourseLearning = () => {
                     seenVideo={count}
                     currentVideoId={currentVideo?.videoId}
                     handleVideoClick={handleVideoClick}
-                    handleExerciseClick={(exerciseId) =>
-                      handleExerciseClick(params.courseId, exerciseId)
+                    handleExerciseClick={(exerciseId, exerciseName) =>
+                      handleExerciseClick(
+                        params.courseId,
+                        exerciseId,
+                        module.moduleId,
+                        exerciseName
+                      )
                     }
                     exercises={module?.moduleExerciseProgress}
                     exerciseId={currentExercise?.exerciseId}

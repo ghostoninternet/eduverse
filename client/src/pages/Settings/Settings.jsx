@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import EditIcon from "@mui/icons-material/Edit";
 import { useAuth } from "../../contexts/AuthContext";
 import updateUser from "../../apis/user/updateUser";
+import { useEffect } from "react";
 
 const Settings = () => {
   const { authState, setAuthState } = useAuth();
@@ -13,10 +14,9 @@ const Settings = () => {
 
     try {
       const updatedUser = await updateUser({
-        updatedUser: authState.user,
-        userId: authState.user._id,
+        updatedUser: authState,
+        userId: authState._id,
       });
-      console.log("User updated successfully:", updatedUser);
 
       setAuthState((prev) => ({
         ...prev,
@@ -36,9 +36,9 @@ const Settings = () => {
       console.error("Error updating user:", error);
     }
   };
-
+  useEffect(() => {}, [authState]);
   // if (loading) {
-  //   return <div>Loading...</div>; 
+  //   return <div>Loading...</div>;
   // }
 
   if (!authState) {
@@ -75,7 +75,7 @@ const Settings = () => {
                   onChange={(e) =>
                     setAuthState((prev) => ({
                       ...prev,
-                      user: { ...prev.user, username: e.target.value },
+                      username: e.target.value,
                     }))
                   }
                   className="border-2 border-gray-500 p-2 text-xl"
@@ -97,7 +97,7 @@ const Settings = () => {
                   onChange={(e) =>
                     setAuthState((prev) => ({
                       ...prev,
-                      user: { ...prev.user, gender: e.target.value },
+                      gender: e.target.value,
                     }))
                   }
                 >
@@ -112,7 +112,7 @@ const Settings = () => {
                   onChange={(e) =>
                     setAuthState((prev) => ({
                       ...prev,
-                      user: { ...prev.user, location: e.target.value },
+                      location: e.target.value,
                     }))
                   }
                   className="border-2 border-gray-500 p-2 text-xl"
@@ -125,12 +125,9 @@ const Settings = () => {
                   onChange={(e) =>
                     setAuthState((prev) => ({
                       ...prev,
-                      user: {
-                        ...prev.user,
-                        preferences: {
-                          ...prev.user.preferences,
-                          theme: e.target.value,
-                        },
+                      preferences: {
+                        ...prev.preferences,
+                        theme: e.target.value,
                       },
                     }))
                   }
@@ -144,13 +141,10 @@ const Settings = () => {
                   onChange={(e) =>
                     setAuthState((prev) => ({
                       ...prev,
-                      user: {
-                        ...prev.user,
                         preferences: {
-                          ...prev.user.preferences,
+                          ...prev.preferences,
                           language: e.target.value,
                         },
-                      },
                     }))
                   }
                   className="border-2 border-gray-500 p-2 text-xl"
