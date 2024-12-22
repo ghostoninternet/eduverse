@@ -3,9 +3,9 @@ import mongoose from "mongoose";
 
 
 const getCourseReviews = async (req, res, next) => {
-  const { courseSlug } = req.params
+  const { courseId } = req.params
   const { limit =3, page=1 } = req.query
-  const courseReviews = await reviewServices.getCourseReviews(courseSlug, limit, page)
+  const courseReviews = await reviewServices.getCourseReviews(courseId, limit, page)
   res.status(200).json(courseReviews)
 }
 
