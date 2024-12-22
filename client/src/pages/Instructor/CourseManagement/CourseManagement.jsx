@@ -1,13 +1,14 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react"
-import Table from "../../../components/Tables/Table"
+import { toast } from "react-toastify"
 import AddNewCourseModal from "./AddNewCourseModal"
-import { COURSE_MANAGEMENT_TABLE_HEADER } from "../../../constants/course"
+import Table from "../../../components/Tables/Table"
 import DeleteConfirmModal from "../../../components/Modals/Confirmation/DeleteConfirmModal"
 import CourseDetailModal from "./CourseDetailModal"
-import { createNewCourse, deleteCourse, editCourse, getInstructorCourse, searchInstructorCourse } from "../../../apis/course/instructorCourse"
 import Spinner from "../../../components/Spinner/Spinner"
+import { COURSE_MANAGEMENT_TABLE_HEADER } from "../../../constants/course"
 import { getCategory } from "../../../apis/category"
+import { createNewCourse, deleteCourse, editCourse, getInstructorCourse, searchInstructorCourse } from "../../../apis/course/instructorCourse"
 
 function DataRow({
   course,
@@ -95,7 +96,6 @@ function CourseManagement() {
   const [totalPages, setTotalPages] = useState(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [limitPerPage, setLimitPerPage] = useState(10)
-
   const [isLoading, setIsLoading] = useState(true)
   const [isFetchError, setIsFetchError] = useState(false)
 
@@ -116,12 +116,15 @@ function CourseManagement() {
     courseCategory: [],
     coursePrice: 0,
     courseImgUrl: '',
+    courseStatus: '',
   })
 
   const handleAddNewCourse = async () => {
     try {
-      const newCourse = await createNewCourse(newCourseData)
-      console.log('🚀 ~ handleAddNewCourse ~ newCourse:', newCourse)
+      const response = await createNewCourse(newCourseData)
+      if (response?.statusCode) {
+        throw new Error(response.message)
+      }
       setShowAddNewCourse(false)
       setNewCourseData({
         courseCategory: [],
@@ -130,20 +133,34 @@ function CourseManagement() {
         coursePrice: 0,
         courseTitle: ''
       })
-      setCurrentPage(1)
-      setLimitPerPage(10)
+      fetchCourses(10, 1)
+      toast('Successfully created new course', {
+        type: 'success',
+        autoClose: 1000,
+      })
     } catch (error) {
       console.log(error)
+      toast(error.message, {
+        type: 'error',
+        autoClose: 2000,
+      })
     }
   }
   const handleEditCourse = async () => {
     try {
       const editedCourse = await editCourse(selectCourse, editCourseData)
-      console.log('🚀 ~ handleEditCourse ~ editedCourse:', editedCourse)
+      toast('Successfully updated a course!', {
+        type: 'success',
+        autoClose: 1000,
+      })
       setIsEditMode(false)
       fetchCourses(limitPerPage, currentPage)
     } catch (error) {
       console.log(error)
+      toast(error.message, {
+        type: 'error',
+        autoClose: 2000,
+      })
     }
   }
   const handleDeleteCourse = async () => {
@@ -167,89 +184,98 @@ function CourseManagement() {
   const fetchCategories = async () => {
     try {
       const categories = await getCategory()
+      if (categories?.statusCode) {
+        throw new Error(categories.message)
+      }
       setCategory(categories)
     } catch (error) {
       console.error(error)
+      toast(error.message, {
+        type: 'error',
+        autoClose: 2000,
+      })
     }
   }
   const fetchCourses = async (limit, page) => {
+    setIsLoading(true)
     try {
       const responseData = await getInstructorCourse(limit, page)
-      if (responseData?.length == 0) {
-        setCourses([])
-        setTotalPages(0)
-        setCurrentPage(0)
-        setLimitPerPage(0)
-        setTotalCourses(0)
-        setIsLoading(false)
-        setIsFetchError(false)
-      } else {
-        const courses = responseData.data
-        const listCourses = []
-        for (let i = 0; i < courses.length; i++) {
-          listCourses.push(<DataRow
-            course={courses[i]}
-            setIsEditMode={setIsEditMode}
-            setIsOpenDelete={setIsOpenDelete}
-            setIsOpenDetail={setIsOpenDetail}
-            setSelectCourse={setSelectCourse}
-            key={courses[i]._id}
-          />)
-        }
-
-        setCourses(listCourses)
-        setTotalPages(Number.parseInt(responseData.pagination.totalPages))
-        setCurrentPage(Number.parseInt(responseData.pagination.currentPage))
-        setLimitPerPage(Number.parseInt(responseData.pagination.limitPerPage))
-        setTotalCourses(Number.parseInt(responseData.pagination.totalCourses))
-        setIsLoading(false)
-        setIsFetchError(false)
+      if (responseData?.statusCode) {
+        throw new Error(responseData.message)
       }
+      const courses = responseData.data
+      const listCourses = []
+      for (let i = 0; i < courses.length; i++) {
+        listCourses.push(<DataRow
+          course={courses[i]}
+          setIsEditMode={setIsEditMode}
+          setIsOpenDelete={setIsOpenDelete}
+          setIsOpenDetail={setIsOpenDetail}
+          setSelectCourse={setSelectCourse}
+          key={courses[i]._id}
+        />)
+      }
+      setCourses(listCourses)
+      setTotalPages(Number.parseInt(responseData.pagination.totalPages))
+      setCurrentPage(Number.parseInt(responseData.pagination.currentPage))
+      setLimitPerPage(Number.parseInt(responseData.pagination.limitPerPage))
+      setTotalCourses(Number.parseInt(responseData.pagination.totalCourses))
+      setIsFetchError(false)
+      toast('Successfully get courses', {
+        type: 'success',
+        autoClose: 1000,
+      })
     } catch (error) {
       console.error(error)
-      setIsLoading(false)
       setIsFetchError(true)
       setCourses(null)
+      toast(error.message, {
+        type: 'error',
+        autoClose: 2000,
+      })
+    } finally {
+      setIsLoading(false)
     }
   }
   const fetchSearchCourse = async (query, limit, page) => {
+    setIsLoading(true)
     try {
       const responseData = await searchInstructorCourse(query, limit, page)
-      if (responseData?.length == 0) {
-        setCourses([])
-        setTotalPages(0)
-        setCurrentPage(0)
-        setLimitPerPage(0)
-        setTotalCourses(0)
-        setIsLoading(false)
-        setIsFetchError(false)
-      } else {
-        const courses = responseData.data
-        const listCourses = []
-        for (let i = 0; i < courses.length; i++) {
-          listCourses.push(<DataRow
-            course={courses[i]}
-            setIsEditMode={setIsEditMode}
-            setIsOpenDelete={setIsOpenDelete}
-            setIsOpenDetail={setIsOpenDetail}
-            setSelectCourse={setSelectCourse}
-            key={courses[i]._id}
-          />)
-        }
-
-        setCourses(listCourses)
-        setTotalPages(Number.parseInt(responseData.pagination.totalPages))
-        setCurrentPage(Number.parseInt(responseData.pagination.currentPage))
-        setLimitPerPage(Number.parseInt(responseData.pagination.limitPerPage))
-        setTotalCourses(Number.parseInt(responseData.pagination.totalCourses))
-        setIsLoading(false)
-        setIsFetchError(false)
+      if (responseData?.statusCode) {
+        throw new Error(responseData.message)
       }
+      const courses = responseData.data
+      const listCourses = []
+      for (let i = 0; i < courses.length; i++) {
+        listCourses.push(<DataRow
+          course={courses[i]}
+          setIsEditMode={setIsEditMode}
+          setIsOpenDelete={setIsOpenDelete}
+          setIsOpenDetail={setIsOpenDetail}
+          setSelectCourse={setSelectCourse}
+          key={courses[i]._id}
+        />)
+      }
+      setCourses(listCourses)
+      setTotalPages(Number.parseInt(responseData.pagination.totalPages))
+      setCurrentPage(Number.parseInt(responseData.pagination.currentPage))
+      setLimitPerPage(Number.parseInt(responseData.pagination.limitPerPage))
+      setTotalCourses(Number.parseInt(responseData.pagination.totalCourses))
+      setIsFetchError(false)
+      toast('Successfully get searched courses', {
+        type: 'success',
+        autoClose: 1000,
+      })
     } catch (error) {
       console.error(error)
-      setIsLoading(false)
       setIsFetchError(true)
       setCourses(null)
+      toast(error.message, {
+        type: 'error',
+        autoClose: 2000,
+      })
+    } finally {
+      setIsLoading(false)
     }
   }
 

@@ -3,7 +3,7 @@ import SchoolIcon from "@mui/icons-material/School";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/authContext";
+import { useAuth } from "../contexts/AuthContext.jsx";
 import logout from "../apis/logout";
 import CourseBar from "./CourseBar";
 import searchCourses from "../apis/course/searchCourses";

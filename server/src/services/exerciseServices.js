@@ -42,11 +42,7 @@ const getExerciseDetail = async (exerciseId, instructorId) => {
   if (!foundExercise) throw new CustomError.NotFoundError("No exercise found!")
 
   let foundModule = await moduleDaos.findModuleById(foundExercise.exerciseModule)
-  // if (foundModule) {
-  //   foundExercise.exerciseModule = foundModule.moduleTitle
-  // } else {
-  //   foundExercise.exerciseModule = null
-  // }
+  foundExercise.exerciseModule = foundModule
 
   return excludeObjectKeys(foundExercise, [
     'exerciseInstructor',
@@ -102,6 +98,7 @@ const updateExercise = async (exerciseId, instructorId, updateExerciseData) => {
     const foundSameNameExercise = await exerciseDaos.findOneExercise({
       exerciseName: updateExerciseData?.exerciseName,
       exerciseModule: new mongoose.Types.ObjectId(updateExerciseData.exerciseModule),
+      _id: { $ne: exerciseId }
     })
     if (foundSameNameExercise) throw new CustomError.BadRequestError("There's already an exercise with the same name in this module")
   }
@@ -139,7 +136,7 @@ const deleteExercise = async (exerciseId) => {
   const updateModuleData = {
     $pull: { moduleExercises: deletedExercise._id }
   }
-  moduleDaos.updateModule(deletedExercise._id, updateModuleData)
+  moduleDaos.updateModule(foundExercise.exerciseModule, updateModuleData)
 
   return true
 }
