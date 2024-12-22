@@ -27,7 +27,7 @@ const getModules = async (instructorId, limit = 10, page = 1) => {
   let transformedModules = []
   for (let i = 0; i < foundModules.length; i++) {
     const foundCourse = await courseDaos.findCourseById(foundModules[i].courseId)
-    if (!foundCourse) throw new NotFoundError('No course found!')
+    if (!foundCourse) throw new CustomError.NotFoundError('No course found!')
 
     const moduleInfo = {
       ...foundModules[i],
@@ -72,7 +72,8 @@ const getModuleDetail = async (moduleId) => {
 
   const foundCourse = await courseDaos.findCourseById(foundModule.courseId)
   if (foundModule) {
-    foundModule.courseId = foundCourse.courseTitle
+    foundModule.courseId = foundCourse._id
+    foundModule.courseTitle = foundCourse.courseTitle
   }
 
   return excludeObjectKeys(foundModule, ['moduleInstructor'])
@@ -160,6 +161,7 @@ const updateModule = async (moduleId, instructorId, updateModuleData) => {
     const foundSameNameModule = await moduleDaos.findOneModule({
       courseId: updateModuleData.courseId,
       moduleTitle: updateModuleData.moduleTitle,
+      _id: { $ne: moduleId },
     })
     if (foundSameNameModule) throw new CustomError.BadRequestError("There is already a module with the same name in this course")  
   }

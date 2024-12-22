@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import SchoolIcon from "@mui/icons-material/School";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/authContext";
+import { useAuth } from "../contexts/AuthContext.jsx";
 import logout from "../apis/logout";
 import CourseBar from "./CourseBar";
 import searchCourses from "../apis/course/searchCourses";
@@ -64,8 +62,10 @@ const NavBar = () => {
     fetchedSearchCourses();
   }, [search, setSearch]);
 
-  const handlecourseBarClick = (courseSlug) => {
-    navigate(`/learn/${courseSlug}`)
+  const handleCourseBarClick = (courseSlug, courseId) => {
+    navigate(`/learn/${courseSlug}`, {
+      state: { courseId: courseId },
+    })
     setSearch('')
   }
   return (
@@ -97,7 +97,7 @@ const NavBar = () => {
               title={searchedCourse.courseTitle}
               instructorName={searchedCourse.courseInstructor}
               avgRating={searchedCourse.courseRatingAvg}
-              handleClick={() => handlecourseBarClick(searchedCourse.courseSlug)}
+              handleClick={() => handleCourseBarClick(searchedCourse.courseSlug, searchedCourse._id)}
               courseImgUrl={searchedCourse.courseImgUrl}
             />
             )
@@ -106,12 +106,6 @@ const NavBar = () => {
       </div>
 
       <div className="max-sm:hidden flex gap-x-6">
-        <button>
-          <ShoppingCartIcon color="primary" fontSize="large" />
-        </button>
-        <button>
-          <NotificationsIcon color="primary" fontSize="large" />
-        </button>
         {authState ? (
           <div>
             <div
@@ -120,7 +114,7 @@ const NavBar = () => {
             >
               <div>
                 <img
-                  src={authState?.user?.avatarUrl}
+                  src={authState?.avatarUrl}
                   width={40}
                   height={40}
                   className="rounded-full"
@@ -161,7 +155,7 @@ const NavBar = () => {
           </div>
         ) : (
           <button
-            className="bg-blue-600 text-white border rounded-full px-4 hover:bg-blue-700"
+            className="bg-blue-600 text-white border rounded-full px-6 py-2 font-semibold hover:bg-blue-700"
             onClick={handleLoginClick}
           >
             Login

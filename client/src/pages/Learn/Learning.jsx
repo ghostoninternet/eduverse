@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import StarIcon from "@mui/icons-material/Star";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import getCourseDetail from "../../apis/course/getCourseDetail";
 import Review from "../../components/Review";
 import getCourseReview from "../../apis/review/getCourseReview";
@@ -11,8 +11,10 @@ const Learn = () => {
   const [isSection, setIsSection] = useState("");
   const [queryParams, setQueryParams] = useState(1);
   const [isMore, setIsMore] = useState(true);
+  const location = useLocation();
   let { courseSlug } = useParams();
   const [loading, setLoading] = useState(true);
+  const courseId = location?.state?.courseId
   const [reviews, setReviews] = useState({
     data: [],
     rating: {},
@@ -32,7 +34,7 @@ const Learn = () => {
   useEffect(() => {
     const fetchedCourse = async () => {
       try {
-        const response = await getCourseDetail(courseSlug);
+        const response = await getCourseDetail(courseId);
         setCourseDetail(response);
       } catch (error) {
         console.error("Error fetching courses:", error);
@@ -41,12 +43,12 @@ const Learn = () => {
       }
     };
     fetchedCourse();
-  }, [courseSlug, queryParams]);
+  }, [courseId, queryParams]);
 
   useEffect(() => {
     const fetchedReview = async () => {
       try {
-        const response = await getCourseReview(courseSlug, queryParams);
+        const response = await getCourseReview(courseId, queryParams);
         setReviews(response);
       } catch (error) {
         console.error("Error fetching courses:", error);
@@ -54,40 +56,34 @@ const Learn = () => {
     };
 
     fetchedReview();
-  }, [courseSlug, queryParams]);
+  }, [courseId, queryParams]);
 
   const aboutRef = useRef(null);
   const modulesRef = useRef(null);
   const reviewsRef = useRef(null);
 
   const scrollToAbout = () => {
-    window.location.hash = "about";
+    location.hash = "about";
     if (aboutRef.current) {
       aboutRef.current.scrollIntoView({ behavior: "smooth" });
     }
     setIsSection("About");
   };
   const scrollToModules = () => {
-    window.location.hash = "modules";
+    location.hash = "modules";
     if (modulesRef.current) {
       modulesRef.current.scrollIntoView({ behavior: "smooth" });
     }
     setIsSection("Modules");
   };
   const scrollToReviews = () => {
-    window.location.hash = "reviews";
+    location.hash = "reviews";
     if (reviewsRef.current) {
       reviewsRef.current.scrollIntoView({ behavior: "smooth" });
     }
     setIsSection("Reviews");
   };
 
-  const handleLeaveReviewClick = () => setIsLeaveReviewOpen(true);
-
-  const handleCloseLeaveReview = () => {
-    setIsLeaveReviewOpen(false);
-    setNewReview({ content: "", rating: 0 });
-  };
   // Quản lý Enroll popup
   const handleEnrollClick = () => setIsEnrollPopupOpen(true);
   const handleCloseEnrollPopup = () => setIsEnrollPopupOpen(false);
@@ -336,7 +332,7 @@ const Learn = () => {
           </div>
           <div className="w-2/3 flex flex-col gap-y-10 mb-10">
             <div className="text-xl">
-              Showing {(reviews.pagination.currentPage - 1) * queryParams + reviews?.data?.length}/
+              Showing {(reviews?.pagination?.currentPage - 1) * queryParams + reviews?.data?.length}/
               {courseDetail?.courseReviewCount}
             </div>
             {reviews?.data?.map((review) => (

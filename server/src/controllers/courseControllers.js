@@ -2,8 +2,9 @@ import categoryServices from '../services/categoryServices.js';
 import courseServices from '../services/courseService.js'
 
 const getRecommendedCourses = async (req, res, next) => {
-  let {categoryName = ""} = req.query 
-  let categories = await categoryServices.findCategoryByName(categoryName) || [];
+  let {categoryName = []} = req.query 
+  categoryName = Array.isArray(categoryName) ? categoryName : [categoryName]
+  let categories = await categoryServices.findCategoryByName(categoryName);
   let categoriesId = [];
   categories.forEach((category) => {
     categoriesId.push(category._id)
@@ -16,8 +17,9 @@ const getRecommendedCourses = async (req, res, next) => {
 }
 
 const getFreeCourses = async (req, res, next) => {
-  let {categoryName = ""} = req.query
-  let categories = await categoryServices.findCategoryByName(categoryName) || [];
+  let {categoryName = []} = req.query 
+  categoryName = Array.isArray(categoryName) ? categoryName : [categoryName]
+  let categories = await categoryServices.findCategoryByName(categoryName);
   let categoriesId = [];
   categories.forEach((category) => {
     categoriesId.push(category._id)
@@ -30,8 +32,9 @@ const getFreeCourses = async (req, res, next) => {
 }
 
 const getMostPopularCourses = async (req, res, next) => {
-  let {categoryName = ""} = req.query
-  let categories = await categoryServices.findCategoryByName(categoryName) || [];
+  let {categoryName = []} = req.query 
+  categoryName = Array.isArray(categoryName) ? categoryName : [categoryName]
+  let categories = await categoryServices.findCategoryByName(categoryName);
   let categoriesId = [];
     categories.forEach((category) => {
       categoriesId.push(category._id)
@@ -46,8 +49,8 @@ const getMostPopularCourses = async (req, res, next) => {
 }
 
 const getCourseDetail = async (req, res, next) => {
-  const {courseSlug} = req.params
-  const courseDetail = await courseServices.getCourseDetail(courseSlug)
+  const {courseId} = req.params
+  const courseDetail = await courseServices.getCourseDetail(courseId)
   res.status(200).json(courseDetail)
 }
 

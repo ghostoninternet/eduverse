@@ -1,7 +1,16 @@
 export const MODULE_MANAGEMENT_TABLE_HEADER = [
   'Module title',
-  'Module description',
   'Course',
-  'Module duration',
+  'Module description',
+  'Module status',
+  'Created at',
+  'Action',
+]
+
+export const MODULE_MANAGEMENT_TABLE_HEADER_MOBILE = [
+  'Module title',
+  'Course',
+  'Module status',
+  'Created at',
   'Action',
 ]

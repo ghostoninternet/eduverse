@@ -44,12 +44,12 @@ const getAllInstructorCourseTitles = async (instructorId) => {
   return courseTitles
 }
 
-const getCourseDetail = async (courseSlug) => {
+const getCourseDetail = async (courseId) => {
   const filter = {
-    courseSlug: courseSlug,
+    _id: courseId,
     courseStatus: COURSE_STATUS.PUBLIC,
   }
-  let foundCourse = await courseDaos.findCourseBySlug(filter)
+  let foundCourse = await courseDaos.findOneCourse(filter)
   if (!foundCourse) {
     return {}
   }
@@ -164,11 +164,9 @@ const searchCourses = async (queryParams, limit, page) => {
   }
 }
 
-// For instructor, optimized later :v
 const getInstructorCourses = async (instructorId, limit = 10, page = 1) => {
   // Find all courses
   let foundCourses = await courseDaos.findCourses({ courseInstructor: instructorId }, limit, page)
-  if (foundCourses.length == 0) return []
 
   // Populate data of course category and exclude unnecessary fields.
   const transformedCourses = []
@@ -263,20 +261,10 @@ const getInstructorCourseDetail = async (courseId) => {
 
 const searchInstructorCourses = async (instructorId, query, limit, page) => {
   let filter = {
-    $text: { $search: `"${query}"` },
+    courseTitle: { $regex: query, $options: 'i' },
     courseInstructor: new mongoose.Types.ObjectId(instructorId)
   }
-
   let foundCourses = await courseDaos.findCourses(filter, limit, page);
-  if (foundCourses.length === 0) return {
-    data: [],
-    pagination: {
-      totalCourses: 0,
-      totalPages: 0,
-      currentPage: page,
-      limitPerPage: limit
-    }
-  };
 
   // Populate data of course category and exclude unnecessary fields.
   const transformedCourses = []

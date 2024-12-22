@@ -1,7 +1,7 @@
 import customFetch from "../../helpers/customFetch";
 
-const getCourseDetail = async (courseSlug) => {
-  const url = `http://localhost:8000/api/courses/detail/${courseSlug}`;
+const getCourseDetail = async (courseId) => {
+  const url = `http://localhost:8000/api/courses/detail/${courseId}`;
   try {
     const response = await customFetch(url);
     const json = await response.json();

@@ -2,11 +2,11 @@ import Courses from "../models/courseModel.js";
 import CustomError from "../errors/customError.js";
 import { COURSE_STATUS } from "../constants/course.js";
 const findRecommendedCourses = async (categoryId) => {
-  if (categoryId) {
+  if (Array.isArray(categoryId) && categoryId.length > 0) {
     return await Courses.aggregate([
       {
         $match: {
-          courseCategory: { $all: [categoryId] },
+          courseCategory: { $all: categoryId },
           courseStatus: COURSE_STATUS.PUBLIC,
           isDeleted: false,
         },
@@ -63,11 +63,11 @@ const findRecommendedCourses = async (categoryId) => {
 };
 
 const findFreeCourses = async (categoryId) => {
-  if (categoryId) {
+  if (Array.isArray(categoryId) && categoryId.length > 0) {
     return await Courses.aggregate([
       {
         $match: {
-          courseCategory: { $all: [categoryId] },
+          courseCategory: { $all: categoryId },
           coursePrice: 0,
           courseStatus: COURSE_STATUS.PUBLIC,
           isDeleted: false,
@@ -124,11 +124,11 @@ const findFreeCourses = async (categoryId) => {
 };
 
 const findMostPopularCourses = async (categoryId) => {
-  if (categoryId) {
+  if (Array.isArray(categoryId) && categoryId.length > 0) {
     return await Courses.aggregate([
       {
         $match: {
-          courseCategory: { $all: [categoryId] },
+          courseCategory: { $all: categoryId },
           courseStatus: COURSE_STATUS.PUBLIC,
           isDeleted: false,
         },
@@ -221,7 +221,7 @@ const findCourses = async (filter = {}, limit = 12, page = 1) => {
     });
 };
 
-const findCourseBySlug = async (filter) => {
+const findCourseBySlug = async (filter={}) => {
   return await Courses.findOne(filter).lean()
     .then((data) => data)
     .catch((err) => {
