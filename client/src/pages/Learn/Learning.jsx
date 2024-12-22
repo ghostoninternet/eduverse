@@ -107,7 +107,7 @@ const Learn = () => {
     }));
 
     // Fetch updated course details to update courseRatingAvg
-    const updatedCourseDetails = await getCourseDetail(courseSlug);
+    const updatedCourseDetails = await getCourseDetail(courseId);
     setCourseDetail(updatedCourseDetails);
   };
   const handleSeeMore = () => {
@@ -384,6 +384,8 @@ const Learn = () => {
               reviewId={review._id}
               onDelete={handleDeleteReview}
               onUpdate={handleUpdateReview}
+              courseId={courseDetail._id}
+              setCourseDetail={setCourseDetail}
             />
             
             ))}
