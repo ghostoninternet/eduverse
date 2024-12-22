@@ -43,12 +43,12 @@ const Learn = () => {
       }
     };
     fetchedCourse();
-  }, [courseSlug, queryParams]);
+  }, [courseId, queryParams]);
 
   useEffect(() => {
     const fetchedReview = async () => {
       try {
-        const response = await getCourseReview(courseSlug, queryParams);
+        const response = await getCourseReview(courseId, queryParams);
         setReviews(response);
       } catch (error) {
         console.error("Error fetching courses:", error);
@@ -56,7 +56,7 @@ const Learn = () => {
     };
 
     fetchedReview();
-  }, [courseSlug, queryParams]);
+  }, [courseId, queryParams]);
 
   const aboutRef = useRef(null);
   const modulesRef = useRef(null);

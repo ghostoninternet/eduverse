@@ -16,9 +16,9 @@ const recalculateRatingAvg = async (courseId, course) => {
   await courseDaos.updateCourse(courseId, course);
 };
 
-const getCourseReviews = async (courseSlug, limit, page) => {
+const getCourseReviews = async (courseId, limit, page) => {
   // Check course exist
-  const foundCourse = await courseDaos.findCourseBySlug({courseSlug: courseSlug});
+  const foundCourse = await courseDaos.findCourseById({_id: courseId});
   if (!foundCourse) {
     throw new CustomError.NotFoundError("No course found!");
   }
