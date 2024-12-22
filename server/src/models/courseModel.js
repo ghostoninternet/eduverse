@@ -66,6 +66,9 @@ const courseSchema = new Schema({
 courseSchema.index({
   courseTitle: 'text',
 })
+courseSchema.index({
+  courseInstructor: 1,
+})
 
 const Courses = mongoose.model("Courses", courseSchema);
 
