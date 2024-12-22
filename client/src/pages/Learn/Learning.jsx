@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import StarIcon from "@mui/icons-material/Star";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import getCourseDetail from "../../apis/course/getCourseDetail";
 import Review from "../../components/Review";
 import getCourseReview from "../../apis/review/getCourseReview";
@@ -11,8 +11,10 @@ const Learn = () => {
   const [isSection, setIsSection] = useState("");
   const [queryParams, setQueryParams] = useState(1);
   const [isMore, setIsMore] = useState(true);
+  const location = useLocation();
   let { courseSlug } = useParams();
   const [loading, setLoading] = useState(true);
+  const courseId = location?.state?.courseId
   const [reviews, setReviews] = useState({
     data: [],
     rating: {},
@@ -32,7 +34,7 @@ const Learn = () => {
   useEffect(() => {
     const fetchedCourse = async () => {
       try {
-        const response = await getCourseDetail(courseSlug);
+        const response = await getCourseDetail(courseId);
         setCourseDetail(response);
       } catch (error) {
         console.error("Error fetching courses:", error);
