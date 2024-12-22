@@ -16,7 +16,9 @@ const HomePage = () => {
   const { authState } = useAuth();
 
   const handleCourseClick = (course) => {
-    navigate(`/learn/${course.courseSlug}`);
+    navigate(`/learn/${course.courseSlug}`,{
+      state: { courseId: course._id }
+    });
   };
 
 

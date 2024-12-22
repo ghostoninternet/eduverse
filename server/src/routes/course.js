@@ -11,7 +11,7 @@ courseRouter.get('/search', asyncHandler(courseControllers.searchCourses))
 courseRouter.get('/recommended', asyncHandler(courseControllers.getRecommendedCourses))
 courseRouter.get('/free', asyncHandler(courseControllers.getFreeCourses))
 courseRouter.get('/popular', asyncHandler(courseControllers.getMostPopularCourses))
-courseRouter.get('/detail/:courseSlug', asyncHandler(courseControllers.getCourseDetail))
+courseRouter.get('/detail/:courseId', asyncHandler(courseControllers.getCourseDetail))
 
 courseRouter.use(authToken)
 courseRouter.use(roleAuth(USER_ROLE.INSTRUCTOR))

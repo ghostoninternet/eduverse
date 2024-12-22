@@ -44,12 +44,12 @@ const getAllInstructorCourseTitles = async (instructorId) => {
   return courseTitles
 }
 
-const getCourseDetail = async (courseSlug) => {
+const getCourseDetail = async (courseId) => {
   const filter = {
-    courseSlug: courseSlug,
+    _id: courseId,
     courseStatus: COURSE_STATUS.PUBLIC,
   }
-  let foundCourse = await courseDaos.findCourseBySlug(filter)
+  let foundCourse = await courseDaos.findOneCourse(filter)
   if (!foundCourse) {
     return {}
   }
