@@ -6,11 +6,11 @@ import { Outlet } from "react-router-dom";
 
 function App() {
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       <header className="sticky top-0 z-10">
         <Header />
       </header>
-      <main>
+      <main className="flex-1">
         <Outlet />
       </main>
       <footer>

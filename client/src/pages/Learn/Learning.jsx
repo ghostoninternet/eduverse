@@ -1,13 +1,18 @@
 import { useEffect, useState, useRef } from "react";
 import StarIcon from "@mui/icons-material/Star";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import getCourseDetail from "../../apis/course/getCourseDetail";
 import Review from "../../components/Review";
 import getCourseReview from "../../apis/review/getCourseReview";
 import CircularProgress from "@mui/material/CircularProgress";
 import ModuleOverview from "../../components/ModuleOverview";
+import { createCheckoutSession } from "../../apis/payment";
+import { toast } from "react-toastify";
+import { useAuth } from "../../contexts/AuthContext";
 
 const Learn = () => {
+  const navigate = useNavigate()
+  const { authState } = useAuth()
   const [isSection, setIsSection] = useState("");
   const [queryParams, setQueryParams] = useState(1);
   const [isMore, setIsMore] = useState(true);
@@ -92,6 +97,27 @@ const Learn = () => {
     const newQueryParams = queryParams + 1;
     setQueryParams(newQueryParams);
   };
+  
+  const handleGoToCourse = () => {
+    navigate(`/enrolledCourse/${courseId}`)
+  }
+  
+  const handlePayment = async () => {
+    try {
+      const response = await createCheckoutSession(courseId)
+      if (response?.statusCode) {
+        throw new Error(response.message)
+      }
+      setIsEnrollPopupOpen(false)
+      window.location.href = response.url
+    } catch (error) {
+      toast(error.message, {
+        type: 'error',
+        autoClose: 2000,
+      })
+    }
+  }
+
   return (
     <div className="">
       <div className="bg-blue-100 px-16 h-[calc(100vh-3rem)] flex items-center">
@@ -105,12 +131,24 @@ const Learn = () => {
               {courseDetail?.courseInstructor?.username}
             </span>
           </div>
-          <button
-            onClick={handleEnrollClick}
-            className="px-3 py-5 bg-blue-500 font-semibold text-2xl text-white rounded-md w-1/3 mb-7"
-          >
-            Enroll now! {courseDetail.coursePrice}$
-          </button>
+          {
+            authState.enrolledCourses.includes(courseId)
+            ? (
+              <button
+                onClick={handleGoToCourse}
+                className="px-3 py-5 bg-blue-500 font-semibold text-2xl text-white rounded-md w-1/3 mb-7"
+              >
+                Go to course
+              </button>
+            ) : (
+              <button
+                onClick={handleEnrollClick}
+                className="px-3 py-5 bg-blue-500 font-semibold text-2xl text-white rounded-md w-1/3 mb-7"
+              >
+                Enroll now! {courseDetail.coursePrice}$
+              </button>
+            )
+          }
           <div className="">
             <p className="text-lg">
               <span className="font-semibold">
@@ -357,10 +395,7 @@ const Learn = () => {
                 Cancel
               </button>
               <button
-                onClick={() => {
-                  alert("Enrolled successfully!");
-                  setIsEnrollPopupOpen(false);
-                }}
+                onClick={handlePayment}
                 className="px-4 py-2 bg-blue-500 text-white rounded-md"
               >
                 Confirm
