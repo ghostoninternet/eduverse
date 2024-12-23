@@ -21,6 +21,7 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { USER_ROLE } from './constants/user.js';
 import InstructorProfile from "./pages/Instructor/Profile/InstructorProfile.jsx";
 import Dashboard from "./pages/Instructor/Dashboard/Dashboard.jsx";
+import Payment from "./pages/Payment/Payment.jsx";
 
 const router = createBrowserRouter([
   {
@@ -71,6 +72,16 @@ const router = createBrowserRouter([
           }
         ]
       },
+      {
+        path: "/payment",
+        element: <ProtectedRoute allowedRoles={[USER_ROLE.USER.value]} />,
+        children: [
+          {
+            path: '',
+            element: <Payment />
+          }
+        ]
+      }
     ],
   },
   {
