@@ -1,10 +1,11 @@
 import customFetch from "../../helpers/customFetch";
+import BASE_URL from "../../constants/api";
 
-const BASE_URL = 'http://localhost:8000/api/courses/instructor'
+const INSTRUCTOR_BASE_URL = `${BASE_URL}/courses/instructor`
 
 export const getInstructorCourse = async (limit, page) => {
   try {
-    const apiUrl = `${BASE_URL}?limit=${limit}&page=${page}`
+    const apiUrl = `${INSTRUCTOR_BASE_URL}?limit=${limit}&page=${page}`
     const response = await customFetch(apiUrl)
     const data = await response.json()
     return data
@@ -16,7 +17,7 @@ export const getInstructorCourse = async (limit, page) => {
 
 export const getInstructorCourseDetail = async (courseId) => {
   try {
-    const apiUrl = `${BASE_URL}/${courseId}`
+    const apiUrl = `${INSTRUCTOR_BASE_URL}/${courseId}`
     const response = await customFetch(apiUrl)
     const data = await response.json()
     return data
@@ -28,7 +29,7 @@ export const getInstructorCourseDetail = async (courseId) => {
 
 export const searchInstructorCourse = async (query, limit, page) => {
   try {
-    const apiUrl = `${BASE_URL}/search?query=${query}&limit=${limit}&page=${page}`
+    const apiUrl = `${INSTRUCTOR_BASE_URL}/search?query=${query}&limit=${limit}&page=${page}`
     const response = await customFetch(apiUrl)
     const data = await response.json()
     return data
@@ -40,7 +41,7 @@ export const searchInstructorCourse = async (query, limit, page) => {
 
 export const createNewCourse = async (data) => {  
   try {
-    const apiUrl = `${BASE_URL}`
+    const apiUrl = `${INSTRUCTOR_BASE_URL}`
     const response = await customFetch(apiUrl, {
       method: 'POST',
       body: JSON.stringify(data),
@@ -59,7 +60,7 @@ export const createNewCourse = async (data) => {
 
 export const editCourse = async (courseId, data) => {
   try {
-    const apiUrl = `${BASE_URL}/${courseId}`
+    const apiUrl = `${INSTRUCTOR_BASE_URL}/${courseId}`
     const response = await customFetch(apiUrl, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -78,7 +79,7 @@ export const editCourse = async (courseId, data) => {
 
 export const deleteCourse = async (courseId) => {
   try {
-    const apiUrl = `${BASE_URL}/${courseId}`
+    const apiUrl = `${INSTRUCTOR_BASE_URL}/${courseId}`
     const response = await customFetch(apiUrl, {
       method: 'DELETE',
     })
@@ -92,7 +93,7 @@ export const deleteCourse = async (courseId) => {
 
 export const getAllCoursesTitle = async () => {
   try {
-    const response = await customFetch(`${BASE_URL}/all-courses`)
+    const response = await customFetch(`${INSTRUCTOR_BASE_URL}/all-courses`)
     const responseData = await response.json()
     return responseData
   } catch (error) {

@@ -1,9 +1,9 @@
 import customFetch from "../helpers/customFetch";
+import BASE_URL from "../constants/api";
 
 const getUser = async() => {
-    const url = "http://localhost:8000/api/user";
     try {
-        const response = await customFetch(url, {method: "GET"});
+        const response = await customFetch(`${BASE_URL}/user`, {method: "GET"});
         if (!response.ok) {
             throw new Error(`Response status: ${response.status}`);
         }

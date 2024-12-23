@@ -1,6 +1,5 @@
 import customFetch from "../helpers/customFetch"
-
-const BASE_URL = 'http://localhost:8000/api'
+import BASE_URL from "../constants/api"
 
 export const createCheckoutSession = async (courseId) => {
   try {

@@ -1,9 +1,9 @@
 import customFetch from "../helpers/customFetch";
+import BASE_URL from "../constants/api";
 
 const getRecommendedCourse = async() => {
-    const url = "http://localhost:8000/api/course/recommended";
     try {
-        const response = await customFetch(url, {method: "GET"});
+        const response = await customFetch(`${BASE_URL}/course/recommended`, {method: "GET"});
         if (!response.ok) {
             throw new Error(`Response status: ${response.status}`);
         }
