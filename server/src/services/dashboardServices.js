@@ -28,9 +28,18 @@ const getInstructorStats = async (instructorId) => {
   return {
     totalCourses,
     totalLearners,
-    monthlyLearners,
-    coursesByLearners,
-    coursesByRating
+    coursesByRating: coursesByRating.map(course => ({
+      title: course.courseTitle,
+      rating: course.courseRatingAvg,
+    })),
+    coursesByLearners: coursesByLearners.map(course => ({
+      title: course.courseTitle,
+      learners: course.courseLearnerCount,
+    })),
+    monthlyLearners: monthlyLearners.map(month => ({
+      month: month._id,
+      count: month.totalLearners,
+    }))
   };
 }
 
