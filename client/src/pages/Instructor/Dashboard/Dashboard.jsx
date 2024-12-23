@@ -146,8 +146,8 @@ function Dashboard() {
   if (isFetchError || !stats) return <div>Oops. Something went wrong.</div>;
 
   return (
-    <div className="dashboard-container  min-h-screen p-6 items-center justify-center">
-      <div className="stats grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 ">
+    <div className="dashboard-container min-h-screen p-4 flex flex-col items-center justify-center">
+      <div className="stats grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8 w-full max-w-4xl">
         <div className="stat-item bg-white shadow-md rounded-lg p-6 text-center">
           <h3 className="text-lg font-semibold text-gray-600 mb-2">Total Courses</h3>
           <p className="text-2xl font-bold text-gray-900">{stats.totalCourses}</p>
@@ -157,12 +157,12 @@ function Dashboard() {
           <p className="text-2xl font-bold text-gray-900">{stats.totalLearners}</p>
         </div>
       </div>
-      <div className="charts grid grid-cols-1 gap-6">
-        <div className="chart bg-white shadow-md rounded-lg p-6" style={{ width: "1200px", margin: "0 auto" }}>
+      <div className="charts flex flex-col items-center gap-10 max-w-7xl w-full">
+        <div className="chart bg-white shadow-md rounded-lg p-6 w-full">
           <h3 className="text-lg font-semibold text-gray-600 mb-4">Course Rankings</h3>
           <canvas id="barChart"></canvas>
         </div>
-        <div className="chart bg-white shadow-md rounded-lg p-6" style={{ width: "800px", margin: "0 auto" }}>
+        <div className="chart bg-white shadow-md rounded-lg p-6 w-full">
           <h3 className="text-lg font-semibold text-gray-600 mb-4">Monthly Learners</h3>
           <canvas id="lineChart"></canvas>
         </div>

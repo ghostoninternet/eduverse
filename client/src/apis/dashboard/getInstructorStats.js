@@ -7,8 +7,8 @@ export default async function getInstructorStats() {
     console.log("API response:", data); // Log the entire response
     return data;
   } catch (error) {
-    console.error("Error fetching instructor stats:", error);
-    return { data: null };
+    console.log(error)
+    throw new Error(error)
   }
 }
 
