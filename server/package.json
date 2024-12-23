@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "generate": "node ./src/configs/generateSampleData.js",
-    "start": "npm run generate && nodemon index.js",
+    "start": "concurrently \"node index.js\" \"npm run stripe\"  ",
     "dev": "concurrently \"nodemon index.js\" \"npm run stripe\"",
     "stripe": "stripe listen --forward-to localhost:8000/api/payment/webhook"
   },

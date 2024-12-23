@@ -5,6 +5,8 @@ import router from "./src/routes/index.js"
 import errorHandler from "./src/middlewares/errorHandler.js"
 import cookieParser from "cookie-parser"
 import cors from 'cors'
+import corsConfig from "./src/configs/cors.js"
+
 function Application() {
   const app = express()
   const PORT = ENV.PORT
@@ -12,10 +14,7 @@ function Application() {
   app.use('/api/payment/webhook', express.raw({ type: "*/*" }))
   app.use(express.json())
   app.use(cookieParser())
-  app.use(cors({
-    origin: 'http://localhost:5173', // Your client URL
-    credentials: true, // Allow credentials to be sent
-  }));
+  app.use(cors(corsConfig));
   app.use('/api', router)
   
   app.use(errorHandler)
