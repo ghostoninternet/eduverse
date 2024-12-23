@@ -127,7 +127,7 @@ function AdminMainLayout() {
 
       {/* Main Content */}
       <main className="lg:ml-60 flex-1 p-8">
-        <h1 className="font-bold text-3xl mb-6">{currentTab}</h1>
+        <h1 className="text-3xl font-bold mb-8 text-center">{currentTab}</h1>
         <Outlet />
       </main>
     </div>
