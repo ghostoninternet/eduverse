@@ -6,7 +6,7 @@ import CustomError from "../errors/customError.js"
 import paymentDaos from "../daos/paymentDaos.js"
 import enrolledCourseService from "./enrolledCourseService.js"
 import enrolledCourseDaos from "../daos/enrolledCourseDaos.js"
-
+  
 const stripe = new Stripe(ENV.STRIPE_API_KEY)
 const clientUrl = ENV.CLIENT_URL
 
@@ -20,7 +20,7 @@ const createCheckoutSession = async (userId, courseId) => {
   })
   if (foundEnrolledCourse) throw new CustomError.BadRequestError("You've already enrolled this course!")
 
-  const amountInCents = Math.round(Number.parseFloat(foundCourse.coursePrice) * 100)
+  const amountInCents = Math.round(Number.parseFloat(foundCourse.coursePrice) * 100)  
   const session = await stripe.checkout.sessions.create({
     line_items: [
       {
@@ -64,7 +64,7 @@ const handleStripeWebhook = async (request) => {
         paymentType: "CREDIT_CARD",
       }
       await paymentDaos.createNewPayment(newPayment)
-      const newEnrolledCourse = await enrolledCourseService.createNewEnrolledCourse(request.userId, courseId)
+      const newEnrolledCourse = await enrolledCourseService.createNewEnrolledCourse(userId, courseId)
       return newEnrolledCourse
     }
   } catch (error) {

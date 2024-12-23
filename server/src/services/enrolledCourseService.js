@@ -92,8 +92,8 @@ const createNewEnrolledCourse = async (userId, courseId) => {
       return prev + curr.videoLength
     }, 0)
 
-    for (let j = 0; j < foundModule.moduleExercises.length; i++) {
-      let foundExercise = await exerciseDaos.findExerciseById(foundModule.moduleExercises[i])
+    for (let j = 0; j < foundModule.moduleExercises.length; j++) {
+      let foundExercise = await exerciseDaos.findExerciseById(foundModule.moduleExercises[j])
       if (!foundExercise) throw new CustomError.NotFoundError("No exercise found!")
 
       exerciseLengths += foundExercise.exerciseDuration

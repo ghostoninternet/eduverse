@@ -7,7 +7,7 @@ const createCheckoutSession = async (req, res, next) => {
 
 const handleStripeWebhook = async (req, res, next) => {
   const handleResult = await paymentServices.handleStripeWebhook(req)
-  res.status(200).json(handleResult)
+  res.status(200).json(handleResult).end()
 }
 
 export default {

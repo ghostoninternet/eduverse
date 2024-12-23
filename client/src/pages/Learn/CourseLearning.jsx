@@ -1,18 +1,19 @@
 import { useState, useEffect, useRef } from "react";
+import { toast } from "react-toastify"
+import { useNavigate, Link, useParams, useLocation } from "react-router-dom";
 import ReactPlayer from "react-player";
+import CircularProgress from "@mui/material/CircularProgress";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
-import { Link } from "react-router-dom";
 import StarIcon from "@mui/icons-material/Star";
-import Module from "../../components/Module";
-import getEnrolledCourseList from "../../apis/enrolled-course/getEnrolledCourseList";
-import { useParams, useLocation } from "react-router";
 import { useAuth } from "../../contexts/AuthContext.jsx";
-import { useNavigate } from "react-router";
-import updateEnrolledCourseVideoProgress from "../../apis/enrolled-course/updateEnrolledCourseVideoProgress";
+import Module from "../../components/Module";
 import ExerciseDetail from "../../components/ExerciseDetail";
+import getEnrolledCourseList from "../../apis/enrolled-course/getEnrolledCourseList";
+import updateEnrolledCourseVideoProgress from "../../apis/enrolled-course/updateEnrolledCourseVideoProgress";
 import createCourseReview from "../../apis/review/createCourseReview";
 import updateExerciseProgress from "../../apis/exercise/updateExerciseProgress";
-import CircularProgress from "@mui/material/CircularProgress";
+import getCourseReview from "../../apis/review/getCourseReview.js";
+
 const CourseLearning = () => {
   const [isLoading, setIsLoading] = useState(true);
   let location = useLocation();
@@ -159,7 +160,10 @@ const CourseLearning = () => {
 
   const handleSubmitReview = async () => {
     if (!newReview.content || newReview.rating === 0) {
-      alert("Please provide both content and a rating.");
+      toast("Please provide both content and a rating.", {
+        type: 'error',
+        autoClose: 2000,
+      });
       return;
     }
     console.log("Sending courseId:", enrolledCoursesDetail._id);
@@ -176,15 +180,15 @@ const CourseLearning = () => {
       // Reset form sau khi gửi thành công
       setNewReview({ content: "", rating: 0 });
 
-      const updatedReviews = await getCourseReview(
-        enrolledCoursesDetail.slug,
-        1
-      );
-      setNewReview(updatedReviews);
+      const updatedReviews = await getCourseReview(enrolledCoursesDetail.courseId, 1);
+      // setNewReview(updatedReviews);
 
-      alert("Review submitted successfully!");
+      toast("Review submitted successfully!", {
+        type: 'success',
+        autoClose: 1000,
+      });
     } catch (error) {
-      console.error("Review created:", response);
+      console.error("Review created:", error);
       alert("Review submitted successfully!");
     }
   };
