@@ -1,11 +1,12 @@
 import customFetch from "../../helpers/customFetch";
+import BASE_URL from "../../constants/api";
 
 const updateEnrolledCourseVideoProgress = async (
   userId,
   courseId,
   updatedData
 ) => {
-  const url = `http://localhost:8000/api/enrolled-courses/video-progress/${courseId}`;
+  const url = `${BASE_URL}/enrolled-courses/video-progress/${courseId}`;
   try {
     const response = await customFetch(url, {
       method: "PUT",

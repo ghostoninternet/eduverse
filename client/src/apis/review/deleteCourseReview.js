@@ -1,7 +1,8 @@
 import customFetch from "../../helpers/customFetch";
+import BASE_URL from "../../constants/api";
 
 const deleteCourseReview = async (reviewId) => {
-  const url = `http://localhost:8000/api/review/${reviewId}`;
+  const url = `${BASE_URL}/review/${reviewId}`;
   try {
     const response = await customFetch(url, {
       method: 'DELETE',

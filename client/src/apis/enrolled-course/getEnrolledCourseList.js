@@ -1,7 +1,8 @@
 import customFetch from "../../helpers/customFetch";
+import BASE_URL from "../../constants/api";
 
 const getCompletedEnrolledCourses = async () => {
-  const url = `http://localhost:8000/api/enrolled-courses/completed`;
+  const url = `${BASE_URL}/enrolled-courses/completed`;
   try {
     const response = await customFetch(url);
     const json = await response.json();
@@ -12,7 +13,7 @@ const getCompletedEnrolledCourses = async () => {
 };
 
 const getInProgressEnrolledCourses = async () => {
-  const url = `http://localhost:8000/api/enrolled-courses/inProgress`;
+  const url = `${BASE_URL}/enrolled-courses/inProgress`;
   try {
     const response = await customFetch(url);
     const json = await response.json();
@@ -23,7 +24,7 @@ const getInProgressEnrolledCourses = async () => {
 };
 
 const getEnrolledCourseDetail = async (courseId) => {
-  const url = `http://localhost:8000/api/enrolled-courses/${courseId}`;
+  const url = `${BASE_URL}/enrolled-courses/${courseId}`;
   try {
     const response = await customFetch(url);
     const json = await response.json();

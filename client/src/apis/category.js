@@ -1,8 +1,9 @@
 import customFetch from "../helpers/customFetch";
+import BASE_URL from "../constants/api";
 
 export const getCategory = async () => {
   try {
-    const apiUrl = `http://localhost:8000/api/category`
+    const apiUrl = `${BASE_URL}/category`
     const response = await customFetch(apiUrl)
     const data = await response.json()
     return data

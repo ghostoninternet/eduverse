@@ -1,9 +1,9 @@
 import customFetch from "../helpers/customFetch";
+import BASE_URL from "../constants/api";
 
 const logout = async() => {
-    const url = "http://localhost:8000/api/auth/logout";
     try {
-        const response = await customFetch(url, {method: "POST"});
+        const response = await customFetch(`${BASE_URL}/auth/logout`, {method: "POST"});
         if (!response.ok) {
             throw new Error(`Response status: ${response.status}`);
         }

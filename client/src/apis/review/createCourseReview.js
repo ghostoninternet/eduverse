@@ -1,7 +1,8 @@
 import customFetch from "../../helpers/customFetch";
+import BASE_URL from "../../constants/api";
 
 const createCourseReview = async (userId, reviewData) => {
-  const url = `http://localhost:8000/api/review?userId=${userId}`;
+  const url = `${BASE_URL}/review?userId=${userId}`;
   try {
     const response = await customFetch(url, {
       method: "POST",

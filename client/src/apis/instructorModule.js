@@ -1,10 +1,11 @@
 import customFetch from "../helpers/customFetch"
+import BASE_URL from "../constants/api"
 
-const BASE_URL = 'http://localhost:8000/api/modules/instructor'
+const INSTRUCTOR_BASE_URL = `${BASE_URL}/modules/instructor`
 
 export const getModules = async (limit, page) => {
   try {
-    const response = await customFetch(`${BASE_URL}?limit=${limit}&page=${page}`)
+    const response = await customFetch(`${INSTRUCTOR_BASE_URL}?limit=${limit}&page=${page}`)
     const responseData = await response.json()
     return responseData
   } catch (error) {
@@ -15,7 +16,7 @@ export const getModules = async (limit, page) => {
 
 export const getModuleDetail = async (moduleId) => {
   try {
-    const response = await customFetch(`${BASE_URL}/${moduleId}`)
+    const response = await customFetch(`${INSTRUCTOR_BASE_URL}/${moduleId}`)
     const responseData = await response.json()
     return responseData
   } catch (error) {
@@ -26,7 +27,7 @@ export const getModuleDetail = async (moduleId) => {
 
 export const searchModules = async (query, limit, page) => {
   try {
-    const response = await customFetch(`${BASE_URL}/search?query=${query}&limit=${limit}&page=${page}`)
+    const response = await customFetch(`${INSTRUCTOR_BASE_URL}/search?query=${query}&limit=${limit}&page=${page}`)
     const responseData = await response.json()
     return responseData
   } catch (error) {
@@ -37,7 +38,7 @@ export const searchModules = async (query, limit, page) => {
 
 export const createNewModule = async (data) => {
   try {
-    const response = await customFetch(`${BASE_URL}`, {
+    const response = await customFetch(`${INSTRUCTOR_BASE_URL}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -54,7 +55,7 @@ export const createNewModule = async (data) => {
 
 export const editModule = async (moduleId, data) => {
   try {
-    const response = await customFetch(`${BASE_URL}/${moduleId}`, {
+    const response = await customFetch(`${INSTRUCTOR_BASE_URL}/${moduleId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -71,7 +72,7 @@ export const editModule = async (moduleId, data) => {
 
 export const deleteModule = async (moduleId) => {
   try {
-    const response = await customFetch(`${BASE_URL}/${moduleId}`, {
+    const response = await customFetch(`${INSTRUCTOR_BASE_URL}/${moduleId}`, {
       method: 'DELETE'
     })
     const responseData = await response.json()
