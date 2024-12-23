@@ -1,6 +1,8 @@
 import EnrolledCourses from "../models/enrolledCourseModel.js";
 import courseDaos from "./courseDaos.js";
 import Mongoose from 'mongoose';
+import CustomError from "../errors/customError.js";
+
 const findEnrolledCourse = async (filter) => {
   return await EnrolledCourses.findOne(filter).lean()
     .then((data) => data)
