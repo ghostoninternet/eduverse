@@ -1,7 +1,8 @@
 import customFetch from "../../helpers/customFetch";
 
+const BASE_URL = "http://localhost:8000/api/courses/search";
 const searchCourses = async (query) => {
-  const apiUrl = `http://localhost:8000/api/courses/search`;
+  const apiUrl = BASE_URL;
   const queryParams = {
     query,
   };

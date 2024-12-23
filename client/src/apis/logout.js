@@ -1,7 +1,7 @@
 import customFetch from "../helpers/customFetch";
 
+const url = "http://localhost:8000/api/auth/logout";
 const logout = async() => {
-    const url = "http://localhost:8000/api/auth/logout";
     try {
         const response = await customFetch(url, {method: "POST"});
         if (!response.ok) {

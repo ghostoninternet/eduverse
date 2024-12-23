@@ -1,7 +1,8 @@
 import customFetch from "../../helpers/customFetch";
 
+const BASE_URL = "http://localhost:8000/api/enrolled-courses/exercise-progress";
 const updateExerciseProgress = async (userId, courseId, updateddData) => {
-  const url = `http://localhost:8000/api/enrolled-courses/exercise-progress/${courseId}`;
+  const url = `${BASE_URL}/${courseId}`;
   try {
     const response = await customFetch(url, {
       method: "PUT",

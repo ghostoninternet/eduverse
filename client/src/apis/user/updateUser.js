@@ -1,7 +1,8 @@
 import customFetch from "../../helpers/customFetch";
 
+const BASE_URL = "http://localhost:8000/api/user";
 const updateUser = async ({updatedUser, userId}) => {
-  const url = `http://localhost:8000/api/user/${userId}`;
+  const url = `${BASE_URL}/${userId}`;
   try {
     const response = await customFetch(url, {
       method: "PATCH",
