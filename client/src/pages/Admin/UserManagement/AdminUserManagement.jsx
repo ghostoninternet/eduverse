@@ -84,7 +84,6 @@ function AdminUserManagement() {
           <p><strong>Job Title:</strong> {selectedUser.jobTitle || "Not provided"}</p>
           <p><strong>Organization:</strong> {selectedUser.organization || "Not provided"}</p>
           <p><strong>Enrolled Courses:</strong> {selectedUser.enrolledCourses.length || 0}</p>
-          <p><strong>Role:</strong> {selectedUser.role}</p>
         </div>
         ) : (
           <p className="text-gray-500">Select a user to view details.</p>
