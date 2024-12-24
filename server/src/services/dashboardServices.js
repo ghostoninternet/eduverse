@@ -231,21 +231,25 @@ const getExerciseDetail = async (exerciseId) => {
 }
 
 const getUsers = async (limit, page) => {
-  const foundUsers = await userDaos.findUsers({ role: USER_ROLE.USER }, limit, page)
-  const transformedUsers = foundUsers.map(user => excludeObjectKeys(user, ['password']))
-  const totalUsers = await userDaos.countTotalOfUsers({ role: USER_ROLE.USER })
-  const totalPages = Math.ceil(totalUsers / limit)
+  const foundUsers = await userDaos.findUsers({ role: USER_ROLE.USER }, limit, page);
+  const transformedUsers = foundUsers.map(user => ({
+    id: user._id,
+    name: user.username,
+    email: user.email,
+  }));
+  const totalUsers = await userDaos.countTotalOfUsers({ role: USER_ROLE.USER });
+  const totalPages = Math.ceil(totalUsers / limit);
 
   return {
-    data: transformedUsers,
+    users: transformedUsers,
     pagination: {
-      totalUsers: totalUsers,
-      totalPages: totalPages,
-      limitPerPage: limit,
+      totalUsers,
+      totalPages,
       currentPage: page,
-    }
-  }
-}
+      limitPerPage: limit,
+    },
+  };
+};
 
 const getUserDetail = async (userId) => {
   const foundUser = await userDaos.findOneUser({ _id: new mongoose.Types.ObjectId(userId) })

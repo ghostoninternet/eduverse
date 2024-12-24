@@ -62,13 +62,17 @@ const getModuleDetail = async (req, res, next) => {
 }
 
 const getUsers = async (req, res, next) => {
-  const { limit, page } = req.query
-  const foundUsers = await dashboardServices.getUsers(limit, page)
-  res.status(200).json({
-    message: 'Successfully get users!',
-    data: foundUsers,
-  })
-}
+  const { limit = 10, page = 1 } = req.query; // Lấy thông tin phân trang từ query
+  try {
+    const result = await dashboardServices.getUsers(parseInt(limit), parseInt(page));
+    res.status(200).json({
+      message: "Successfully fetched user list!",
+      data: result, // Trả dữ liệu từ `getUsers`
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 const getUserDetail = async (req, res, next) => {
   const { userId } = req.params
