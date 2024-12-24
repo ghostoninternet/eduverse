@@ -65,87 +65,115 @@ const getAdminStats = async () => {
 }
 
 const getCourses = async (limit, page) => {
-  let foundCourses = await courseDaos.findCourses({}, limit, page)
+  const foundCourses = await courseDaos.findCourses({}, limit, page);
 
-  const transformedCourses = []
-  for (let i = 0; i < foundCourses.length; i++) {
-    let categories = []
-    for (let j = 0; j < foundCourses[i].courseCategory.length; j++) {
-      let foundCategory = await categoryDaos.findCategoryById(foundCourses[i].courseCategory[j])
-      if (foundCategory) {
-        categories.push(foundCategory.categoryName)
-      }
-    }
-    foundCourses[i].courseCategory = categories
+  // Lấy tất cả categoryId từ tất cả các khóa học
+  const categoryIds = foundCourses.flatMap((course) => course.courseCategory);
 
-    const transformedCourse = excludeObjectKeys(foundCourses[i], [
-      'courseDescription',
-      'courseInstructor',
-      'courseImgUrl',
-      'courseModules',
-      'updatedAt',
-      '__v',
-    ])
-    transformedCourses.push(transformedCourse)
-  }
+  // Tìm tất cả danh mục trong một lần truy vấn
+  const foundCategories = await categoryDaos.findAllCategories(categoryIds);
 
-  const totalCourses = await courseDaos.countNumberOfCourses({})
-  const totalPages = Math.ceil(totalCourses / limit)
+  // Tạo một map để tra cứu danh mục theo id
+  const categoryMap = new Map();
+  foundCategories.forEach((category) => {
+    categoryMap.set(category._id.toString(), category.categoryName);
+  });
+
+  // Xử lý dữ liệu khóa học
+  const transformedCourses = foundCourses.map((course) => {
+    const categories = course.courseCategory.map(
+      (categoryId) => categoryMap.get(categoryId.toString()) || "Unknown"
+    );
+
+    return {
+      ...excludeObjectKeys(course, [
+        "courseDescription",
+        "courseInstructor",
+        "courseImgUrl",
+        "courseModules",
+        "updatedAt",
+        "__v",
+      ]),
+      courseCategory: categories,
+    };
+  });
+
+  const totalCourses = await courseDaos.countNumberOfCourses({});
+  const totalPages = Math.ceil(totalCourses / limit);
 
   return {
     data: transformedCourses,
     pagination: {
-      totalPages: totalPages,
+      totalPages,
       currentPage: page,
       limitPerPage: limit,
-      totalCourses: totalCourses,
-    }
-  }
-}
+      totalCourses,
+    },
+  };
+};
+
+
 
 const getCourseDetail = async (courseId) => {
-  const foundCourse = await courseDaos.findCourseById(courseId)
-  if (!foundCourse) throw new CustomError.NotFoundError("No course found!")
+  // Tìm khóa học theo ID
+  const foundCourse = await courseDaos.findCourseById(courseId);
+  if (!foundCourse) throw new CustomError.NotFoundError("No course found!");
 
-  const transformedCourse = foundCourse.toObject()
-  const categories = []
-  for (let i = 0; i < transformedCourse.courseCategory.length; i++) {
-    const foundCategory = await categoryDaos.findCategoryById(transformedCourse.courseCategory[i])
+  // Lấy thông tin danh mục (category)
+  const categories = [];
+  for (let i = 0; i < foundCourse.courseCategory.length; i++) {
+    const foundCategory = await categoryDaos.findCategoryById(foundCourse.courseCategory[i]);
     if (foundCategory) {
-      categories.push(foundCategory.categoryName)
+      categories.push(foundCategory.categoryName);
     }
   }
-  transformedCourse.courseCategory = categories
 
-  let modules = []
-  for (let i = 0; i < transformedCourse.courseModules.length; i++) {
-    let foundModule = await moduleDaos.findModuleById(transformedCourse.courseModules[i])
-    if (foundModule) {
-      let moduleExercises = []
-      for (let j = 0; j < foundModule.moduleExercises.length; j++) {
-        let foundExercise = await exerciseDaos.findExerciseById(foundModule.moduleExercises[j])
-        if (foundExercise) {
-          moduleExercises.push(includeObjectKeys(foundExercise, [
-            '_id',
-            'exerciseName',
-            'exerciseDuration'
-          ]))
-        }
+  // Lấy thông tin instructor
+  const foundInstructor = await userDaos.findOneUser({ _id: foundCourse.courseInstructor });
+  const instructorInfo = foundInstructor
+    ? {
+        id: foundInstructor._id,
+        name: foundInstructor.username,
+        email: foundInstructor.email,
+        avatarUrl: foundInstructor.avatarUrl,
       }
-      foundModule.moduleExercises = moduleExercises
-      modules.push(excludeObjectKeys(foundModule, [
-        'courseId',
-        'moduleInstructor',
-        'createdAt',
-        'updatedAt'
-      ]))
+    : null;
+
+  // Lấy danh sách module
+  const modules = [];
+  for (let i = 0; i < foundCourse.courseModules.length; i++) {
+    const foundModule = await moduleDaos.findModuleById(foundCourse.courseModules[i]);
+    if (foundModule) {
+      modules.push({
+        id: foundModule._id,
+        title: foundModule.moduleTitle,
+        description: foundModule.moduleDescription,
+        totalLessons: foundModule.moduleVideoLessons.length,
+      });
     }
   }
 
-  transformedCourse.courseModules = modules
+  // Chuẩn bị dữ liệu khóa học
+  const courseDetail = {
+    id: foundCourse._id,
+    title: foundCourse.courseTitle,
+    slug: foundCourse.courseSlug,
+    description: foundCourse.courseDescription,
+    price: foundCourse.coursePrice,
+    status: foundCourse.courseStatus,
+    category: categories,
+    instructor: instructorInfo,
+    modules: modules,
+    rating: foundCourse.courseRatingAvg,
+    totalReviews: foundCourse.courseReviewCount,
+    totalLearners: foundCourse.courseLearnerCount,
+    createdAt: foundCourse.createdAt,
+    updatedAt: foundCourse.updatedAt,
+  };
 
-  return transformedCourse;
-}
+  return courseDetail;
+};
+
 
 const getModules = async (limit, page) => {
   const foundModules = await moduleDaos.findModules({}, limit, page)
