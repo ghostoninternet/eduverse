@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuth } from "../../contexts/AuthContext";
@@ -12,18 +12,15 @@ const SignIn = () => {
   const { authState, setAuthState } = useAuth();
   const navigate = useNavigate();
 
-
-    if (authState?.role) {
-      console.log("Current role:", authState.role);
-      if (authState.role === USER_ROLE.ADMIN) {
-        navigate('/admin/admin-dashboard', { replace: true });
-      } else if (authState.role === USER_ROLE.INSTRUCTOR) {
-        navigate('/instructor/dashboard', { replace: true });
-      } else {
-        navigate('/', { replace: true });
-      }
+  if (authState) {
+    if (authState.role === USER_ROLE.INSTRUCTOR) {
+      navigate('/instructor/course-management', { replace: true });
+    } else if (authState.role === USER_ROLE.ADMIN) {
+      navigate('/admin/admin-dashboard', { replace: true });
+    } else {
+      navigate('/', { replace: true });
     }
-
+  }
   
   const validateEmail = (e) => {
     const input = e.target;
@@ -47,15 +44,12 @@ const SignIn = () => {
     try {
       const response = await signInApi(data)
       if (response?.data) {
-        console.log("User role:", response.data.role);
         setAuthState(response.data)
         toast(response.message, { type: "success" })
-        if (response.data.role == USER_ROLE.USER) {
+        if (response.data.role === USER_ROLE.USER) {
           navigate('/', { replace: true })
-        } else if (response.data.role == USER_ROLE.ADMIN) {
-          navigate('/admin/admin-dashboard', { replace: true })
         } else {
-          navigate('/instructor/dashboard', { replace: true })
+          navigate('/instructor/course-management', { replace: true })
         }
       } else {
         setMessage(response.message);
