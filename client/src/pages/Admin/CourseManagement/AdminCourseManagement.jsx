@@ -1,22 +1,23 @@
 import React, { useEffect, useState } from "react";
+import Table from "../../../components/Tables/Table";
+import ModalDetail from "../../../components/Modals/DetailModal/ModalDetail";
 import getCourseList from "../../../apis/admin/getCourseList";
 import getCourseDetail from "../../../apis/admin/getCourseDetail";
-import Table from "../../../components/Tables/Table";
 
 function CourseManagement() {
-  const [courses, setCourses] = useState([]); // Danh sách khóa học
-  const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại
-  const [limitPerPage, setLimitPerPage] = useState(10); // Số lượng bản ghi mỗi trang
-  const [totalCourses, setTotalCourses] = useState(0); // Tổng số khóa học
-  const [selectedCourse, setSelectedCourse] = useState(null); // Khóa học được chọn để hiển thị chi tiết
+  const [courses, setCourses] = useState([]); 
+  const [currentPage, setCurrentPage] = useState(1); 
+  const [limitPerPage, setLimitPerPage] = useState(10); 
+  const [totalCourses, setTotalCourses] = useState(0); 
+  const [selectedCourse, setSelectedCourse] = useState(null); 
+  const [isModalOpen, setModalOpen] = useState(false); 
 
-  // Lấy danh sách khóa học
   useEffect(() => {
     async function fetchCourses() {
       try {
         const data = await getCourseList(currentPage, limitPerPage);
         console.log("Fetched Courses Data:", data);
-        setCourses(data.data || []); // Đảm bảo `courses` là một mảng
+        setCourses(data.data || []);
         setTotalCourses(data.pagination?.totalCourses || 0);
       } catch (error) {
         console.error("Error fetching course list:", error);
@@ -25,18 +26,30 @@ function CourseManagement() {
     fetchCourses();
   }, [currentPage, limitPerPage]);
 
-  // Lấy chi tiết khóa học
   const handleViewCourse = async (courseId) => {
     try {
       const courseDetail = await getCourseDetail(courseId);
       console.log("Course Detail:", courseDetail);
-      setSelectedCourse(courseDetail.data); // Hiển thị thông tin khóa học được chọn
+      setSelectedCourse({
+        Title: courseDetail.data.title || "N/A",
+        Description: courseDetail.data.description || "No description",
+        Instructor: courseDetail.data.instructor?.name || "N/A",
+        Rating: courseDetail.data.rating
+          ? courseDetail.data.rating.toFixed(1)
+          : "N/A",
+        Price: courseDetail.data.price !== undefined && courseDetail.data.price !== null
+          ? `$${courseDetail.data.price.toLocaleString()}`
+          : "N/A",
+        Modules: courseDetail.data.modules ? courseDetail.data.modules.length : 0,
+        Learners: courseDetail.data.totalLearners || 0,
+        CreatedAt: new Date(courseDetail.data.createdAt).toLocaleDateString(),
+      });
+      setModalOpen(true); 
     } catch (error) {
       console.error("Error fetching course detail:", error);
     }
   };
 
-  // Tạo cấu trúc dữ liệu cho bảng
   const tableData = Array.isArray(courses)
     ? courses.map((course) => (
         <tr key={course._id}>
@@ -61,10 +74,9 @@ function CourseManagement() {
     : [];
 
   return (
-    <div className="flex flex-col md:flex-row">
-      {/* Danh sách khóa học */}
-      <div className="md:w-2/3">
-        <h1 className="text-2xl font-bold mb-6">Course Management</h1>
+    <div className="flex flex-col items-center w-full px-4">
+      {/* Bảng */}
+      <div className="w-full max-w-7xl mx-auto">
         <Table
           tableHeaders={["ID", "Title", "Categories", "Learners", "Actions"]}
           tableData={tableData}
@@ -76,48 +88,13 @@ function CourseManagement() {
         />
       </div>
 
-      {/* Chi tiết khóa học */}
-      <div className="md:w-1/3 mt-6 md:mt-0 md:pl-4">
-        {selectedCourse ? (
-          <div className="p-4 bg-gray-100 border rounded">
-            <h2 className="text-xl font-bold">Course Details</h2>
-            <p>
-              <strong>Title:</strong> {selectedCourse.title || "N/A"}
-            </p>
-            <p>
-              <strong>Instructor:</strong> {selectedCourse.instructor.name || "N/A"}
-            </p>
-            <p>
-              <strong>Rating:</strong>{" "}
-              {selectedCourse.rating ? selectedCourse.rating.toFixed(1) : "N/A"}
-            </p>
-            <p>
-              <strong>Price:</strong>{" "}
-              {selectedCourse.price !== undefined && selectedCourse.price !== null
-                ? `$${selectedCourse.price.toLocaleString()}`
-                : "N/A"}
-            </p>
-            <p>
-              <strong>Description:</strong>{" "}
-              {selectedCourse.description || "No description"}
-            </p>
-            <p>
-              <strong>Total Modules:</strong>{" "}
-              {selectedCourse.modules ? selectedCourse.modules.length : 0}
-            </p>
-            <p>
-              <strong>Total Learners:</strong>{" "}
-              {selectedCourse.totalLearners || 0}
-            </p>
-            <p>
-              <strong>Created At:</strong>{" "}
-              {new Date(selectedCourse.createdAt).toLocaleDateString()}
-            </p>
-          </div>
-        ) : (
-          <p className="text-gray-500">Select a course to view details.</p>
-        )}
-      </div>
+      {/* ModalDetail */}
+      <ModalDetail
+        isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        title="Course Details"
+        details={selectedCourse}
+      />
     </div>
   );
 }
