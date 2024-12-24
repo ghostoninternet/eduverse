@@ -17,23 +17,34 @@ const getAdminStats = async (req, res, next) => {
 };
 
 const getCourses = async (req, res, next) => {
-  const { limit, page } = req.query
-  const foundCourses = await dashboardServices.getCourses(limit, page)
-  res.status(200).json({
-    message: 'Successfully get courses!',
-    data: foundCourses,
-  })
-}
+  const { limit = 10, page = 1 } = req.query;
+  try {
+    const foundCourses = await dashboardServices.getCourses(parseInt(limit), parseInt(page));
+    res.status(200).json({
+      message: "Successfully fetched courses!",
+      data: foundCourses.data,
+      pagination: foundCourses.pagination,
+    });
+  } catch (error) {
+    console.error("Error in getCourses:", error); // Log lỗi chi tiết
+    res.status(500).json({ message: "Internal Server Error", error: error.message });
+  }
+};
+
+
 
 const getCourseDetail = async (req, res, next) => {
-  const { courseId } = req.params
-  const foundCourse = await dashboardServices.getCourseDetail(courseId)
-  res.status(200).json({
-    message: 'Successfully get course detail!',
-    data: foundCourse,
-  })
-}
-
+  try {
+    const { courseId } = req.params;
+    const courseDetail = await dashboardServices.getCourseDetail(courseId);
+    res.status(200).json({
+      message: "Successfully fetched course detail!",
+      data: courseDetail,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 const getModules = async (req, res, next) => {
   const { limit, page } = req.query
   const foundModules = await dashboardServices.getModules(limit, page)
