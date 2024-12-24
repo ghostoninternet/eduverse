@@ -1,5 +1,5 @@
 // customFetch.js
-
+import BASE_URL from "../constants/api";
 const customFetch = async (url, options = {}) => {
     // Try to fetch data with the current access token
     const response = await fetch(url, {
@@ -11,7 +11,7 @@ const customFetch = async (url, options = {}) => {
     if (response.status === 401 || response.status === 403) {
       try {
         // Attempt to refresh the access token
-        const refreshResponse = await fetch('http://localhost:8000/api/auth/refresh-token', {
+        const refreshResponse = await fetch(`${BASE_URL}/auth/refresh-token`, {
           method: 'POST',
           credentials: 'include', // Send cookies for refreshing
         });

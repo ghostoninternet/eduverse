@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { Chart, BarController, LineController, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Tooltip, Legend } from "chart.js";
+import { Chart, BarController, LineController, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Tooltip, Legend, Title } from "chart.js";
 import getAdminStats from "../../../apis/dashboard/getAdminStats";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-Chart.register(BarController, LineController, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Tooltip, Legend);
+Chart.register(BarController, LineController, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Tooltip, Legend, Title);
 
 function AdminDashboard() {
   const [stats, setStats] = useState(null);
@@ -15,6 +15,7 @@ function AdminDashboard() {
 
   useEffect(() => {
     let isMounted = true;
+
     async function fetchStats() {
       try {
         const response = await getAdminStats();
@@ -39,6 +40,7 @@ function AdminDashboard() {
         }
       }
     }
+
     fetchStats();
 
     return () => {
@@ -47,6 +49,7 @@ function AdminDashboard() {
   }, []);
 
   useEffect(() => {
+    // Xóa biểu đồ nếu đã tồn tại
     if (userChartRef.current) {
       userChartRef.current.destroy();
     }
@@ -55,17 +58,36 @@ function AdminDashboard() {
     }
 
     if (stats) {
+      const months = Array.from({ length: 12 }, (_, i) => `Month ${i + 1}`);
+      const usersData = Array(12).fill(0);
+      const instructorsData = Array(12).fill(0);
+
+      stats.monthlyStats.forEach((item) => {
+        if (item._id.role === "user") {
+          usersData[item._id.month - 1] = item.count;
+        } else if (item._id.role === "instructor") {
+          instructorsData[item._id.month - 1] = item.count;
+        }
+      });
+
       const userCtx = document.getElementById("userChart").getContext("2d");
       userChartRef.current = new Chart(userCtx, {
         type: "line",
         data: {
-          labels: stats.monthlyStats.map((month) => month.month),
+          labels: months,
           datasets: [
             {
               label: "Users",
-              data: stats.monthlyStats.map((data) => data.users),
+              data: usersData,
               borderColor: "rgba(75, 192, 192, 1)",
               backgroundColor: "rgba(75, 192, 192, 0.2)",
+              borderWidth: 1,
+            },
+            {
+              label: "Instructors",
+              data: instructorsData,
+              borderColor: "rgba(255, 159, 64, 1)",
+              backgroundColor: "rgba(255, 159, 64, 0.2)",
               borderWidth: 1,
             },
           ],
@@ -75,6 +97,10 @@ function AdminDashboard() {
           plugins: {
             tooltip: { enabled: true },
             legend: { display: true },
+            title: {
+              display: true,
+              text: "Monthly User Growth by Role",
+            },
           },
         },
       });
@@ -83,16 +109,16 @@ function AdminDashboard() {
       topCoursesChartRef.current = new Chart(coursesCtx, {
         type: "bar",
         data: {
-          labels: stats.topCoursesByRating.map((course) => course.title),
+          labels: stats.topCoursesByRating.map((course) => course.courseTitle),
           datasets: [
             {
               label: "Average Rating",
-              data: stats.topCoursesByRating.map((course) => course.rating),
+              data: stats.topCoursesByRating.map((course) => course.courseRatingAvg),
               backgroundColor: "rgba(255, 159, 64, 0.6)",
             },
             {
               label: "Learners",
-              data: stats.topCoursesByLearners.map((course) => course.learners),
+              data: stats.topCoursesByLearners.map((course) => course.courseLearnerCount),
               backgroundColor: "rgba(153, 102, 255, 0.6)",
             },
           ],
@@ -102,9 +128,25 @@ function AdminDashboard() {
           plugins: {
             tooltip: { enabled: true },
             legend: { display: true },
+            title: {
+              display: true,
+              text: "Top Courses Overview",
+            },
           },
           scales: {
-            x: { ticks: { maxRotation: 75, minRotation: 50 } },
+            x: {
+              ticks: { maxRotation: 75, minRotation: 50 },
+              title: {
+                display: true,
+                text: "Courses",
+              },
+            },
+            y: {
+              title: {
+                display: true,
+                text: "Counts",
+              },
+            },
           },
         },
       });
@@ -119,11 +161,11 @@ function AdminDashboard() {
       <div className="stats grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8 w-full max-w-4xl">
         <div className="stat-item bg-white shadow-md rounded-lg p-6 text-center">
           <h3 className="text-lg font-semibold text-gray-600 mb-2">Total Users</h3>
-          <p className="text-2xl font-bold text-gray-900">{stats.userStats.totalUsers}</p>
+          <p className="text-2xl font-bold text-gray-900">{stats.userStats.users}</p>
         </div>
         <div className="stat-item bg-white shadow-md rounded-lg p-6 text-center">
           <h3 className="text-lg font-semibold text-gray-600 mb-2">Total Instructors</h3>
-          <p className="text-2xl font-bold text-gray-900">{stats.userStats.totalInstructors}</p>
+          <p className="text-2xl font-bold text-gray-900">{stats.userStats.instructors}</p>
         </div>
       </div>
 

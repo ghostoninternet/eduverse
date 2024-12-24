@@ -16,7 +16,7 @@ dashboardRouter.get(
 );
 
 dashboardRouter.get(
-  '/admin',
+  '/admin/stats',
   roleAuth(USER_ROLE.ADMIN),
   asyncHandler(dashboardControllers.getAdminStats)
 );

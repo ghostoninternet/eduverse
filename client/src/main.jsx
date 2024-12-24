@@ -22,7 +22,12 @@ import { USER_ROLE } from './constants/user.js';
 import InstructorProfile from "./pages/Instructor/Profile/InstructorProfile.jsx";
 import Dashboard from "./pages/Instructor/Dashboard/Dashboard.jsx";
 import Payment from "./pages/Payment/Payment.jsx";
-
+import AdminMainLayout from "./layouts/AdminMainLayout.jsx";
+import AdminDashboard from "./pages/Admin/AdminDashboard/AdminDashboard.jsx";
+import AdminUserManagement from "./pages/Admin/UserManagement/AdminUserManagement.jsx";
+import AdminInstructorManagement from "./pages/Admin/InstructorManagement/AdminInstructorManagement.jsx";
+import AdminCourseManagement from "./pages/Admin/CourseManagement/AdminCourseManagement.jsx";
+import AdminModuleManagement from "./pages/Admin/ModuleManagement/AdminModuleManagement.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -141,12 +146,42 @@ const router = createBrowserRouter([
             ]
           },
         ]
-
-      },
-
-    ],
+      }
+    ]
   },
-]);
+  {
+  path: "/admin",
+  element: <ProtectedRoute allowedRoles={[USER_ROLE.ADMIN.value]} />, 
+  children: [
+    {
+      path: '',
+      element: <AdminMainLayout />,
+      children: [
+        {
+          path: "admin-dashboard",
+          element: <AdminDashboard />
+        },
+        {
+          path: "users",
+          element: <AdminUserManagement />
+        },
+        {
+          path: "instructors",
+          element: <AdminInstructorManagement />
+        },
+        {
+          path: "courses",
+          element: <AdminCourseManagement />
+        },
+        {
+          path: "modules",
+          element: <AdminModuleManagement />
+        }
+          ]
+        }
+      ]
+    },
+  ]);
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthProvider>
