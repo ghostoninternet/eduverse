@@ -46,13 +46,35 @@ const getCourseDetail = async (req, res, next) => {
   }
 };
 const getModules = async (req, res, next) => {
-  const { limit, page } = req.query
-  const foundModules = await dashboardServices.getModules(limit, page)
-  res.status(200).json({
-    message: 'Successfully get modules!',
-    data: foundModules,
-  })
-}
+  const { limit = 10, page = 1 } = req.query;
+  try {
+    const modules = await dashboardServices.getModules(parseInt(limit), parseInt(page));
+    res.status(200).json({
+      message: "Successfully fetched modules!",
+      data: modules.data,
+      pagination: modules.pagination,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getModuleDetail = async (req, res, next) => {
+  const { moduleId } = req.params;
+  if (!moduleId || moduleId === "undefined") {
+    return res.status(400).json({ message: "Invalid Module ID" });
+  }
+  try {
+    const moduleDetail = await dashboardServices.getModuleDetail(moduleId);
+    res.status(200).json({
+      message: "Successfully fetched module detail!",
+      data: moduleDetail,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 const getExerciseDetail = async (req, res, next) => {
   const { exerciseId } = req.params
@@ -63,14 +85,7 @@ const getExerciseDetail = async (req, res, next) => {
   })
 }
 
-const getModuleDetail = async (req, res, next) => {
-  const { moduleId } = req.params
-  const foundModule = await dashboardServices.getModuleDetail(moduleId)
-  res.status(200).json({
-    message: 'Successfully get module detail!',
-    data: foundModule,
-  })
-}
+
 
 const getUsers = async (req, res, next) => {
   const { limit = 10, page = 1 } = req.query; // Lấy thông tin phân trang từ query

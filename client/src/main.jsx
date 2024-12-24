@@ -174,7 +174,7 @@ const router = createBrowserRouter([
           element: <AdminCourseManagement />
         },
         {
-          path: "modules",
+          path: "module",
           element: <AdminModuleManagement />
         }
           ]
