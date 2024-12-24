@@ -7,4 +7,8 @@ export const USER_ROLE = {
     label: 'Instructor',
     value: 'instructor'
   },
+  ADMIN: {
+    label: 'Admin',
+    value: 'admin'
+  }
 }

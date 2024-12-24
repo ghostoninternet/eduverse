@@ -1,33 +1,37 @@
 /* eslint-disable react/prop-types */
-import { useNavigate, Outlet } from "react-router-dom";
+import React from "react";
+import { Outlet, Navigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { toast } from "react-toastify";
 import LoadingScreen from "./LoadingScreen";
 import { USER_ROLE } from "../constants/user";
 
 const ProtectedRoute = ({ allowedRoles }) => {
-  const navigate = useNavigate();
-  const { authState, isLoading } = useAuth()
+  const { authState, isLoading } = useAuth();
 
+  // Nếu đang trong trạng thái tải dữ liệu xác thực
   if (isLoading) {
-    return <LoadingScreen />
+    return <LoadingScreen />;
   }
 
+  // Nếu người dùng chưa đăng nhập
   if (!authState) {
-    navigate('/signin', { replace: true })
+    return <Navigate to="/signin" replace />;
   }
 
-  if (!allowedRoles || (allowedRoles && !allowedRoles.includes(authState.role))) {
-    toast('You are not allowed to access this content!', {
-      type: 'error'
-    })
-    if (authState.role === USER_ROLE.INSTRUCTOR) {
-      navigate('/instructor/course-management', { replace: true })
-    } else {
-      navigate('/', { replace: true })
+  // Nếu người dùng không có quyền truy cập
+  if (!allowedRoles.includes(authState.role)) {
+    toast.error("You are not allowed to access this content!");
+    if (authState.role === USER_ROLE.ADMIN.value) {
+      return <Navigate to="/admin/admin-dashboard" replace />;
     }
+    if (authState.role === USER_ROLE.INSTRUCTOR.value) {
+      return <Navigate to="/instructor/dashboard" replace />;
+    }
+    return <Navigate to="/" replace />;
   }
 
+  // Nếu người dùng được phép truy cập
   return <Outlet />;
 };
 
