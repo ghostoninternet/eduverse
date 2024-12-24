@@ -258,16 +258,20 @@ const getUserDetail = async (userId) => {
 }
 
 const getInstructors = async (limit, page) => {
-  const foundUsers = await userDaos.findUsers({ role: USER_ROLE.INSTRUCTOR }, limit, page)
-  const transformedUsers = foundUsers.map(user => excludeObjectKeys(user, ['password']))
-  const totalUsers = await userDaos.countTotalOfUsers({ role: USER_ROLE.INSTRUCTOR })
-  const totalPages = Math.ceil(totalUsers / limit)
+  const foundUsers = await userDaos.findUsers({ role: USER_ROLE.INSTRUCTOR }, limit, page);
+  const transformedUsers = foundUsers.map(user => ({
+    id: user._id,
+    name: user.username,
+    email: user.email,
+  }));
+  const totalUsers = await userDaos.countTotalOfUsers({ role: USER_ROLE.INSTRUCTOR });
+  const totalPages = Math.ceil(totalUsers / limit);
 
   return {
     data: transformedUsers,
     pagination: {
-      totalUsers: totalUsers,
-      totalPages: totalPages,
+      totalUsers,
+      totalPages,
       limitPerPage: limit,
       currentPage: page,
     }
@@ -277,7 +281,14 @@ const getInstructors = async (limit, page) => {
 const getInstructorDetail = async (userId) => {
   const foundUser = await userDaos.findOneUser({ _id: new mongoose.Types.ObjectId(userId) })
   if (!foundUser) throw new CustomError.NotFoundError('User not found!')
-  return excludeObjectKeys(foundUser, ['password', '__v', 'createdAt', 'updatedAt'])
+  const courses = await courseDaos.findCourses({ courseInstructor: userId });
+  const totalLearners = courses.reduce((acc, course) => acc + (course.courseLearnerCount || 0), 0);
+  const totalCourses = await courseDaos.countNumberOfCourses({ courseInstructor: userId });
+  return {
+    ...excludeObjectKeys(foundUser, ['password', '__v', 'createdAt', 'updatedAt']), 
+    totalCourses,
+    totalLearners,
+  };
 }
 
 export default {

@@ -84,13 +84,17 @@ const getUserDetail = async (req, res, next) => {
 }
 
 const getInstructors = async (req, res, next) => {
-  const { limit, page } = req.query
-  const foundInstructors = await dashboardServices.getInstructors(limit, page)
-  res.status(200).json({
-    message: 'Successfully get instructors!',
-    data: foundInstructors,
-  })
-}
+  const { limit = 10, page = 1 } = req.query;
+  try {
+    const foundInstructors = await dashboardServices.getInstructors(parseInt(limit), parseInt(page));
+    res.status(200).json({
+      message: "Successfully get instructors!",
+      data: foundInstructors,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 const getInstructorDetail = async (req, res, next) => {
   const { instructorId } = req.params
