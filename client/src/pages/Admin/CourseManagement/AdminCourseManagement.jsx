@@ -102,10 +102,8 @@ function CourseManagement() {
               {selectedCourse.description || "No description"}
             </p>
             <p>
-              <strong>Categories:</strong>{" "}
-              {Array.isArray(selectedCourse.category)
-                ? selectedCourse.category.join(", ")
-                : "No categories available"}
+              <strong>Total Modules:</strong>{" "}
+              {selectedCourse.modules ? selectedCourse.modules.length : 0}
             </p>
             <p>
               <strong>Total Learners:</strong>{" "}

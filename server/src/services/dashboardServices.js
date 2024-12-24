@@ -176,26 +176,27 @@ const getCourseDetail = async (courseId) => {
 
 
 const getModules = async (limit, page) => {
-  const foundModules = await moduleDaos.findModules({}, limit, page)
-  const totalModules = await moduleDaos.countNumberOfModule()
-  const totalPages = Math.ceil(totalModules / limit)
+  const foundModules = await moduleDaos.findModules({}, limit, page);
+  const totalModules = await moduleDaos.countNumberOfModule();
+  const totalPages = Math.ceil(totalModules / limit);
 
-  let transformedModules = []
-  for (let i = 0; i < foundModules.length; i++) {
-    const foundCourse = await courseDaos.findCourseById(foundModules[i].courseId)
-    if (!foundCourse) throw new CustomError.NotFoundError('No course found!')
+  const transformedModules = [];
+  for (const module of foundModules) {
+    const course = await courseDaos.findCourseById(module.courseId);
+    const instructor = course
+    ? await userDaos.findOneUser({ _id: course.courseInstructor })
+    : null;
 
-    const moduleInfo = {
-      ...foundModules[i],
-      courseId: foundCourse.courseTitle,
-    }
-    transformedModules.push(excludeObjectKeys(moduleInfo, [
-      'moduleInstructor',
-      'moduleVideoLessons',
-      'moduleExercises',
-      'updatedAt',
-      "__v",
-    ]))
+    transformedModules.push({
+      id: module._id,
+      moduleTitle: module.moduleTitle,
+      moduleDescription: module.moduleDescription,
+      courseTitle: course?.courseTitle,
+      instructor: instructor
+        ? { id: instructor._id, name: instructor.username }
+        : { id: null, name: "No Instructor" },
+      createdAt: module.createdAt,
+    });
   }
 
   return {
@@ -204,47 +205,28 @@ const getModules = async (limit, page) => {
       totalModules,
       totalPages,
       currentPage: page,
-      itemPerPage: limit,
-    }
-  }
-}
+      limitPerPage: limit,
+    },
+  };
+};
 
 const getModuleDetail = async (moduleId) => {
-  let foundModule = await moduleDaos.findModuleById(moduleId)
-  if (!foundModule) throw new CustomError.NotFoundError("No module found!")
+  const foundModule = await moduleDaos.findModuleById(moduleId);
+  if (!foundModule) throw new CustomError.NotFoundError("Module not found!");
 
-  let foundModuleInstructor = await userDaos.findOneUser({
-    _id: foundModule.moduleInstructor
-  })
-  if (!foundModuleInstructor) {
-    throw new CustomError.NotFoundError("No instructor for this module found!")
-  }
-  foundModule.moduleInstructor = {
-    username: foundModuleInstructor.username,
-    avatarUrl: foundModuleInstructor.avatarUrl,
-  }
+  const course = await courseDaos.findCourseById(foundModule.courseId);
 
-  let foundExercises = []
-  for (let i = 0; i < foundModule.moduleExercises.length; i++) {
-    let foundExercise = await exerciseDaos.findExerciseById(foundModule.moduleExercises[i])
-    if (foundExercise) {
-      foundExercise = excludeObjectKeys(foundExercise, [
-        'exerciseQuizes',
-        'updatedAt',
-      ])
-      foundExercises.push(foundExercise)
-    }
-  }
-  foundModule.moduleExercises = foundExercises
+  return {
+    id: foundModule._id,
+    title: foundModule.moduleTitle,
+    description: foundModule.moduleDescription,
+    courseTitle: course?.courseTitle || "Unknown",
+    createdAt: foundModule.createdAt,
+    videoLessons: foundModule.moduleVideoLessons,
+    exercises: foundModule.moduleExercises,
+  };
+};
 
-  const foundCourse = await courseDaos.findCourseById(foundModule.courseId)
-  if (foundModule) {
-    foundModule.courseId = foundCourse._id
-    foundModule.courseTitle = foundCourse.courseTitle
-  }
-
-  return foundModule
-}
 
 const getExerciseDetail = async (exerciseId) => {
   const foundExercise = await exerciseDaos.findOneExercise({
