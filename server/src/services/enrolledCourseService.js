@@ -16,45 +16,12 @@ const getEnrolledCourseDetail = async (userId, courseId) => {
   )
   if (!enrolledCourse) throw new CustomError.NotFoundError("No enrolled course found!")
 
-  for (let i = 0; i < enrolledCourse.courseModulesProgress.length; i++) {
-    let foundModule = await moduleDaos.findModuleById(enrolledCourse.courseModulesProgress[i].moduleId)
-    if (!foundModule) throw new CustomError.NotFoundError("No module found!")
-    foundModule = excludeObjectKeys(foundModule, [
-      '_id',
-      '__v',
-      'courseId',
-      'moduleInstructor',
-      'createdAt',
-      'updatedAt',
-    ])
-
-    let exercises = []
-    for (let j = 0; j < foundModule.moduleExercises.length; j++) {
-      let foundExercise = await exerciseDaos.findExerciseById(foundModule.moduleExercises[j])
-      if (!foundExercise) throw new CustomError.NotFoundError("No exercise found!")
-      foundExercise = excludeObjectKeys(foundExercise, [
-        'exerciseInstructor',
-        'createdAt',
-        'updatedAt',
-      ])
-      exercises.push(foundExercise)
-      enrolledCourse.courseModulesProgress[i].moduleExerciseProgress[j].exerciseName = foundExercise.exerciseName
-      enrolledCourse.courseModulesProgress[i].moduleExerciseProgress[j].exerciseDuration = foundExercise.exerciseDuration
-    }
-
-    foundModule.moduleExercises = exercises
-
-    enrolledCourse.courseModulesProgress[i] = {
-      ...enrolledCourse.courseModulesProgress[i],
-      ...foundModule
-    }
-  }
   let course = await courseDaos.findCourseById(enrolledCourse.courseId)
   let instructor = await userDaos.findOneUser(course.courseInstructor)
   enrolledCourse = {
     ...enrolledCourse,
-    courseTitle : course.courseTitle,
-    courseDescription :  course.courseDescription,
+    courseTitle: course.courseTitle,
+    courseDescription: course.courseDescription,
     courseRatingAvg: formatValue(course.courseRatingAvg),
     courseInstuctor: {
       username: instructor.username,
@@ -87,42 +54,56 @@ const createNewEnrolledCourse = async (userId, courseId) => {
   for (let i = 0; i < foundCourse.courseModules.length; i++) {
     let foundModule = await moduleDaos.findModuleById(foundCourse.courseModules[i])
     if (!foundModule) throw new CustomError.NotFoundError("No module found!")
+    foundModule = excludeObjectKeys(foundModule, [
+      '_id',
+      '__v',
+      'courseId',
+      'moduleInstructor',
+      'createdAt',
+      'updatedAt',
+    ])
 
     videoLengths = foundModule.moduleVideoLessons.reduce((prev, curr) => {
       return prev + curr.videoLength
     }, 0)
 
+    let exercises = []
     for (let j = 0; j < foundModule.moduleExercises.length; j++) {
       let foundExercise = await exerciseDaos.findExerciseById(foundModule.moduleExercises[j])
       if (!foundExercise) throw new CustomError.NotFoundError("No exercise found!")
 
       exerciseLengths += foundExercise.exerciseDuration
+      exercises.push(foundExercise)
     }
+    foundModule.moduleExercises = exercises
 
     let moduleProgress = {
       moduleId: foundCourse.courseModules[i],
+      ...foundModule,
       isFinish: false,
       moduleVideoProgress: foundModule.moduleVideoLessons.map(moduleVideo => {
         return {
-          videoTitle: moduleVideo.videoTitle,
+          ...moduleVideo,
           isFinish: false
         }
       }),
-      moduleExerciseProgress: foundModule.moduleExercises.map(moduleExercise => {
+      moduleExerciseProgress: exercises.map(moduleExercise => {
         return {
-          exerciseId: moduleExercise,
+          exerciseName: moduleExercise.exerciseName,
+          exerciseDuration: moduleExercise.exerciseDuration,
+          exerciseId: moduleExercise._id,
           userScore: 0,
           hasPassed: false,
           previousSubmitDate: null,
         }
-      })
+      }),
     }
     courseModulesProgress.push(moduleProgress)
   }
   courseEstimateDeadline += videoLengths + exerciseLengths
   const bonusTime = foundCourse.courseModules.length * 7 * 24 * 60 * 60 * 1000
   courseEstimateDeadline = new Date((new Date().getTime() + courseEstimateDeadline + bonusTime))
-  
+
   enrolledCourseDocument = {
     ...enrolledCourseDocument,
     courseEstimateDeadline,
@@ -130,13 +111,15 @@ const createNewEnrolledCourse = async (userId, courseId) => {
   }
 
   const newEnrolledCourse = await enrolledCourseDaos.createNewEnrolledCourse(enrolledCourseDocument)
+  await userDaos.updateUser(
+    userId,
+    {
+      $push: { enrolledCourses: courseId }
+    },
+  )
   return newEnrolledCourse
 }
 
-// updateData: { 
-//   moduleId,
-//   videoTitle,
-// }
 const updateEnrolledCourseVideoProgress = async (userId, courseId, updateData) => {
   const foundCourse = await courseDaos.findCourseById(courseId)
   if (!foundCourse) throw new CustomError.NotFoundError("No course found!")
@@ -164,7 +147,7 @@ const updateEnrolledCourseVideoProgress = async (userId, courseId, updateData) =
 
   let totalVideosAndExercises = 0
   let totalFinishedVideosAndExercises = 0
-  
+
   for (let i = 0; i < foundEnrolledCourse.courseModulesProgress.length; i++) {
     for (let j = 0; j < foundEnrolledCourse.courseModulesProgress[i].moduleVideoProgress.length; j++) {
       if (foundEnrolledCourse.courseModulesProgress[i].moduleVideoProgress[j].isFinish) {
@@ -204,12 +187,6 @@ const updateEnrolledCourseVideoProgress = async (userId, courseId, updateData) =
   ])
 }
 
-// updateData: { 
-//   moduleId,
-//   exerciseId,
-//   userScore,
-//   hasPassed,
-// }
 const updateEnrolledCourseExerciseProgress = async (userId, courseId, updateData) => {
   const foundCourse = await courseDaos.findCourseById(courseId)
   if (!foundCourse) throw new CustomError.NotFoundError("No course found!")
@@ -242,7 +219,7 @@ const updateEnrolledCourseExerciseProgress = async (userId, courseId, updateData
 
   let totalVideosAndExercises = 0
   let totalFinishedVideosAndExercises = 0
-  
+
   for (let i = 0; i < foundEnrolledCourse.courseModulesProgress.length; i++) {
     for (let j = 0; j < foundEnrolledCourse.courseModulesProgress[i].moduleVideoProgress.length; j++) {
       if (foundEnrolledCourse.courseModulesProgress[i].moduleVideoProgress[j].isFinish) {
@@ -309,12 +286,12 @@ const deleteEnrolledCourse = async (userId, courseId) => {
   return true
 }
 
-const getCompletedEnrolledCourses = async(userId) => {
+const getCompletedEnrolledCourses = async (userId) => {
   const response = await enrolledCourseDaos.getCompletedEnrolledCourses(userId)
   return response
 }
 
-const getInProgressEnrolledCourses = async(userId) => {
+const getInProgressEnrolledCourses = async (userId) => {
   const response = await enrolledCourseDaos.getInProgressEnrolledCourses(userId)
   return response
 }

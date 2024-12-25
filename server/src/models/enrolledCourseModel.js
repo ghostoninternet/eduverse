@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Exercises from "./exerciseModel.js";
 const { Schema } = mongoose;
 
 const enrolledCourseSchema = new Schema({
@@ -31,6 +32,8 @@ const enrolledCourseSchema = new Schema({
         isFinish: Boolean,
       }],
       moduleExerciseProgress: [{
+        exerciseName: String,
+        exerciseDuration: Number,
         exerciseId: mongoose.Schema.Types.ObjectId,
         userScore: Number,
         hasPassed: Boolean,
@@ -38,7 +41,26 @@ const enrolledCourseSchema = new Schema({
           type: Date,
           default: null,
         }
-      }]
+      }],
+      moduleTitle: String,
+      moduleDescription: String,
+      moduleVideoLessons: [{
+        videoTitle: String,
+        videoUrl: String,
+        videoLength: Number,
+      }],
+      moduleExercises: [{
+        exerciseModule: mongoose.Schema.Types.ObjectId,
+        exerciseName: String,
+        exerciseQuizes: [{
+          question: String,
+          choices: [String],
+          answer: String,
+        }],
+        exercisePassScore: Number,
+        exerciseDuration: Number,
+        isDeleted: Boolean,
+      }],
     }],
     required: true,
     ref: 'Modules',
