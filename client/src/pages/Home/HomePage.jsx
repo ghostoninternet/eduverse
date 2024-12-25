@@ -5,6 +5,7 @@ import HomeTab from "../../components/Home/HomeTab";
 import { useNavigate } from "react-router-dom";
 import { useCourse } from "../../contexts/CourseContext";
 import { useLocation } from 'react-router'
+import getEnrolledCourseList from "../../apis/enrolled-course/getEnrolledCourseList";
 const HomePage = () => {
   const navigate = useNavigate()
   let location = useLocation()
@@ -74,15 +75,38 @@ const HomePage = () => {
   }, [location.search]);
 
 
-  const {completedCourses, inProgressCourses} = useCourse();
+  // let {completedCourses, inProgressCourses} = useCourse();
 
   const handleEnrolledCourseClick = (course) => {
     navigate(`/enrolledCourse/${course._id}`);
   };
-
+  const [completedCourses, setCompletedCourses] = useState([]);
+  const [inProgressCourses, setInProgressCourses] = useState([]);
   const handleTabClick = (tab) => {
     setActiveItem(tab);
-    window.location.hash = tab; 
+    window.location.hash = tab;
+    const fetchCompletedCourses = async () => {
+          try {
+            const data = await getEnrolledCourseList.getCompletedEnrolledCourses();
+            setCompletedCourses(data);
+          } catch (error) {
+            console.error("Error fetching user data:", error);
+            setCompletedCourses(null);
+          }
+        };
+
+        const fetchInProgressCourses = async () => {
+              try {
+                const data = await getEnrolledCourseList.getInProgressEnrolledCourses();
+                setInProgressCourses(data);
+              } catch (error) {
+                console.error("Error fetching user data:", error);
+                setInProgressCourses(null);
+              }
+            };
+        
+        fetchInProgressCourses();
+        fetchCompletedCourses();
   };
 
 
