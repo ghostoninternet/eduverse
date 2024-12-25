@@ -49,7 +49,6 @@ function AdminDashboard() {
   }, []);
 
   useEffect(() => {
-    // Xóa biểu đồ nếu đã tồn tại
     if (userChartRef.current) {
       userChartRef.current.destroy();
     }
@@ -58,7 +57,20 @@ function AdminDashboard() {
     }
 
     if (stats) {
-      const months = Array.from({ length: 12 }, (_, i) => `Month ${i + 1}`);
+      const months = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
       const usersData = Array(12).fill(0);
       const instructorsData = Array(12).fill(0);
 
