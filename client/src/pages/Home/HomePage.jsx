@@ -3,9 +3,9 @@ import { useAuth } from "../../contexts/AuthContext";
 import MyLearningTab from "../../components/Home/MyLearningTab";
 import HomeTab from "../../components/Home/HomeTab";
 import { useNavigate } from "react-router-dom";
-import { useCourse } from "../../contexts/CourseContext";
 import { useLocation } from 'react-router'
 import getEnrolledCourseList from "../../apis/enrolled-course/getEnrolledCourseList";
+import { getFreeCourses, getPopularCourses, getRecommendedCourse } from "../../apis/getHomepageCourses";
 const HomePage = () => {
   const navigate = useNavigate()
   let location = useLocation()
@@ -34,10 +34,8 @@ const HomePage = () => {
   useEffect(() => {
     const fetchRecommendedCourses = async () => {
       try {
-        const url = `http://localhost:8000/api/courses/recommended${location.search}`;
-        const response = await fetch(url);
-        const json = await response.json();
-        setRecommendedCourses(json);
+        const response = await getRecommendedCourse();
+        setRecommendedCourses(response);
       } catch (error) {
         console.error("Error fetching courses:", error);
       }
@@ -48,10 +46,8 @@ const HomePage = () => {
   useEffect(() => {
     const fetchFreeCourses = async () => {
       try {
-        const url = `http://localhost:8000/api/courses/free${location.search}`;
-        const response = await fetch(url);
-        const json = await response.json();
-        setFreeCourses(json);
+        const response = await getFreeCourses();
+        setFreeCourses(response);
       } catch (error) {
         console.error("Error fetching courses:", error);
       }
@@ -62,10 +58,8 @@ const HomePage = () => {
   useEffect(() => {
     const fetchPopularCourses = async () => {
       try {
-        const url = `http://localhost:8000/api/courses/popular${location.search}`;
-        const response = await fetch(url);
-        const json = await response.json();
-        setPopularCourses(json);
+        const response = await getPopularCourses();
+        setPopularCourses(response);
       } catch (error) {
         console.error("Error fetching courses:", error);
       }
@@ -73,9 +67,6 @@ const HomePage = () => {
 
     fetchPopularCourses();
   }, [location.search]);
-
-
-  // let {completedCourses, inProgressCourses} = useCourse();
 
   const handleEnrolledCourseClick = (course) => {
     navigate(`/enrolledCourse/${course._id}`);
