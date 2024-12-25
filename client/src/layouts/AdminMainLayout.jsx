@@ -6,8 +6,26 @@ import { ADMIN_NAVBAR } from "../constants/navbar";
 import { useAuth } from "../contexts/AuthContext";
 import logout from "../apis/logout";
 import { toast } from "react-toastify";
+import { pingServer } from "../apis/ping";
 
 function AdminMainLayout() {
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const response = await pingServer()
+        if (response?.statusCode) {
+          throw new Error(response.message)
+        }
+        console.log(response)
+      } catch (error) {
+        console.log(error)
+      }
+
+      return () => clearInterval(interval)
+    }, 30000)
+  }, [])
+
   const [currentTab, setCurrentTab] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
@@ -42,7 +60,7 @@ function AdminMainLayout() {
         <div className="flex flex-col items-center py-5">
           <div className="mb-4 flex flex-col items-center">
             <img
-              src={authState?.avatarUrl || "/path/to/default-avatar.jpg"} 
+              src={authState?.avatarUrl || "/path/to/default-avatar.jpg"}
               alt="Admin Avatar"
               className="w-20 h-20 rounded-full mb-2 object-cover shadow-md"
             />
@@ -55,10 +73,9 @@ function AdminMainLayout() {
                 key={ADMIN_ROUTES[route]}
                 to={ADMIN_ROUTES[route]}
                 className={`block w-[90%] mx-auto text-center font-bold text-lg h-12 py-2 rounded-xl shadow-lg transition-colors duration-200 
-                  ${
-                    location.pathname.startsWith(ADMIN_ROUTES[route])
-                      ? 'bg-blue-700 text-white hover:bg-blue-700'
-                      : 'bg-gray-300 text-black hover:bg-gray-400'
+                  ${location.pathname.startsWith(ADMIN_ROUTES[route])
+                    ? 'bg-blue-700 text-white hover:bg-blue-700'
+                    : 'bg-gray-300 text-black hover:bg-gray-400'
                   }`}
               >
                 {ADMIN_NAVBAR[route]}
@@ -91,10 +108,9 @@ function AdminMainLayout() {
               key={ADMIN_ROUTES[route]}
               to={ADMIN_ROUTES[route]}
               className={`block w-[90%] text-center font-bold text-lg py-2 px-4 rounded-2xl shadow-lg 
-                ${
-                  location.pathname.startsWith(ADMIN_ROUTES[route])
-                    ? "bg-blue-700 text-white"
-                    : "bg-slate-300"
+                ${location.pathname.startsWith(ADMIN_ROUTES[route])
+                  ? "bg-blue-700 text-white"
+                  : "bg-slate-300"
                 }`}
               onClick={() => setOpenSidebar(false)}
             >

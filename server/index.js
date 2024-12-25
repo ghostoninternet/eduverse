@@ -15,6 +15,12 @@ function Application() {
   app.use(express.json())
   app.use(cookieParser())
   app.use(cors(corsConfig));
+
+  app.get('/api/ping', (req, res, next) => {
+    res.status(200).json({
+      message: "Ok"
+    })
+  })
   app.use('/api', router)
   
   app.use(errorHandler)
