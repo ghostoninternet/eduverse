@@ -6,6 +6,7 @@ import { INSTRUCTOR_NAVBAR } from '../constants/navbar.js'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import logout from '../apis/logout.js'
 import { toast } from 'react-toastify'
+import { pingServer } from '../apis/ping.js'
 
 function InstructorMainLayout() {
   const [currentTab, setCurrentTab] = useState('')
@@ -13,6 +14,22 @@ function InstructorMainLayout() {
   const navigate = useNavigate()
   const { authState, setAuthState } = useAuth()
   const [openSidebar, setOpenSidebar] = useState(false)
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const response = await pingServer()
+        if (response?.statusCode) {
+          throw new Error(response.message)
+        }
+        console.log(response)
+      } catch (error) {
+        console.log(error)
+      }
+
+      return () => clearInterval(interval)
+    }, 30000)
+  }, [])
 
   const handleLogout = async () => {
     try {
@@ -60,17 +77,17 @@ function InstructorMainLayout() {
 
           <div className="flex-1 py-10 flex flex-col gap-4 items-center">
             {Object.keys(INSTRUCTOR_ROUTES).map((route) => (
-              <Link 
-                key={INSTRUCTOR_ROUTES[route]} 
-                to={INSTRUCTOR_ROUTES[route]} 
+              <Link
+                key={INSTRUCTOR_ROUTES[route]}
+                to={INSTRUCTOR_ROUTES[route]}
                 className={`block w-[90%] text-center font-bold text-lg py-2 px-4 rounded-2xl shadow-lg 
                   ${location.pathname === INSTRUCTOR_ROUTES[route] ? 'bg-blue-400 text-white' : 'bg-slate-300'}`}
               >
                 {INSTRUCTOR_NAVBAR[route]}
               </Link>
             ))}
-            <button 
-              onClick={handleLogout} 
+            <button
+              onClick={handleLogout}
               className="block w-[90%] text-center font-bold text-lg py-2 px-4 rounded-2xl shadow-lg bg-slate-300"
             >
               Logout
@@ -107,17 +124,17 @@ function InstructorMainLayout() {
 
           <div className="flex-1 py-10 flex flex-col gap-4 items-center">
             {Object.keys(INSTRUCTOR_ROUTES).map((route) => (
-              <Link 
-                key={INSTRUCTOR_ROUTES[route]} 
-                to={INSTRUCTOR_ROUTES[route]} 
+              <Link
+                key={INSTRUCTOR_ROUTES[route]}
+                to={INSTRUCTOR_ROUTES[route]}
                 className={`block w-[90%] text-center font-bold text-lg py-2 px-4 rounded-2xl shadow-lg 
                   ${location.pathname === INSTRUCTOR_ROUTES[route] ? 'bg-blue-400 text-white' : 'bg-slate-300'}`}
               >
                 {INSTRUCTOR_NAVBAR[route]}
               </Link>
             ))}
-            <button 
-              onClick={handleLogout} 
+            <button
+              onClick={handleLogout}
               className="block w-[90%] text-center font-bold text-lg py-2 px-4 rounded-2xl shadow-lg bg-slate-300"
             >
               Logout
