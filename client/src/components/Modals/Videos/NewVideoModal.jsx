@@ -3,6 +3,7 @@ import { useState } from 'react'
 import ReactPlayer from 'react-player'
 import { uploadVideo } from '../../../apis/upload';
 import { toast } from 'react-toastify';
+import CancelConfirmModal from '../Confirmation/CancelConfirmModal';
 
 function NewVideoModal({
   isOpen,
@@ -14,6 +15,7 @@ function NewVideoModal({
     videoUrl: '',
     videoLength: '',
   })
+  const [isOpenCancel, setIsOpenCancel] = useState(false)
 
   const handleChangeVideo = async (e) => {
     if (e.target.files) {
@@ -50,6 +52,7 @@ function NewVideoModal({
       videoLength: '',
     })
     setIsOpen(false)
+    setIsOpenCancel(false)
   }
 
   const validateData = () => {
@@ -82,7 +85,7 @@ function NewVideoModal({
 
   return (
     <div
-      className={`${isOpen ? '' : 'hidden'} absolute z-10 top-0 right-0 left-0 bottom-0 bg-slate-950/50 w-full h-full`}
+      className={`${isOpen ? '' : 'hidden'} absolute z-[90] top-0 right-0 left-0 bottom-0 bg-slate-950/50 w-full h-full`}
     >
       <div
         onClick={(e) => {
@@ -92,8 +95,11 @@ function NewVideoModal({
       >
         <div className="flex justify-between mb-4">
           <div className="font-bold text-2xl">New Video</div>
-          <button onClick={() => { setIsOpen(false) }} className="font-bold rounded-full bg-slate-200 py-1 px-2">
-            X
+          <button
+            onClick={() => setIsOpenCancel(true)}
+            className="text-gray-500 hover:text-black"
+          >
+            ✖
           </button>
         </div>
         <div className="mb-4">
@@ -138,10 +144,21 @@ function NewVideoModal({
           }
         </div>
         <div className="flex justify-center">
-          <button onClick={handleCancelAddNewVideo} className="mx-5 px-2 py-1 bg-gray-500 font-bold text-white rounded-lg">Cancel</button>
+          <button onClick={() => setIsOpenCancel(true)} className="mx-5 px-2 py-1 bg-gray-500 font-bold text-white rounded-lg">Cancel</button>
           <button onClick={handleAddNewVideo} className="mx-5 px-2 py-1 bg-blue-700 font-bold text-white rounded-lg">Add</button>
         </div>
       </div>
+      {
+        isOpenCancel && (
+          <CancelConfirmModal
+            isOpen={isOpenCancel}
+            confirmMessage={"Are you sure you want to discard adding new video ?"}
+            handelClose={() => setIsOpenCancel(false)}
+            handleSave={handleAddNewVideo}
+            handleConfirmCancel={handleCancelAddNewVideo}
+          />
+        )
+      }
     </div>
   )
 }

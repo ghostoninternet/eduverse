@@ -3,6 +3,7 @@ import SchoolIcon from "@mui/icons-material/School";
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { useAuth } from "../contexts/AuthContext.jsx";
 import logout from "../apis/logout";
 import CourseBar from "./CourseBar";
@@ -20,8 +21,19 @@ const NavBar = () => {
     setIsDown(!isDown);
   };
   const handleLogout = async () => {
-    await logout();
-    setAuthState(null);
+    try {
+      const response = await logout();
+      toast(response.message, {
+        type: 'success',
+        autoClose: 1000,
+      })
+      setAuthState(null);
+    } catch (error) {
+      toast(error.message, {
+        type: 'error',
+        autoClose: 2000,
+      })
+    }
   };
 
   const handleProfileClick = () => {

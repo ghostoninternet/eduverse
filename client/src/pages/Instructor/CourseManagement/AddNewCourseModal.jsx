@@ -3,6 +3,7 @@ import { useState } from 'react'
 import MultiSelectDropdown from '../../../components/Input/MultiSelectDropdown ';
 import { uploadImage } from '../../../apis/upload';
 import { toast } from 'react-toastify';
+import CancelConfirmModal from '../../../components/Modals/Confirmation/CancelConfirmModal';
 
 function AddNewCourseModal({
   category,
@@ -14,6 +15,7 @@ function AddNewCourseModal({
 }) {
 
   const [isOpen, setIsOpen] = useState(false);
+  const [isOpenCancel, setIsOpenCancel] = useState(false)
   const [selectedItems, setSelectedItems] = useState([]);
   const toggleDropdown = () => setIsOpen(!isOpen);
   const handleItemClick = (item) => {
@@ -112,10 +114,25 @@ function AddNewCourseModal({
       <div onClick={(e) => { e.stopPropagation() }} className="w-4/5 mx-auto mt-10 p-3 border-2 bg-white rounded-2xl lg:w-3/5">
         <div className="flex justify-between mb-4">
           <div className="font-bold text-2xl">New Course</div>
-          <button onClick={() => { handleCancelAndClose() }} className="font-bold rounded-full bg-slate-200 py-1 px-2">
-            X
+          <button
+            onClick={() => setIsOpenCancel(true)}
+            className="text-gray-500 hover:text-black"
+          >
+            ✖
           </button>
         </div>
+        {
+          newCourseData.courseImgUrl !== ''
+            ? (
+              <div className='my-5 lg:mb-10'>
+                <img
+                  className='w-[60%] h-[60%] mx-auto lg:w-[40%] lg:h-[40%]'
+                  alt='Course Image'
+                  src={newCourseData.courseImgUrl}
+                />
+              </div>
+            ) : null
+        }
         <div className="mb-4">
           <div className="flex w-full items-center mb-2">
             <label className="w-2/5 font-bold text-xl">Course Title</label>
@@ -153,7 +170,7 @@ function AddNewCourseModal({
             </div>
           </div>
           <div className="flex w-full items-center mb-2">
-            <label className="w-2/5 font-bold text-xl">Course Price</label>
+            <label className="w-2/5 font-bold text-xl">Course Price ($)</label>
             <input
               value={newCourseData.coursePrice}
               onChange={(e) => {
@@ -169,13 +186,28 @@ function AddNewCourseModal({
           </div>
         </div>
         <div className="flex justify-center">
-          <button onClick={handleCancelAndClose} className="mx-5 px-2 py-1 bg-gray-500 font-bold text-white rounded-lg">Cancel</button>
+          <button onClick={() => setIsOpenCancel(true)} className="mx-5 px-2 py-1 bg-gray-500 font-bold text-white rounded-lg">Cancel</button>
           <button onClick={() => {
             setSelectedItems([])
             handleAddCourse()
           }} className="mx-5 px-2 py-1 bg-blue-700 font-bold text-white rounded-lg">Add</button>
         </div>
       </div>
+
+      {
+        isOpenCancel && (
+          <CancelConfirmModal
+            isOpen={isOpenCancel}
+            confirmMessage={"Are you sure you want to discard creating new course ?"}
+            handelClose={() => setIsOpenCancel(false)}
+            handleSave={() => {
+              handleAddCourse()
+              setIsOpenCancel(false)
+            }}
+            handleConfirmCancel={handleCancelAndClose}
+          />
+        )
+      }
     </div>
   )
 }

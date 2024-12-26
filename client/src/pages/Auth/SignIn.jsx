@@ -46,7 +46,7 @@ const SignIn = () => {
       if (response?.data) {
         setAuthState(response.data)
         toast(response.message, { type: "success" })
-        if (response.data.role === USER_ROLE.USER) {
+        if (response.data.role === USER_ROLE.USER.value) {
           navigate('/', { replace: true })
         } else {
           navigate('/instructor/course-management', { replace: true })

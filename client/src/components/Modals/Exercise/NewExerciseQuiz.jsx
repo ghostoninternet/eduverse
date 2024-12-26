@@ -58,7 +58,7 @@ function NewExerciseQuiz({
 
   return (
     <div
-      className={`${isOpen ? '' : 'hidden'} absolute top-0 right-0 left-0 bottom-0 bg-slate-950/50 w-full h-full`}>
+      className={`${isOpen ? '' : 'hidden'} absolute z-[90] top-0 right-0 left-0 bottom-0 bg-slate-950/50 w-full h-full`}>
       <div
         onClick={(e) => {
           e.stopPropagation()
