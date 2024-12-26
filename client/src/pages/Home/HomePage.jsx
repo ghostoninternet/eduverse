@@ -3,14 +3,18 @@ import { useAuth } from "../../contexts/AuthContext";
 import MyLearningTab from "../../components/Home/MyLearningTab";
 import HomeTab from "../../components/Home/HomeTab";
 import { useNavigate } from "react-router-dom";
-import { useLocation } from 'react-router'
+import { useLocation } from "react-router";
 import getEnrolledCourseList from "../../apis/enrolled-course/getEnrolledCourseList";
-import { getFreeCourses, getPopularCourses, getRecommendedCourse } from "../../apis/getHomepageCourses";
+import {
+  getFreeCourses,
+  getPopularCourses,
+  getRecommendedCourse,
+} from "../../apis/getHomepageCourses";
 import CourseCatalog from "../../components/Home/CourseCatalog";
-import getAllCourses from "../../apis/course/getAllCourses"
+import getAllCourses from "../../apis/course/getAllCourses";
 const HomePage = () => {
-  const navigate = useNavigate()
-  let location = useLocation()
+  const navigate = useNavigate();
+  let location = useLocation();
 
   const [activeItem, setActiveItem] = useState("home");
   const [recommendedCourses, setRecommendedCourses] = useState([]);
@@ -19,19 +23,18 @@ const HomePage = () => {
   const { authState } = useAuth();
 
   const handleCourseClick = (course) => {
-    navigate(`/learn/${course.courseSlug}`,{
-      state: { courseId: course._id }
+    navigate(`/learn/${course.courseSlug}`, {
+      state: { courseId: course._id },
     });
   };
 
-
   useEffect(() => {
     let hash = window.location.hash;
-    if (hash){
-      hash = window.location.hash.replace("#","")
-      setActiveItem(hash)
+    if (hash) {
+      hash = window.location.hash.replace("#", "");
+      setActiveItem(hash);
     }
-  },[])
+  }, []);
 
   useEffect(() => {
     const fetchRecommendedCourses = async () => {
@@ -70,17 +73,21 @@ const HomePage = () => {
     fetchPopularCourses();
   }, [location.search]);
   const [allCourses, setAllCourses] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const handleChangePage = (page) => {
+    setCurrentPage(page);
+  };
   useEffect(() => {
     const fetchedAllCourses = async () => {
       try {
-        const response = await getAllCourses();
+        const response = await getAllCourses(currentPage);
         setAllCourses(response);
       } catch (error) {
         console.error("Error fetching courses:", error);
       }
-    }
+    };
     fetchedAllCourses();
-  }, [])
+  }, [currentPage]);
   const handleEnrolledCourseClick = (course) => {
     navigate(`/enrolledCourse/${course._id}`);
   };
@@ -91,215 +98,224 @@ const HomePage = () => {
     setActiveItem(tab);
     window.location.hash = tab;
     const fetchCompletedCourses = async () => {
-          try {
-            const data = await getEnrolledCourseList.getCompletedEnrolledCourses();
-            setCompletedCourses(data);
-          } catch (error) {
-            console.error("Error fetching user data:", error);
-            setCompletedCourses(null);
-          }
-        };
+      try {
+        const data = await getEnrolledCourseList.getCompletedEnrolledCourses();
+        setCompletedCourses(data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setCompletedCourses(null);
+      }
+    };
 
-        const fetchInProgressCourses = async () => {
-              try {
-                const data = await getEnrolledCourseList.getInProgressEnrolledCourses();
-                setInProgressCourses(data);
-              } catch (error) {
-                console.error("Error fetching user data:", error);
-                setInProgressCourses(null);
-              }
-            };
-        
-        fetchInProgressCourses();
-        fetchCompletedCourses();
+    const fetchInProgressCourses = async () => {
+      try {
+        const data = await getEnrolledCourseList.getInProgressEnrolledCourses();
+        setInProgressCourses(data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setInProgressCourses(null);
+      }
+    };
+
+    fetchInProgressCourses();
+    fetchCompletedCourses();
   };
-  if(authState && activeItem === "home"){
+  if (authState && activeItem === "home") {
     return (
       <div className="mt-5">
-          <ul className="flex gap-x-8 pl-20 border-b-2">
-            <li
-              onClick={() => handleTabClick("home")}
-              className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
-                activeItem === "home"
-                  ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
-                  : "text-slate-500 font-medium"
-              } `}
-            >
-              Home
-            </li>
-            <li
-              onClick={()=> handleTabClick("browse-courses")}
-              className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
-                activeItem === "browse-courses"
-                  ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
-                  : "text-slate-500 font-medium"
-              } `}
-            >
-              Browse courses
-            </li>
-            <li
-              onClick={()=> handleTabClick("my-learning")}
-              className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
-                activeItem === "my-learning"
-                  ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
-                  : "text-slate-500 font-medium"
-              } `}
-            >
-              My learning
-            </li>
-          </ul>
-          <HomeTab
+        <ul className="flex gap-x-8 pl-20 border-b-2">
+          <li
+            onClick={() => handleTabClick("home")}
+            className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
+              activeItem === "home"
+                ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
+                : "text-slate-500 font-medium"
+            } `}
+          >
+            Home
+          </li>
+          <li
+            onClick={() => handleTabClick("browse-courses")}
+            className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
+              activeItem === "browse-courses"
+                ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
+                : "text-slate-500 font-medium"
+            } `}
+          >
+            Browse courses
+          </li>
+          <li
+            onClick={() => handleTabClick("my-learning")}
+            className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
+              activeItem === "my-learning"
+                ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
+                : "text-slate-500 font-medium"
+            } `}
+          >
+            My learning
+          </li>
+        </ul>
+        <HomeTab
           recommend={recommendedCourses}
           free={freeCourses}
           popular={popularCourses}
           handleCourseClick={handleCourseClick}
         />
-        </div>
-    )
-  }else if(authState && activeItem === "browse-courses"){
+      </div>
+    );
+  } else if (authState && activeItem === "browse-courses") {
     return (
       <div className="mt-5">
-          <ul className="flex gap-x-8 pl-20 border-b-2">
-            <li
-              onClick={() => handleTabClick("home")}
-              className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
-                activeItem === "home"
-                  ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
-                  : "text-slate-500 font-medium"
-              } `}
-            >
-              Home
-            </li>
-            <li
-              onClick={()=> handleTabClick("browse-courses")}
-              className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
-                activeItem === "browse-courses"
-                  ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
-                  : "text-slate-500 font-medium"
-              } `}
-            >
-              Browse courses
-            </li>
-            <li
-              onClick={()=> handleTabClick("my-learning")}
-              className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
-                activeItem === "my-learning"
-                  ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
-                  : "text-slate-500 font-medium"
-              } `}
-            >
-              My learning
-            </li>
-          </ul>
-          <CourseCatalog allCourses={allCourses}/>
-        </div>
-    )
-  }else if(authState && activeItem === "my-learning"){
+        <ul className="flex gap-x-8 pl-20 border-b-2">
+          <li
+            onClick={() => handleTabClick("home")}
+            className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
+              activeItem === "home"
+                ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
+                : "text-slate-500 font-medium"
+            } `}
+          >
+            Home
+          </li>
+          <li
+            onClick={() => handleTabClick("browse-courses")}
+            className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
+              activeItem === "browse-courses"
+                ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
+                : "text-slate-500 font-medium"
+            } `}
+          >
+            Browse courses
+          </li>
+          <li
+            onClick={() => handleTabClick("my-learning")}
+            className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
+              activeItem === "my-learning"
+                ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
+                : "text-slate-500 font-medium"
+            } `}
+          >
+            My learning
+          </li>
+        </ul>
+        <CourseCatalog
+          count={allCourses?.pagination?.totalPages}
+          allCourses={allCourses?.data}
+          currentPage={currentPage}
+          handleChangePage={handleChangePage}
+        />
+      </div>
+    );
+  } else if (authState && activeItem === "my-learning") {
     return (
       <div className="mt-5">
-          <ul className="flex gap-x-8 pl-20 border-b-2">
-            <li
-              onClick={() => handleTabClick("home")}
-              className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
-                activeItem === "home"
-                  ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
-                  : "text-slate-500 font-medium"
-              } `}
-            >
-              Home
-            </li>
-            <li
-              onClick={()=> handleTabClick("browse-courses")}
-              className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
-                activeItem === "browse-courses"
-                  ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
-                  : "text-slate-500 font-medium"
-              } `}
-            >
-              Browse courses
-            </li>
-            <li
-              onClick={()=> handleTabClick("my-learning")}
-              className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
-                activeItem === "my-learning"
-                  ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
-                  : "text-slate-500 font-medium"
-              } `}
-            >
-              My learning
-            </li>
-          </ul>
-          <MyLearningTab
+        <ul className="flex gap-x-8 pl-20 border-b-2">
+          <li
+            onClick={() => handleTabClick("home")}
+            className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
+              activeItem === "home"
+                ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
+                : "text-slate-500 font-medium"
+            } `}
+          >
+            Home
+          </li>
+          <li
+            onClick={() => handleTabClick("browse-courses")}
+            className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
+              activeItem === "browse-courses"
+                ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
+                : "text-slate-500 font-medium"
+            } `}
+          >
+            Browse courses
+          </li>
+          <li
+            onClick={() => handleTabClick("my-learning")}
+            className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
+              activeItem === "my-learning"
+                ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
+                : "text-slate-500 font-medium"
+            } `}
+          >
+            My learning
+          </li>
+        </ul>
+        <MyLearningTab
           courseInProgress={inProgressCourses}
           courseInCompleted={completedCourses}
           handleEnrolledCourseClick={handleEnrolledCourseClick}
         />
-        </div>
-    )
+      </div>
+    );
   } else {
-    if(activeItem === "home"){
+    if (activeItem === "home") {
       return (
         <div className="mt-5">
-            <ul className="flex gap-x-8 pl-20 border-b-2">
-              <li
-                onClick={() => handleTabClick("home")}
-                className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
-                  activeItem === "home"
-                    ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
-                    : "text-slate-500 font-medium"
-                } `}
-              >
-                Home
-              </li>
-              <li
-                onClick={()=> handleTabClick("browse-courses")}
-                className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
-                  activeItem === "browse-courses"
-                    ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
-                    : "text-slate-500 font-medium"
-                } `}
-              >
-                Browse courses
-              </li>
-            </ul>
-            <HomeTab
+          <ul className="flex gap-x-8 pl-20 border-b-2">
+            <li
+              onClick={() => handleTabClick("home")}
+              className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
+                activeItem === "home"
+                  ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
+                  : "text-slate-500 font-medium"
+              } `}
+            >
+              Home
+            </li>
+            <li
+              onClick={() => handleTabClick("browse-courses")}
+              className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
+                activeItem === "browse-courses"
+                  ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
+                  : "text-slate-500 font-medium"
+              } `}
+            >
+              Browse courses
+            </li>
+          </ul>
+          <HomeTab
             recommend={recommendedCourses}
             free={freeCourses}
             popular={popularCourses}
             handleCourseClick={handleCourseClick}
           />
-          </div>
-      )
-    }else{
+        </div>
+      );
+    } else {
       return (
         <div className="mt-5">
-            <ul className="flex gap-x-8 pl-20 border-b-2">
-              <li
-                onClick={() => handleTabClick("home")}
-                className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
-                  activeItem === "home"
-                    ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
-                    : "text-slate-500 font-medium"
-                } `}
-              >
-                Home
-              </li>
-              <li
-                onClick={()=> handleTabClick("browse-courses")}
-                className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
-                  activeItem === "browse-courses"
-                    ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
-                    : "text-slate-500 font-medium"
-                } `}
-              >
-                Browse courses
-              </li>
-            </ul>
-            <CourseCatalog allCourses={allCourses}/>
-          </div>
-      )
+          <ul className="flex gap-x-8 pl-20 border-b-2">
+            <li
+              onClick={() => handleTabClick("home")}
+              className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
+                activeItem === "home"
+                  ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
+                  : "text-slate-500 font-medium"
+              } `}
+            >
+              Home
+            </li>
+            <li
+              onClick={() => handleTabClick("browse-courses")}
+              className={`pb-2 text-xl hover:text-blue-500 cursor-pointer ${
+                activeItem === "browse-courses"
+                  ? "border-b-4 border-blue-700 text-blue-700 font-semibold scale-110"
+                  : "text-slate-500 font-medium"
+              } `}
+            >
+              Browse courses
+            </li>
+          </ul>
+          <CourseCatalog
+            count={allCourses?.pagination?.totalPages}
+            allCourses={allCourses?.data}
+            currentPage={currentPage}
+            handleChangePage={handleChangePage}
+          />
+        </div>
+      );
+    }
   }
-
 };
-}
 export default HomePage;

@@ -1,9 +1,10 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import Course from "../Course";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useMemo } from "react";
-import Pagination from "../Pagination";
+// import Pagination from "../Pagination";
+import Pagination from "@mui/material/Pagination";
 const optionsFilterBy = [
   {
     id: "1",
@@ -47,20 +48,20 @@ Filter.propTypes = {
   handleClickOption: PropTypes.func,
 };
 
-const CourseCatalog = ({ allCourses }) => {
-  const [currentPage, setCurrentPage] = useState(1);
+const CourseCatalog = ({ allCourses, handleChangePage, currentPage, totalPages }) => {
+  // const [currentPage, setCurrentPage] = useState(1);
 
-  const currentTableData = useMemo(() => {
-    const firstPageIndex = (currentPage - 1) * PageSize;
-    const lastPageIndex = firstPageIndex + PageSize;
-    return allCourses.slice(firstPageIndex, lastPageIndex);
-  }, [currentPage, allCourses]);
-  
+  // const currentTableData = useMemo(() => {
+  //   const firstPageIndex = (currentPage - 1) * PageSize;
+  //   const lastPageIndex = firstPageIndex + PageSize;
+  //   return allCourses.slice(firstPageIndex, lastPageIndex);
+  // }, [currentPage, allCourses]);
+
   const navigate = useNavigate();
   const location = useLocation();
   const handleCourseClick = (course) => {
     navigate(`/learn/${course.courseSlug}`, {
-        state: { courseId: course._id },
+      state: { courseId: course._id },
     });
   };
 
@@ -105,7 +106,7 @@ const CourseCatalog = ({ allCourses }) => {
             Course catalog
           </h2>
           <div className="sm:grid grid-cols-4 sm:gap-6 flex flex-col gap-y-4 mb-10">
-            {currentTableData?.map((course) => (
+            {allCourses?.map((course) => (
               <Course
                 onClick={() => handleCourseClick(course)}
                 key={course._id}
@@ -118,13 +119,24 @@ const CourseCatalog = ({ allCourses }) => {
               />
             ))}
           </div>
-          <Pagination
+          {/* <Pagination
               className="pagination-bar"
               currentPage={currentPage}
               totalCount={allCourses.length}
               pageSize={PageSize}
               onPageChange={(page) => setCurrentPage(page)}
+            /> */}
+          <div className="flex justify-center">
+            <Pagination
+              count={totalPages}
+              variant="outlined"
+              shape="rounded"
+              size="large"
+              color="primary"
+              onChange={handleChangePage}
+              page={currentPage}
             />
+          </div>
         </div>
       </div>
     </div>
