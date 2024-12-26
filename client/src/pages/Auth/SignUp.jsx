@@ -47,9 +47,11 @@ function Signup() {
         setAuthState(response.data)
         if (response.data.role === USER_ROLE.USER.value) {
           navigate('/', { replace: true })
-        } else {
+        } else if (response.data.role === USER_ROLE.INSTRUCTOR.value) {
           navigate('/instructor/course-management', { replace: true })
-        }
+        } else if (response.data.role === USER_ROLE.ADMIN.value) {
+          navigate('/admin/admin-dashboard', { replace: true })
+        } 
       } else {
         setMessage(response.message);
       }

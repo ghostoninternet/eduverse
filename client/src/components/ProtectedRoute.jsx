@@ -7,7 +7,6 @@ import { USER_ROLE } from "../constants/user";
 
 const ProtectedRoute = ({ allowedRoles }) => {
   const { authState, isLoading } = useAuth();
-  console.log('🚀 ~ ProtectedRoute ~ authState:', authState)
 
   // Nếu đang trong trạng thái tải dữ liệu xác thực
   if (isLoading) {
