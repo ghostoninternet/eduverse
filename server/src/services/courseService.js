@@ -404,6 +404,15 @@ const deleteCourse = async (courseId) => {
   }
 }
 
+const getAllCourses = async () => {
+  return await courseDaos.findAllCourses()
+    .then(data => data)
+    .catch(err => {
+      console.log(err)
+      throw new CustomError.DatabaseError()
+    })
+}
+
 export default {
   getAllInstructorCourseTitles,
   getCourseDetail,
@@ -417,4 +426,5 @@ export default {
   createNewCourse,
   updateCourse,
   deleteCourse,
+  getAllCourses,
 }
