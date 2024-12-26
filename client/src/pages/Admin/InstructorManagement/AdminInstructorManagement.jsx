@@ -17,7 +17,7 @@ function InstructorManagement() {
       try {
         const data = await getInstructorList(currentPage, limitPerPage);
         setInstructors(data.data || []);
-        setTotalInstructors(data.pagination.totalInstructors || 0);
+        setTotalInstructors(data.pagination.totalUsers || 0);
       } catch (error) {
         console.error("Error fetching instructor list:", error);
       }

@@ -205,15 +205,10 @@ const deleteCourseReview = async (reviewId, userId) => {
   }
 
   // Delete review
-  await reviewDaos.deleteCourseReview(reviewId)
-  
-  // Recalculate rating average and update number of reviews
-  recalculateRatingAvg(foundCourse._id, foundCourse);
+  await reviewDaos.deleteCourseReview(reviewId);
   foundCourse.courseReviewCount -= 1;
-  courseDaos.updateCourse(foundCourse._id, {
-    courseReviewCount: foundCourse.courseReviewCount,
-  });
-
+  await courseDaos.updateCourse(foundCourse._id, { courseReviewCount: foundCourse.courseReviewCount });
+  await recalculateRatingAvg(foundCourse._id, foundCourse);
   return true;
 };
 
