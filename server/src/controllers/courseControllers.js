@@ -107,7 +107,7 @@ const deleteCourse = async (req, res, next) => {
 }
 
 const getAllCourses = async (req, res, next) => {
-  const foundCourses = await courseServices.getAllCourses()
+  const foundCourses = await courseServices.getAllCourses(req.query, req.query.limit, req.query.page)
   res.status(200).json(foundCourses)
 }
 
