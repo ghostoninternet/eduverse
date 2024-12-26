@@ -32,8 +32,18 @@ const findCategoryByName = async (categoryName) => {
   })
 }
 
+const findByName = async (categoryName) => {
+  return await Categories.findOne({categoryName: categoryName}) 
+  .then(data => data)
+  .catch(err => {
+    console.log(err)
+    throw new CustomError.DatabaseError()
+  })
+}
+
 export default {
   findAllCategories,
   findCategoryById,
   findCategoryByName,
+  findByName
 }
