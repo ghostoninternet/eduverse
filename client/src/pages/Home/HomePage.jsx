@@ -91,8 +91,8 @@ const HomePage = () => {
   const handleEnrolledCourseClick = (course) => {
     navigate(`/enrolledCourse/${course._id}`);
   };
-  const [completedCourses, setCompletedCourses] = useState([]);
-  const [inProgressCourses, setInProgressCourses] = useState([]);
+  const [completedCourses, setCompletedCourses] = useState({});
+  const [inProgressCourses, setInProgressCourses] = useState({});
   const handleTabClick = (tab) => {
     navigate(`/#${tab}`);
     setActiveItem(tab);
