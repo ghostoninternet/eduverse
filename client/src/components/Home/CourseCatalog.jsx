@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import Course from "../Course";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useMemo } from "react";
-import Pagination from "../pagination";
+import Pagination from "../Pagination";
 const optionsFilterBy = [
   {
     id: "1",
