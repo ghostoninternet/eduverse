@@ -72,15 +72,15 @@ export default async function generateSampleData() {
   await mongoose.connect(ENV.MONGO_URI, {
     dbName: ENV.DATABASE_NAME
   })
-  .then(async () => {
-    console.log("Connected to Database. Ready to generate sample data")   
-  })
-  .catch((err) => {
-    console.log("Error connecting to Database!")
-    console.log(err)
-    mongoose.disconnect()
-    process.exit(1)
-  })
+    .then(async () => {
+      console.log("Connected to Database. Ready to generate sample data")
+    })
+    .catch((err) => {
+      console.log("Error connecting to Database!")
+      console.log(err)
+      mongoose.disconnect()
+      process.exit(1)
+    })
 
   console.log("Cleaning Old Data")
   await Users.deleteMany({})
@@ -115,7 +115,7 @@ export default async function generateSampleData() {
     fs.writeFileSync(userAccount, '');
 
     for (let i = 0; i < 500; i++) {
-      const rawPassword = faker.internet.password(); 
+      const rawPassword = faker.internet.password();
       const username = faker.person.fullName();
       const email = `example-user-v${i}@gmail.com`;
       fs.appendFileSync(userAccount, `Account: ${username}, ${email}, ${rawPassword}\n`);
@@ -141,7 +141,7 @@ export default async function generateSampleData() {
 
     fs.writeFileSync(instructorAccount, '');
     for (let i = 0; i < 10; i++) {
-      const rawPassword = faker.internet.password(); 
+      const rawPassword = faker.internet.password();
       const username = faker.person.fullName();
       const email = `example-instructor-v${i}@gmail.com`;
       fs.appendFileSync(instructorAccount, `Account: ${username}, ${email}, ${rawPassword}\n`);
@@ -165,50 +165,28 @@ export default async function generateSampleData() {
     console.log("Generating Courses....")
     for (let i = 0; i < 500; i++) {
       const courseCategory = []
-      const freeCourse = 20;
       for (let j = 0; j < getRandomNumber(4); j++) {
         courseCategory.push(getRandomElement(categories)._id)
       }
-      if(i < freeCourse){
-        const course = await Courses.create({
-          courseTitle: `Course ${i + 1}`,
-          courseSlug: `course-${i + 1}`,
-          courseInstructor: getRandomElement(instructors),
-          courseDescription: faker.lorem.paragraph(5),
-          courseImgUrl: faker.image.avatar(),
-          courseCategory,
-          coursePrice: 0.00,
-          courseModules: [],
-          courseReviews: [],
-          courseReviewCount: 0,
-          courseRatingAvg: 0,
-          courseLearnerCount: 0,
-          courseStatus: 'public'
-        });
-        courses.push(course._id);
-      }else{
-        const course = await Courses.create({
-          courseTitle: `Course ${i + 1}`,
-          courseSlug: `course-${i + 1}`,
-          courseInstructor: getRandomElement(instructors),
-          courseDescription: faker.lorem.paragraph(5),
-          courseImgUrl: faker.image.avatar(),
-          courseCategory,
-          coursePrice: Number.parseFloat(faker.finance.amount({
-            min: 0.01,
-            max: 9.99,
-          })),
-          courseModules: [],
-          courseReviews: [],
-          courseReviewCount: 0,
-          courseRatingAvg: 0,
-          courseLearnerCount: 0,
-          courseStatus: 'public'
-        });
-        courses.push(course._id);
-      }
-      
-      
+      const course = await Courses.create({
+        courseTitle: `Course ${i + 1}`,
+        courseSlug: `course-${i + 1}`,
+        courseInstructor: getRandomElement(instructors),
+        courseDescription: faker.lorem.paragraph(5),
+        courseImgUrl: faker.image.avatar(),
+        courseCategory,
+        coursePrice: Number.parseFloat(faker.finance.amount({
+          min: 10.99,
+          max: 49.99,
+        })),
+        courseModules: [],
+        courseReviews: [],
+        courseReviewCount: 0,
+        courseRatingAvg: 0,
+        courseLearnerCount: 0,
+        courseStatus: 'public'
+      });
+      courses.push(course._id);
     }
     console.log("Finish Generating Courses")
 
@@ -223,7 +201,7 @@ export default async function generateSampleData() {
             "https://www.youtube.com/watch?v=GxmfcnU3feo",
             "https://www.youtube.com/watch?v=09n__iJvTeY",
             "https://www.youtube.com/watch?v=HNBCKzaRpQU",
-            "https://www.youtube.com/watch?v=EjEDfymRSIw",
+            "https://www.youtube.com/watch?v=XXjfTQ7d-eo",
             "https://www.youtube.com/watch?v=8_ZjWWp_BUM",
             "https://www.youtube.com/watch?v=JQbASNZ4v-U",
             "https://www.youtube.com/watch?v=__AApNgsAbE&t=174s"
@@ -234,9 +212,10 @@ export default async function generateSampleData() {
             videoLength: Math.floor(Math.random() * 10) + 10,
           })
         }
+        const foundModule = await Courses.findById(courses[i1])
         const module = await Modules.create({
           courseId: courses[i1],
-          moduleInstructor: getRandomElement(instructors),
+          moduleInstructor: foundModule.courseInstructor,
           moduleTitle: `Module ${i2 + 1}`,
           moduleDescription: faker.lorem.paragraph(5),
           moduleVideoLessons,
