@@ -6,6 +6,7 @@ import ModuleVideo from '../../../components/Modals/Videos/ModuleVideo';
 import NewVideoModal from '../../../components/Modals/Videos/NewVideoModal';
 import { getAllCoursesTitle } from '../../../apis/course/instructorCourse';
 import { toast } from 'react-toastify';
+import CancelConfirmModal from '../../../components/Modals/Confirmation/CancelConfirmModal';
 
 function AddNewModuleModal({
   showAddNewModule,
@@ -19,16 +20,10 @@ function AddNewModuleModal({
     moduleDescription: '',
     moduleVideoLessons: [],
   })
+  const [isOpenCancel, setIsOpenCancel] = useState(false)
   const [showAddNewVideo, setShowAddNewVideo] = useState(false)
 
   const validateData = () => {
-    if (newModuleData.courseId == '') {
-      toast('You need to select at lease one course', {
-        type: 'error',
-        autoClose: 2000,
-      })
-      return false
-    }
     if (newModuleData.moduleTitle == '') {
       toast('Please provide module title', {
         type: 'error',
@@ -38,6 +33,13 @@ function AddNewModuleModal({
     }
     if (newModuleData.moduleDescription == '') {
       toast('Please provide module description', {
+        type: 'error',
+        autoClose: 2000,
+      })
+      return false
+    }
+    if (newModuleData.courseId == '') {
+      toast('You need to select at lease one course', {
         type: 'error',
         autoClose: 2000,
       })
@@ -60,6 +62,7 @@ function AddNewModuleModal({
       moduleVideoLessons: [],
     })
     setShowAddNewModule(false)
+    setIsOpenCancel(false)
   }
 
   const handleAddNewVideo = (newVideo, resetData) => {
@@ -70,7 +73,6 @@ function AddNewModuleModal({
     resetData()
   }
   const handleChangeCourse = (newCourseId) => {
-    console.log('🚀 ~ handleChangeCourse ~ newCourseId:', newCourseId)
     setNewModuleData({
       ...newModuleData,
       courseId: newCourseId
@@ -114,7 +116,7 @@ function AddNewModuleModal({
   return (
     <>
       <div
-        className={`${showAddNewModule ? '' : 'hidden'} absolute top-0 right-0 left-0 bottom-0 bg-slate-950/50 w-full h-full`}>
+        className={`${showAddNewModule ? '' : 'hidden'} absolute z-[90] top-0 right-0 left-0 bottom-0 bg-slate-950/50 w-full h-full`}>
         <div
           onClick={(e) => {
             e.stopPropagation()
@@ -122,8 +124,11 @@ function AddNewModuleModal({
           className="w-4/5 mx-auto mt-10 p-3 border-2 bg-white rounded-2xl lg:w-3/5 max-h-[70dvh] overflow-auto">
           <div className="flex justify-between mb-4">
             <div className="font-bold text-2xl">New Module</div>
-            <button onClick={() => { setShowAddNewModule(false) }} className="font-bold rounded-full bg-slate-200 py-1 px-2">
-              X
+            <button
+              onClick={() => { setIsOpenCancel(true) }}
+              className="text-gray-500 hover:text-black"
+            >
+              ✖
             </button>
           </div>
           <div className="mb-4">
@@ -179,7 +184,7 @@ function AddNewModuleModal({
             </div>
           </div>
           <div className="flex justify-center">
-            <button onClick={handleCancelAddNewModule} className="mx-5 px-2 py-1 bg-gray-500 font-bold text-white rounded-lg">Cancel</button>
+            <button onClick={() => setIsOpenCancel(true)} className="mx-5 px-2 py-1 bg-gray-500 font-bold text-white rounded-lg">Cancel</button>
             <button onClick={handleAddNewModule} className="mx-5 px-2 py-1 bg-blue-700 font-bold text-white rounded-lg">Add</button>
           </div>
         </div>
@@ -190,6 +195,17 @@ function AddNewModuleModal({
             isOpen={setShowAddNewVideo}
             setIsOpen={setShowAddNewVideo}
             handleCreate={handleAddNewVideo}
+          />
+        )
+      }
+      {
+        isOpenCancel && (
+          <CancelConfirmModal
+            isOpen={isOpenCancel}
+            handelClose={() => setIsOpenCancel(false)}
+            confirmMessage={"Are you sure you want to discard creating new module ?"}
+            handleConfirmCancel={handleCancelAddNewModule}
+            handleSave={handleAddNewModule}
           />
         )
       }

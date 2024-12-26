@@ -3,6 +3,7 @@ import { useState } from 'react'
 import ReactPlayer from 'react-player'
 import { uploadVideo } from '../../../apis/upload'
 import { toast } from 'react-toastify'
+import CancelConfirmModal from '../Confirmation/CancelConfirmModal'
 
 function VideoModal({
   video,
@@ -11,6 +12,7 @@ function VideoModal({
   isEditMode,
   handleEdit,
 }) {
+  const [isOpenCancel, setIsOpenCancel] = useState(false)
   const [editVideo, setEditVideo] = useState({
     videoUrl: video.videoUrl,
     videoTitle: video.videoTitle,
@@ -52,6 +54,7 @@ function VideoModal({
       videoLength: video.videoLength,
     })
     setIsOpen(false)
+    setIsOpenCancel(false)
   }
 
   const validateData = () => {
@@ -105,8 +108,17 @@ function VideoModal({
               )
             }
           </div>
-          <button onClick={() => { setIsOpen(false) }} className="font-bold rounded-full bg-slate-200 py-1 px-2">
-            X
+          <button
+            onClick={() => {
+              if (isEditMode) {
+                setIsOpenCancel(true)
+              } else {
+                setIsOpen(false)
+              }
+            }}
+            className="text-gray-500 hover:text-black"
+          >
+            ✖
           </button>
         </div>
         <div className="mb-4 w-full">
@@ -160,13 +172,24 @@ function VideoModal({
           {
             isEditMode && (
               <div className="flex justify-center">
-                <button onClick={handleCancelEditVideo} className="mx-5 px-2 py-1 bg-gray-500 font-bold text-white rounded-lg">Cancel</button>
+                <button onClick={() => setIsOpenCancel(true)} className="mx-5 px-2 py-1 bg-gray-500 font-bold text-white rounded-lg">Cancel</button>
                 <button onClick={handleEditVideo} className="mx-5 px-2 py-1 bg-blue-700 font-bold text-white rounded-lg">Save</button>
               </div>
             )
           }
         </div>
       </div>
+      {
+        isOpenCancel && (
+          <CancelConfirmModal
+            isOpen={isOpenCancel}
+            confirmMessage={"Are you sure you want to discard all changes to this video ?"}
+            handelClose={() => setIsOpenCancel(false)}
+            handleSave={handleEditVideo}
+            handleConfirmCancel={handleCancelEditVideo}
+          />
+        )
+      }
     </div>
   )
 }

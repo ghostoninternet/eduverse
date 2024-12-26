@@ -6,6 +6,7 @@ import { getExerciseDetail, updateExercise } from '../../../apis/instructorExerc
 import ExerciseQuiz from './ExerciseQuiz';
 import Spinner from '../../Spinner/Spinner';
 import NewExerciseQuiz from './NewExerciseQuiz';
+import CancelConfirmModal from '../Confirmation/CancelConfirmModal';
 
 function ExerciseDetailModal({
   exerciseId,
@@ -13,6 +14,7 @@ function ExerciseDetailModal({
   setIsOpen,
   isEditMode,
 }) {
+  const [isOpenCancel, setIsOpenCancel] = useState(false)
   const [exerciseDetail, setExerciseDetail] = useState(null)
   const [editExerciseData, setEditExerciseData] = useState({
     exerciseModule: '',
@@ -25,7 +27,6 @@ function ExerciseDetailModal({
   const [showAddNewQuiz, setShowAddNewQuiz] = useState(false)
 
   const handleAddNewQuiz = (newQuiz) => {
-    console.log('🚀 ~ handleAddNewQuiz ~ newQuiz:', newQuiz)
     setEditExerciseData({
       ...editExerciseData,
       exerciseQuizes: [...editExerciseData.exerciseQuizes, newQuiz]
@@ -34,7 +35,7 @@ function ExerciseDetailModal({
   const handleCancelAddNewQuiz = () => {
     setShowAddNewQuiz(false)
   }
-  
+
   const handleUpdateExercise = async () => {
     setIsLoading(true)
     try {
@@ -57,6 +58,7 @@ function ExerciseDetailModal({
       })
     } finally {
       setIsLoading(false)
+      setIsOpenCancel(false)
     }
   }
   const handleCancelUpdateExercise = () => {
@@ -69,6 +71,7 @@ function ExerciseDetailModal({
       exerciseQuizes: editExerciseData.exerciseQuizes,
     })
     setShowAddNewQuiz(false)
+    setIsOpenCancel(false)
   }
 
   const fetchExerciseDetail = async (exerciseId) => {
@@ -108,8 +111,17 @@ function ExerciseDetailModal({
         className="w-4/5 mx-auto mt-20 p-3 border-2 bg-white rounded-2xl lg:w-3/5 max-h-[70dvh] overflow-auto"
       >
         <div className="flex justify-end mb-4">
-          <button onClick={() => { setIsOpen(false) }} className="font-bold rounded-full bg-slate-200 py-1 px-2">
-            X
+          <button
+            onClick={() => {
+              if (isEditMode) {
+                setIsOpenCancel(true)
+              } else {
+                setIsOpen(false)
+              }
+            }}
+            className="text-gray-500 hover:text-black"
+          >
+            ✖
           </button>
         </div>
         {
@@ -218,7 +230,7 @@ function ExerciseDetailModal({
               {
                 isEditMode && (
                   <div className="flex justify-center">
-                    <button onClick={() => handleCancelUpdateExercise()} className="mx-5 px-2 py-1 bg-gray-500 font-bold text-white rounded-lg">Cancel</button>
+                    <button onClick={() => setIsOpenCancel(true)} className="mx-5 px-2 py-1 bg-gray-500 font-bold text-white rounded-lg">Cancel</button>
                     <button onClick={() => handleUpdateExercise()} className="mx-5 px-2 py-1 bg-blue-700 font-bold text-white rounded-lg">Save</button>
                   </div>
                 )
@@ -234,6 +246,17 @@ function ExerciseDetailModal({
             setIsOpen={setShowAddNewQuiz}
             handleAdd={handleAddNewQuiz}
             handleCancel={handleCancelAddNewQuiz}
+          />
+        )
+      }
+      {
+        isOpenCancel && (
+          <CancelConfirmModal
+            isOpen={isOpenCancel}
+            confirmMessage={"Are you sure you want to discard all changes to this exercise ?"}
+            handelClose={() => setIsOpenCancel(false)}
+            handleConfirmCancel={handleCancelUpdateExercise}
+            handleSave={handleUpdateExercise}
           />
         )
       }

@@ -4,6 +4,7 @@ import AddCircleIcon from '@mui/icons-material/AddCircle'
 import NewExerciseQuiz from './NewExerciseQuiz'
 import ExerciseQuiz from './ExerciseQuiz'
 import { toast } from 'react-toastify'
+import CancelConfirmModal from '../Confirmation/CancelConfirmModal'
 
 function NewExerciseModal({
   moduleId,
@@ -20,7 +21,8 @@ function NewExerciseModal({
     exerciseDuration: 0,
   })
   const [showAddNewQuiz, setShowAddNewQuiz] = useState(false)
-  
+  const [isOpenCancel, setIsOpenCancel] = useState(false)
+
   const validateNewExerciseData = () => {
     if (newExercise.exerciseName == '') {
       toast('Please provide exercise name!', {
@@ -62,6 +64,7 @@ function NewExerciseModal({
       exerciseDuration: 0,
     })
     setIsOpen(false)
+    setIsOpenCancel(false)
   }
 
   const handleAddNewExercise = async () => {
@@ -86,7 +89,7 @@ function NewExerciseModal({
   return (
     <>
       <div
-        className={`${isOpen ? '' : 'hidden'} absolute top-0 right-0 left-0 bottom-0 bg-slate-950/50 w-full h-full`}>
+        className={`${isOpen ? '' : 'hidden'} absolute z-[90] top-0 right-0 left-0 bottom-0 bg-slate-950/50 w-full h-full`}>
         <div
           onClick={(e) => {
             e.stopPropagation()
@@ -94,8 +97,11 @@ function NewExerciseModal({
           className="w-4/5 mx-auto mt-20 p-3 border-2 bg-white rounded-2xl lg:w-3/5 max-h-[70dvh] overflow-auto">
           <div className="flex justify-between mb-4">
             <div className="font-bold text-2xl">New Exercise</div>
-            <button onClick={() => { setIsOpen(false) }} className="font-bold rounded-full bg-slate-200 py-1 px-2">
-              X
+            <button
+              onClick={() => { setIsOpenCancel(true) }}
+              className="text-gray-500 hover:text-black"
+            >
+              ✖
             </button>
           </div>
           <div className="mb-4">
@@ -118,7 +124,7 @@ function NewExerciseModal({
               </div>
             </div>
             <div className="flex w-full mb-2">
-              <label className="w-2/5 font-bold text-base md:text-xl">Exercise Duration</label>
+              <label className="w-2/5 font-bold text-base md:text-xl">Exercise Duration (minutes)</label>
               <input
                 placeholder='Enter exercise duration in minutes'
                 className="w-3/5 border-2 px-2 py-1 border-black rounded-xl"
@@ -130,7 +136,7 @@ function NewExerciseModal({
               />
             </div>
             <div className="flex w-full mb-2">
-              <label className="w-2/5 font-bold text-base md:text-xl">Pass Score</label>
+              <label className="w-2/5 font-bold text-base md:text-xl">Pass Score (%)</label>
               <input
                 placeholder='Enter exercise pass score on scale 100%'
                 className="w-3/5 border-2 px-2 py-1 border-black rounded-xl"
@@ -156,7 +162,7 @@ function NewExerciseModal({
             </div>
           </div>
           <div className="flex justify-center">
-            <button onClick={() => handleCancelAddNewExercise()} className="mx-5 px-2 py-1 bg-gray-500 font-bold text-white rounded-lg">Cancel</button>
+            <button onClick={() => setIsOpenCancel(true)} className="mx-5 px-2 py-1 bg-gray-500 font-bold text-white rounded-lg">Cancel</button>
             <button onClick={() => handleAddNewExercise()} className="mx-5 px-2 py-1 bg-blue-700 font-bold text-white rounded-lg">Add</button>
           </div>
         </div>
@@ -168,6 +174,17 @@ function NewExerciseModal({
         handleAdd={handleAddQuiz}
         handleCancel={handleCancelAddQuiz}
       />
+      {
+        isOpenCancel && (
+          <CancelConfirmModal
+            isOpen={isOpenCancel}
+            confirmMessage={"Are you sure you want to discard creating new exercise ?"}
+            handelClose={() => setIsOpenCancel(false)}
+            handleSave={handleAddNewExercise}
+            handleConfirmCancel={handleCancelAddNewExercise}
+          />
+        )
+      }
     </>
   )
 }

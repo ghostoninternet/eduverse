@@ -63,11 +63,18 @@ function DataRow({
         }
       </td>
       <td className="px-6 py-4 flex gap-2 justify-center items-center">
-        <button onClick={() => {
-          setSelectCourse(course._id)
-          setIsEditMode(true)
-          setIsOpenDetail(true)
-        }} className="py-1 px-2 bg-slate-300 rounded-xl font-bold">Edit</button>
+        {
+          course.isDeleted
+            ? null
+            : (
+              <button onClick={() => {
+                setSelectCourse(course._id)
+                setIsEditMode(true)
+                setIsOpenDetail(true)
+              }} className="py-1 px-2 bg-slate-300 rounded-xl font-bold">Edit</button>
+            )
+
+        }
         <button onClick={() => {
           setSelectCourse(course._id)
           setIsOpenDetail(true)
@@ -304,14 +311,28 @@ function CourseManagement() {
               />
             </div>
             <div>
-              <button onClick={() => {
-                if (searchCourse !== '') {
-                  fetchSearchCourse(searchCourse, 10, 1)
-                } else {
-                  fetchCourses(10, 1)
-                }
-              }} className={`bg-blue-700 text-white p-2 text-base rounded-3xl disabled:opacity-50`}>
+              <button
+                disabled={searchCourse == "" ? true : false}
+                onClick={() => {
+                  if (searchCourse !== '') {
+                    fetchSearchCourse(searchCourse, 10, 1)
+                  } else {
+                    fetchCourses(10, 1)
+                  }
+                }}
+                className={`bg-blue-700 text-white p-2 text-base rounded-3xl disabled:opacity-50`}
+              >
                 Search
+              </button>
+              <button
+                onClick={() => {
+                  setSearchCourse('')
+                  setIsLoading(true)
+                  fetchCourses(10, 1)
+                }}
+                className={`ml-2 bg-blue-700 text-white p-2 text-base rounded-3xl disabled:opacity-50`}
+              >
+                Reset
               </button>
             </div>
           </div>

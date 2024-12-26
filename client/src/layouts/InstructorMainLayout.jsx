@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import MenuIcon from '@mui/icons-material/Menu'
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import { INSTRUCTOR_ROUTES } from '../constants/routes.js'
 import { INSTRUCTOR_NAVBAR } from '../constants/navbar.js'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import logout from '../apis/logout.js'
-import { toast } from 'react-toastify'
 import { pingServer } from '../apis/ping.js'
 
 function InstructorMainLayout() {
@@ -58,7 +58,7 @@ function InstructorMainLayout() {
 
   return (
     <div className="min-h-screen">
-      <div className={`lg:hidden fixed top-0 left-0 h-screen bg-slate-100 shadow-lg z-20 transition-all duration-300 
+      <div className={`lg:hidden fixed top-0 left-0 h-screen bg-slate-100 shadow-lg z-50 transition-all duration-300 
         ${openSidebar ? 'w-60' : 'w-0'} rounded-br-3xl rounded-tr-3xl overflow-hidden`}>
         <button onClick={() => setOpenSidebar(false)} className="absolute top-4 right-4 bg-slate-300 px-2 py-1 rounded-full">
           X
@@ -81,14 +81,15 @@ function InstructorMainLayout() {
                 key={INSTRUCTOR_ROUTES[route]}
                 to={INSTRUCTOR_ROUTES[route]}
                 className={`block w-[90%] text-center font-bold text-lg py-2 px-4 rounded-2xl shadow-lg 
-                  ${location.pathname === INSTRUCTOR_ROUTES[route] ? 'bg-blue-400 text-white' : 'bg-slate-300'}`}
+                  ${location.pathname === INSTRUCTOR_ROUTES[route] ? 'bg-blue-700 text-white hover:bg-blue-700'
+                    : 'bg-gray-300 text-black hover:bg-gray-400'}`}
               >
                 {INSTRUCTOR_NAVBAR[route]}
               </Link>
             ))}
             <button
               onClick={handleLogout}
-              className="block w-[90%] text-center font-bold text-lg py-2 px-4 rounded-2xl shadow-lg bg-slate-300"
+              className="block w-[90%] text-center text-white font-bold text-lg py-2 px-4 rounded-2xl shadow-lg bg-red-600"
             >
               Logout
             </button>
@@ -128,14 +129,15 @@ function InstructorMainLayout() {
                 key={INSTRUCTOR_ROUTES[route]}
                 to={INSTRUCTOR_ROUTES[route]}
                 className={`block w-[90%] text-center font-bold text-lg py-2 px-4 rounded-2xl shadow-lg 
-                  ${location.pathname === INSTRUCTOR_ROUTES[route] ? 'bg-blue-400 text-white' : 'bg-slate-300'}`}
+                  ${location.pathname === INSTRUCTOR_ROUTES[route] ? 'bg-blue-700 text-white hover:bg-blue-700'
+                    : 'bg-gray-300 text-black hover:bg-gray-400'}`}
               >
                 {INSTRUCTOR_NAVBAR[route]}
               </Link>
             ))}
             <button
               onClick={handleLogout}
-              className="block w-[90%] text-center font-bold text-lg py-2 px-4 rounded-2xl shadow-lg bg-slate-300"
+              className="block w-[90%] text-center text-white font-bold text-lg py-2 px-4 rounded-2xl shadow-lg bg-red-600"
             >
               Logout
             </button>

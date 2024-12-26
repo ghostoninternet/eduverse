@@ -45,7 +45,7 @@ function Signup() {
       const response = await signUpApi(data)
       if (response?.data) {
         setAuthState(response.data)
-        if (response.data.role === USER_ROLE.USER) {
+        if (response.data.role === USER_ROLE.USER.value) {
           navigate('/', { replace: true })
         } else {
           navigate('/instructor/course-management', { replace: true })

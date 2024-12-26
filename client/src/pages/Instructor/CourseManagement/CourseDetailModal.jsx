@@ -11,6 +11,7 @@ import deleteCourseReview from '../../../apis/review/deleteCourseReview'
 import { uploadImage } from '../../../apis/upload'
 import SelectDropdown from '../../../components/Input/SelectDropdown'
 import { COURSE_STATUS } from '../../../constants/course'
+import CancelConfirmModal from '../../../components/Modals/Confirmation/CancelConfirmModal'
 
 function CourseStatus({ courseStatus }) {
   return (
@@ -37,12 +38,12 @@ function CourseDetailModal({
   setIsEditMode,
   handleEditCourse,
 }) {
-  const optionCourseStatus = Object.keys(COURSE_STATUS).map(status => {
+  const [optionCourseStatus, setOptionCourseStatus] = useState(Object.keys(COURSE_STATUS).map(status => {
     return {
       value: COURSE_STATUS[status],
       label: status
     }
-  })
+  }))
   const [courseDetail, setCourseDetail] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isFetchError, setIsFetchError] = useState(false);
@@ -54,6 +55,8 @@ function CourseDetailModal({
   const [totalPages, setTotalPages] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
   const [limitPerPage, setLimitPerPage] = useState(5)
+
+  const [isOpenCancel, setIsOpenCancel] = useState(false)
 
   const [isOpenCategory, setIsOpenCategory] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
@@ -126,6 +129,7 @@ function CourseDetailModal({
       courseStatus: courseDetail.courseStatus,
     })
     setIsEditMode(false)
+    setIsOpenCancel(false)
     setOpen(false)
   }
   const handleEditCourseDetail = async () => {
@@ -155,6 +159,29 @@ function CourseDetailModal({
         })
         setSelectedItems(courseDetail.courseCategory)
         setIsFetchError(false)
+        if (courseDetail.courseStatus == COURSE_STATUS.PUBLIC) {
+          setOptionCourseStatus([
+            {
+              label: 'PUBLIC',
+              value: COURSE_STATUS.PUBLIC,
+            },
+            {
+              label: 'DRAFT',
+              value: COURSE_STATUS.DRAFT,
+            }
+          ])
+        } else {
+          setOptionCourseStatus([
+            {
+              label: 'DRAFT',
+              value: COURSE_STATUS.DRAFT,
+            },
+            {
+              label: 'PUBLIC',
+              value: COURSE_STATUS.PUBLIC,
+            },
+          ])
+        }
         toast('Successfully get course detail!', {
           type: 'success',
           autoClose: 1000,
@@ -228,7 +255,6 @@ function CourseDetailModal({
   }, [])
   useEffect(() => {
     if (courseId && limitPerPage) {
-      console.log('🚀 ~ useEffect ~ limitPerPage:', limitPerPage)
       fetchInstructorCourseReview(limitPerPage, currentPage);
     }
   }, [courseId, currentPage]);
@@ -237,11 +263,18 @@ function CourseDetailModal({
     <div className={`${isOpen ? '' : 'hidden'} absolute z-50 top-0 right-0 left-0 bottom-0 bg-slate-950/50 w-full h-full`}>
       <div onClick={(e) => { e.stopPropagation() }} className="w-4/5 max-h-[90dvh] overflow-auto mx-auto mt-10 p-3 border-2 bg-white rounded-2xl lg:px-8">
         <div className='flex justify-end'>
-          <button onClick={() => {
-            setOpen(false)
-            setIsEditMode(false)
-          }} className="font-bold rounded-full bg-slate-200 py-1 px-2">
-            X
+          <button
+            onClick={() => {
+              if (isEditMode) {
+                setIsOpenCancel(true)
+              } else {
+                setOpen(false)
+                setIsEditMode(false)
+              }
+            }}
+            className="text-gray-500 hover:text-black"
+          >
+            ✖
           </button>
         </div>
         {
@@ -343,7 +376,7 @@ function CourseDetailModal({
 
                 </div>
                 <div className="flex w-full items-center mb-2">
-                  <p className="w-2/5 font-bold text-xl">Course Price</p>
+                  <p className="w-2/5 font-bold text-xl">Course Price { isEditMode ? '($)' : null }</p>
                   {
                     isEditMode ? (
                       <input
@@ -439,7 +472,7 @@ function CourseDetailModal({
               {
                 isEditMode ? (
                   <div className="flex justify-center">
-                    <button onClick={handleCancelEditCourseDetail} className="mx-5 px-2 py-1 bg-gray-500 font-bold text-white rounded-lg">Cancel</button>
+                    <button onClick={() => setIsOpenCancel(true)} className="mx-5 px-2 py-1 bg-gray-500 font-bold text-white rounded-lg">Cancel</button>
                     <button onClick={handleEditCourseDetail} className="mx-5 px-2 py-1 bg-blue-700 font-bold text-white rounded-lg">Save</button>
                   </div>
                 ) : null
@@ -448,6 +481,21 @@ function CourseDetailModal({
           )
         }
       </div>
+
+      {
+        isOpenCancel && (
+          <CancelConfirmModal
+            isOpen={isOpenCancel}
+            confirmMessage={"Are you sure you want to discard all changes ?"}
+            handelClose={() => setIsOpenCancel(false)}
+            handleSave={() => {
+              handleEditCourseDetail()
+              setIsOpenCancel(false)
+            }}
+            handleConfirmCancel={handleCancelEditCourseDetail}
+          />
+        )
+      }
     </div >
   )
 }

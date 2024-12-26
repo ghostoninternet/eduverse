@@ -9,6 +9,7 @@ import { getModuleDetail } from '../../../apis/instructorModule';
 import Spinner from '../../../components/Spinner/Spinner';
 import { createNewExercise, deleteExercise } from '../../../apis/instructorExercise';
 import NewVideoModal from '../../../components/Modals/Videos/NewVideoModal';
+import CancelConfirmModal from '../../../components/Modals/Confirmation/CancelConfirmModal';
 
 function ModuleDetailModal({
   moduleId,
@@ -26,6 +27,8 @@ function ModuleDetailModal({
     moduleVideoLessons: [],
   })
   const [isLoading, setIsLoading] = useState(true)
+
+  const [isOpenCancel, setIsOpenCancel] = useState(false)
 
   const [showAddNewVideo, setShowAddNewVideo] = useState(false)
   const [showAddNewExercise, setShowAddNewExercise] = useState(false)
@@ -73,6 +76,8 @@ function ModuleDetailModal({
     setShowAddNewVideo(false)
     setNewExercises(false)
     setNewExercises([])
+    setIsOpenCancel(false)
+    setIsEditMode(false)
   }
 
   const handleAddNewVideo = (newVideo, resetData) => {
@@ -180,7 +185,7 @@ function ModuleDetailModal({
   return (
     <>
       <div
-        className={`${isOpen ? '' : 'hidden'} absolute top-0 right-0 left-0 bottom-0 bg-slate-950/50 w-full h-full`}>
+        className={`${isOpen ? '' : 'hidden'} absolute z-[90] top-0 right-0 left-0 bottom-0 bg-slate-950/50 w-full h-full`}>
         <div
           onClick={(e) => {
             e.stopPropagation()
@@ -189,11 +194,15 @@ function ModuleDetailModal({
           <div className="flex justify-end mb-4">
             <button
               onClick={() => {
-                setOpen(false)
-                setIsEditMode(false)
+                if (isEditMode) {
+                  setIsOpenCancel(true)
+                } else {
+                  setOpen(false)
+                }
               }}
-              className="font-bold rounded-full bg-slate-200 py-1 px-2">
-              X
+              className="text-gray-500 hover:text-black"
+            >
+              ✖
             </button>
           </div>
           {
@@ -317,7 +326,7 @@ function ModuleDetailModal({
                 {
                   isEditMode && (
                     <div className="flex justify-center">
-                      <button onClick={handleCancelEditModule} className="mx-5 px-2 py-1 bg-gray-500 font-bold text-white rounded-lg">Cancel</button>
+                      <button onClick={() => setIsOpenCancel(true)} className="mx-5 px-2 py-1 bg-gray-500 font-bold text-white rounded-lg">Cancel</button>
                       <button onClick={handleEditModule} className="mx-5 px-2 py-1 bg-blue-700 font-bold text-white rounded-lg">Save</button>
                     </div>
                   )
@@ -347,6 +356,17 @@ function ModuleDetailModal({
             isOpen={showAddNewVideo}
             setIsOpen={setShowAddNewVideo}
             handleCreate={handleAddNewVideo}
+          />
+        )
+      }
+      {
+        isEditMode && isOpenCancel && (
+          <CancelConfirmModal
+            isOpen={isOpenCancel}
+            confirmMessage={"Are you sure you want to discard all changes ?"}
+            handelClose={() => setIsOpenCancel(false)}
+            handleSave={handleEditModule}
+            handleConfirmCancel={handleCancelEditModule}
           />
         )
       }

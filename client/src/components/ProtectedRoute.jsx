@@ -1,5 +1,4 @@
 /* eslint-disable react/prop-types */
-import React from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { toast } from "react-toastify";
@@ -8,6 +7,7 @@ import { USER_ROLE } from "../constants/user";
 
 const ProtectedRoute = ({ allowedRoles }) => {
   const { authState, isLoading } = useAuth();
+  console.log('🚀 ~ ProtectedRoute ~ authState:', authState)
 
   // Nếu đang trong trạng thái tải dữ liệu xác thực
   if (isLoading) {
