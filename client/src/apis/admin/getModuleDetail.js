@@ -9,7 +9,7 @@ const getModuleDetail = async (moduleId) => {
     console.log("Response detail:", response);
 
     if (!response.ok) {
-      console.error("Failed Response:", await response.text()); // Log chi tiết
+      console.error("Failed Response:", await response.text());
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 

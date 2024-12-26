@@ -185,6 +185,7 @@ const getCourseDetail = async (courseId) => {
   }
   const courseDetail = {
     id: foundCourse._id,
+    courseImgUrl: foundCourse.courseImgUrl,
     title: foundCourse.courseTitle,
     slug: foundCourse.courseSlug,
     description: foundCourse.courseDescription,
@@ -242,52 +243,78 @@ const getModules = async (limit, page) => {
 };
 
 const getModuleDetail = async (moduleId) => {
+  // Tìm module theo ID
   const foundModule = await moduleDaos.findModuleById(moduleId);
   if (!foundModule) throw new CustomError.NotFoundError("Module not found!");
 
+  // Tìm course liên quan đến module
   const course = await courseDaos.findCourseById(foundModule.courseId);
+
+  // Xử lý danh sách exercises
   const moduleExercises = foundModule.moduleExercises
-  ? await Promise.all(
-      foundModule.moduleExercises.map(async (exerciseId) => {
-        const exercise = await getExerciseDetail(exerciseId); // Gọi hàm getExerciseDetail
-        if (!exercise) return null;
-        return {
-          id: exercise._id,
-          exerciseName: exercise.exerciseName,
-          exerciseDuration: exercise.exerciseDuration,
-          exercisePassScore: exercise.exercisePassScore,
-          exerciseQuizzes: exercise.exerciseQuizzes.map((quiz) => ({
-            question: quiz.question,
-            choices: quiz.choices,
-            answer: quiz.answer,
-          })),
-        };
-      })
-    )
-  : [];
+    ? await Promise.all(
+        foundModule.moduleExercises.map(async (exerciseId) => {
+          const exercise = await exerciseDaos.findExerciseById(exerciseId);
+          if (!exercise) return null;
+          return {
+            id: exercise._id,
+            name: exercise.exerciseName,
+            duration: exercise.exerciseDuration,
+            passScore: exercise.exercisePassScore,
+            quizzes: exercise.exerciseQuizes.map((quiz) => ({
+              question: quiz.question,
+              choices: quiz.choices,
+              answer: quiz.answer,
+            })),
+          };
+        })
+      )
+    : [];
+
+  // Trả về chi tiết module
   return {
     id: foundModule._id,
     title: foundModule.moduleTitle,
     description: foundModule.moduleDescription,
-    courseTitle: course?.courseTitle || "Unknown",
+    course: course ? { id: course._id, title: course.courseTitle } : null,
     createdAt: foundModule.createdAt,
     videoLessons: foundModule.moduleVideoLessons,
-    exercises: moduleExercises,
+    exercises: moduleExercises.filter((exercise) => exercise !== null), // Loại bỏ exercises null
   };
 };
 
 
+
 const getExerciseDetail = async (exerciseId) => {
+  // Tìm exercise theo ID
   const foundExercise = await exerciseDaos.findOneExercise({
     _id: new mongoose.Types.ObjectId(exerciseId),
-  })
-  if (!foundExercise) throw new CustomError.NotFoundError("No exercise found!")
+  });
+  if (!foundExercise) throw new CustomError.NotFoundError("No exercise found!");
 
-  let foundModule = await moduleDaos.findModuleById(foundExercise.exerciseModule)
-  foundExercise.exerciseModule = foundModule
+  // Kiểm tra và tìm module nếu tồn tại
+  let foundModule = null;
+  if (foundExercise.exerciseModule) {
+    foundModule = await moduleDaos.findModuleById(foundExercise.exerciseModule);
+  }
 
-  return foundExercise
-}
+  // Trả về chi tiết exercise kèm thông tin module
+  return {
+    id: foundExercise._id,
+    name: foundExercise.exerciseName,
+    duration: foundExercise.exerciseDuration,
+    passScore: foundExercise.exercisePassScore,
+    quizzes: foundExercise.exerciseQuizes.map((quiz) => ({
+      question: quiz.question,
+      choices: quiz.choices,
+      answer: quiz.answer,
+    })),
+    module: foundModule
+      ? { id: foundModule._id, title: foundModule.moduleTitle }
+      : "Module not found",
+  };
+};
+
 
 const getUsers = async (limit, page) => {
   const foundUsers = await userDaos.findUsers({ role: USER_ROLE.USER }, limit, page);

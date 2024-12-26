@@ -65,7 +65,18 @@ function CourseDetailModal({ isOpen, onClose, courseDetail }) {
         {/* Course Information */}
         <div className="mb-4">
           <h3 className="text-lg font-bold">Course Information</h3>
-          <p><strong>Title:</strong> {courseDetail.title || "N/A"}</p>
+          {/* Course Image */}
+          {courseDetail.courseImgUrl && (
+          <div className="flex flex-col justify-center items-center mb-4">
+            <img
+              src={courseDetail.courseImgUrl}
+              alt="Course Thumbnail"
+              className="w-32 h-32 rounded-full object-cover shadow-lg"
+            />
+            {/* Title */}
+            <p className="mt-2 text-xl font-bold">{courseDetail.title || "N/A"}</p>
+          </div>
+        )}
           <p><strong>Description:</strong> {courseDetail.description || "No description available"}</p>
           <p><strong>Instructor:</strong> {courseDetail.instructor?.name || "No Instructor"}</p>
           <p><strong>Rating:</strong> {courseDetail.rating?.toFixed(1) || "No ratings yet"}</p>
