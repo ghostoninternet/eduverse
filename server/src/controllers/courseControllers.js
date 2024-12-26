@@ -106,6 +106,11 @@ const deleteCourse = async (req, res, next) => {
   }) 
 }
 
+const getAllCourses = async (req, res, next) => {
+  const foundCourses = await courseServices.getAllCourses()
+  res.status(200).json(foundCourses)
+}
+
 export default {
   searchCourses,
   getRecommendedCourses,
@@ -119,4 +124,5 @@ export default {
   createNewCourse,
   updateCourse,
   deleteCourse,
+  getAllCourses
 }

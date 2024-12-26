@@ -6,7 +6,7 @@ import roleAuth from '../middlewares/roleAuth.js'
 import { USER_ROLE } from '../constants/user.js'
 const courseRouter = express.Router()
 
-
+courseRouter.get('/allCourses', asyncHandler(courseControllers.getAllCourses))
 courseRouter.get('/search', asyncHandler(courseControllers.searchCourses))
 courseRouter.get('/recommended', asyncHandler(courseControllers.getRecommendedCourses))
 courseRouter.get('/free', asyncHandler(courseControllers.getFreeCourses))
