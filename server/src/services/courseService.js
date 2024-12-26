@@ -127,9 +127,13 @@ const searchCourses = async (queryParams, limit, page) => {
     filter = {
       ...filter,
       courseCategory: { $in: categoryIds },
-      courseStatus: COURSE_STATUS.PUBLIC,
-      isDeleted: false,
     }
+  }
+
+  filter = {
+    ...filter,
+    courseStatus: COURSE_STATUS.PUBLIC,
+    isDeleted: false,
   }
 
   const totalCourses = await courseDaos.countNumberOfCourses(filter)
