@@ -144,16 +144,45 @@ const getCourseDetail = async (courseId) => {
   for (let i = 0; i < foundCourse.courseModules.length; i++) {
     const foundModule = await moduleDaos.findModuleById(foundCourse.courseModules[i]);
     if (foundModule) {
+      const moduleExercises = await Promise.all(
+        foundModule.moduleExercises.map(async (exerciseId) => {
+          const exercise = await exerciseDaos.findOneExercise({ _id: exerciseId });
+          return {
+            id: exercise._id,
+            exerciseName: exercise.exerciseName,
+            exerciseDuration: exercise.exerciseDuration,
+          };
+        })
+      );
+
       modules.push({
         id: foundModule._id,
         title: foundModule.moduleTitle,
-        description: foundModule.moduleDescription,
-        totalLessons: foundModule.moduleVideoLessons.length,
+        moduleDescription: foundModule.moduleDescription,
+        moduleVideoLessons: foundModule.moduleVideoLessons.map((lesson) => ({
+          videoTitle: lesson.videoTitle,
+          videoUrl: lesson.videoUrl,
+        })),
+        moduleExercises,
       });
     }
   }
-
-  // Chuẩn bị dữ liệu khóa học
+  const reviews = [];
+  if (foundCourse.courseReviews && Array.isArray(foundCourse.courseReviews[i])) {
+    for (let reviewId of foundCourse.courseReviews) {
+      const review = await reviewDaos.findCourseReviewById(reviewId);
+      if (review) {
+        reviews.push({
+          id: review._id,
+          reviewContent: review.reviewContent,
+          ratingStar: review.ratingStar,
+          userId: review.userId,
+          createdAt: review.createdAt,
+          updatedAt: review.updatedAt,
+        });
+    }
+  }
+  }
   const courseDetail = {
     id: foundCourse._id,
     title: foundCourse.courseTitle,
@@ -164,6 +193,7 @@ const getCourseDetail = async (courseId) => {
     category: categories,
     instructor: instructorInfo,
     modules: modules,
+    reviews: reviews,
     rating: foundCourse.courseRatingAvg,
     totalReviews: foundCourse.courseReviewCount,
     totalLearners: foundCourse.courseLearnerCount,
@@ -173,6 +203,7 @@ const getCourseDetail = async (courseId) => {
 
   return courseDetail;
 };
+
 
 
 const getModules = async (limit, page) => {
@@ -215,7 +246,25 @@ const getModuleDetail = async (moduleId) => {
   if (!foundModule) throw new CustomError.NotFoundError("Module not found!");
 
   const course = await courseDaos.findCourseById(foundModule.courseId);
-
+  const moduleExercises = foundModule.moduleExercises
+  ? await Promise.all(
+      foundModule.moduleExercises.map(async (exerciseId) => {
+        const exercise = await getExerciseDetail(exerciseId); // Gọi hàm getExerciseDetail
+        if (!exercise) return null;
+        return {
+          id: exercise._id,
+          exerciseName: exercise.exerciseName,
+          exerciseDuration: exercise.exerciseDuration,
+          exercisePassScore: exercise.exercisePassScore,
+          exerciseQuizzes: exercise.exerciseQuizzes.map((quiz) => ({
+            question: quiz.question,
+            choices: quiz.choices,
+            answer: quiz.answer,
+          })),
+        };
+      })
+    )
+  : [];
   return {
     id: foundModule._id,
     title: foundModule.moduleTitle,
@@ -223,7 +272,7 @@ const getModuleDetail = async (moduleId) => {
     courseTitle: course?.courseTitle || "Unknown",
     createdAt: foundModule.createdAt,
     videoLessons: foundModule.moduleVideoLessons,
-    exercises: foundModule.moduleExercises,
+    exercises: moduleExercises,
   };
 };
 

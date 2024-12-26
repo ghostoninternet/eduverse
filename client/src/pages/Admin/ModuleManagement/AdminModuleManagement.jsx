@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import ManagementTable from "../../../components/Tables/Table";
-import ModalDetail from "../../../components/Modals/DetailModal/ModalDetail";
+import ModuleDetail from "./ModuleDetail";
 import getModuleList from "../../../apis/admin/getModuleList";
+import getModuleDetail from "../../../apis/admin/getModuleDetail";
 
 function AdminModuleManagement() {
   const [modules, setModules] = useState([]);
@@ -20,15 +21,7 @@ function AdminModuleManagement() {
     try {
       const response = await getModuleList(page, limit);
       console.log("Fetched modules:", response);
-      const transformedModules = response.data.map((module) => ({
-        id: module.id || module._id,
-        "Module Title": module.moduleTitle,
-        Course: module.courseTitle || "Unknown Course",
-        Instructor: module.instructor?.name || "No Instructor",
-        "Created At": new Date(module.createdAt).toLocaleDateString(),
-        Description: module.moduleDescription || "No description available",
-      }));
-      setModules(transformedModules);
+      setModules(response.data || []);
       setTotalModules(response.pagination?.totalModules || 0);
       setTotalPages(response.pagination?.totalPages || 0);
     } catch (error) {
@@ -36,25 +29,35 @@ function AdminModuleManagement() {
     }
   };
 
-  const handleViewModule = (module) => {
-    setSelectedModule(module); 
-    setIsOpenDetail(true); 
+  const handleViewModule = async (moduleId) => {
+    try {
+      const moduleDetail = await getModuleDetail(moduleId);
+      console.log("Module detail:", moduleDetail);
+      setSelectedModule(moduleDetail.data);
+      setIsOpenDetail(true);
+    } catch (error) {
+      console.error("Failed to fetch module detail:", error);
+    }
+  };
+
+  const closeDetailModal = () => {
+    setSelectedModule(null);
+    setIsOpenDetail(false);
   };
 
   return (
     <div className="p-5">
-
       <ManagementTable
         tableHeaders={["Module Title", "Course", "Instructor", "Created At", "Actions"]}
         tableData={modules.map((module) => (
           <tr key={module.id} className="bg-white border-b hover:bg-gray-50">
-            <td className="px-6 py-4">{module["Module Title"]}</td>
-            <td className="px-6 py-4">{module.Course}</td>
-            <td className="px-6 py-4">{module.Instructor}</td>
-            <td className="px-6 py-4">{module["Created At"]}</td>
+            <td className="px-6 py-4">{module.moduleTitle}</td>
+            <td className="px-6 py-4">{module.courseTitle || "Unknown Course"}</td>
+            <td className="px-6 py-4">{module.instructor?.name || "No Instructor"}</td>
+            <td className="px-6 py-4">{new Date(module.createdAt).toLocaleDateString()}</td>
             <td className="px-6 py-4">
               <button
-                onClick={() => handleViewModule(module)}
+                onClick={() => handleViewModule(module.id)}
                 className="bg-blue-500 text-white px-4 py-2 rounded-lg"
               >
                 View
@@ -70,11 +73,10 @@ function AdminModuleManagement() {
       />
 
       {isOpenDetail && selectedModule && (
-        <ModalDetail
+        <ModuleDetail
           isOpen={isOpenDetail}
-          onClose={() => setIsOpenDetail(false)}
-          title="Module Details"
-          details={selectedModule}
+          onClose={closeDetailModal}
+          moduleDetail={selectedModule}
         />
       )}
     </div>

@@ -1,7 +1,8 @@
 import customFetch from "../../helpers/customFetch";
+import BASE_URL from "../../constants/api";
 
 const updateCourseReview = async (reviewId, updatedContent) => {
-  const url = `http://localhost:8000/api/review/${reviewId}`;
+  const url = `${BASE_URL}/review/${reviewId}`;
   
   try {
     const response = await customFetch(url, {
@@ -11,6 +12,7 @@ const updateCourseReview = async (reviewId, updatedContent) => {
       },
       body: JSON.stringify(updatedContent),
     });
+    console.log("Updated review:", response);
     if (!response.ok) {
       throw new Error(`Failed to update review: ${response.statusText}`);
     }
