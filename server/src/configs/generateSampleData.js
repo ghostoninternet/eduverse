@@ -8,6 +8,7 @@ import EnrolledCourses from '../models/enrolledCourseModel.js';
 import Exercises from '../models/exerciseModel.js';
 import Modules from '../models/moduleModel.js';
 import Payments from '../models/paymentModel.js';
+import enrolledCourseService from '../services/enrolledCourseService.js';
 import Reviews from '../models/reviewModel.js';
 import Users from '../models/userModel.js';
 import fs from 'fs'
@@ -114,7 +115,7 @@ export default async function generateSampleData() {
 
     fs.writeFileSync(userAccount, '');
 
-    for (let i = 0; i < 500; i++) {
+    for (let i = 0; i < 200; i++) {
       const rawPassword = faker.internet.password();
       const username = faker.person.fullName();
       const email = `example-user-v${i}@gmail.com`;
@@ -163,7 +164,7 @@ export default async function generateSampleData() {
 
     // Courses
     console.log("Generating Courses....")
-    for (let i = 0; i < 500; i++) {
+    for (let i = 0; i < 200; i++) {
       const courseCategory = []
       for (let j = 0; j < getRandomNumber(4); j++) {
         courseCategory.push(getRandomElement(categories)._id)
@@ -304,45 +305,44 @@ export default async function generateSampleData() {
       for (let j = 0; j < foundUser.enrolledCourses.length; j++) {
         // Find course
         const foundCourse = await Courses.findById(foundUser.enrolledCourses[j])
-        const courseModulesProgress = []
+        // const courseModulesProgress = []
 
-        for (let k = 0; k < foundCourse.courseModules.length; k++) {
-          // Find course module
-          const foundModule = await Modules.findById(foundCourse.courseModules[k])
-          const moduleVideoProgress = []
-          foundModule.moduleVideoLessons.forEach((video) => {
-            moduleVideoProgress.push({
-              ...video,
-              isFinish: false,
-            })
-          })
-          const moduleExerciseProgress = []
-          foundModule.moduleExercises.forEach(exercise => {
-            moduleExerciseProgress.push({
-              exerciseId: exercise,
-              userScore: 0,
-              hasPassed: false,
-              previousSubmitDate: null,
-            })
-          })
+        // for (let k = 0; k < foundCourse.courseModules.length; k++) {
+        //   // Find course module
+        //   const foundModule = await Modules.findById(foundCourse.courseModules[k])
+        //   const moduleVideoProgress = []
+        //   foundModule.moduleVideoLessons.forEach((video) => {
+        //     moduleVideoProgress.push({
+        //       ...video,
+        //       isFinish: false,
+        //     })
+        //   })
+        //   const moduleExerciseProgress = []
+        //   foundModule.moduleExercises.forEach(exercise => {
+        //     moduleExerciseProgress.push({
+        //       exerciseId: exercise,
+        //       userScore: 0,
+        //       hasPassed: false,
+        //       previousSubmitDate: null,
+        //     })
+        //   })
 
-          courseModulesProgress.push({
-            moduleId: foundModule._id,
-            isFinish: false,
-            moduleVideoProgress,
-            moduleExerciseProgress,
-          })
-        }
+        //   courseModulesProgress.push({
+        //     moduleId: foundModule._id,
+        //     isFinish: false,
+        //     moduleVideoProgress,
+        //     moduleExerciseProgress,
+        //   })
+        // }
 
-        const enrolledCourseDocument = {
-          courseId: foundCourse._id,
-          userId: foundUser._id,
-          courseProgress: 0,
-          courseEstimateDeadline: new Date(),
-          courseModulesProgress
-        }
-
-        await EnrolledCourses.create(enrolledCourseDocument)
+        // const enrolledCourseDocument = {
+        //   courseId: foundCourse._id,
+        //   userId: foundUser._id,
+        //   courseProgress: 0,
+        //   courseEstimateDeadline: new Date(),
+        //   courseModulesProgress
+        // }
+        await enrolledCourseService.createNewEnrolledCourse(users[i], foundCourse._id)
 
         // Review
         const reviewDocument = {
