@@ -1,2 +1,2 @@
-# digital-academy
-Project Công Nghệ Web
+# Eduverse
+An online learning platform
